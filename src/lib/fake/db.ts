@@ -929,6 +929,7 @@ export function metricsForPeriod(days: number): PeriodMetrics {
   const payouts = PERSONS.filter(p => p.ftd_at && isInLastDays(p.ftd_at, days)).reduce((s, p) => s + p.payout, 0);
   const grossMargin = netDeposits - payouts;
 
+  const spend = spendForPeriod(days);
   // Custo/FTD canônico: Investimento TOTAL ÷ FTDs (bate com Command/Analytics/Revenue).
   const cpftd = ftds > 0 ? Math.round(spend.total / ftds) : 0;
   const roi = spend.total > 0 ? Math.round(((grossMargin - spend.total) / spend.total) * 100) : 0;
