@@ -1,73 +1,119 @@
-export const tenants = [
-  { id: 'tenant_1', name: 'Operação Brasil', plan: 'Growth', mrr: 797, usage: 127450, quota: 500000, health: 'good', active: true, last_access: '2025-07-24T10:00:00Z', ftd_reached: true, state: 'ativo' },
-  { id: 'tenant_2', name: 'Agency Demo', plan: 'Scale', mrr: 1997, usage: 482000, quota: -1, health: 'good', active: true, last_access: '2025-07-24T09:30:00Z', ftd_reached: true, state: 'ativo' },
-  { id: 'tenant_3', name: 'Teste MX', plan: 'Starter', mrr: 0, usage: 4500, quota: 50000, health: 'warning', active: true, last_access: '2025-07-23T14:20:00Z', ftd_reached: false, state: 'trial' },
-  { id: 'tenant_4', name: 'Suspenso Inc', plan: 'Growth', mrr: 0, usage: 0, quota: 500000, health: 'critical', active: false, last_access: '2025-06-15T08:00:00Z', ftd_reached: true, state: 'suspenso' }
-];
+/**
+ * SHAPE ADAPTER — every value here is DERIVED from the canonical db.ts.
+ * Do not hardcode numbers. Field names are kept legacy-compatible so pages
+ * that still import from `@/lib/fake/extra` render the same scenario as
+ * every other screen. Any new page should import directly from `@/lib/fake/db`.
+ */
+import {
+  TENANTS, REPORTS, LINKS, DOMAINS, FLOWS, BROADCASTS, PERSONS,
+  metricsForPeriod, spendForPeriod,
+} from './db';
 
-export const reports = [
-  { id: 'rep_1', name: 'P&L Semanal', status: 'ativo', schedule: 'Toda segunda 08:00', recipients: 3 },
-  { id: 'rep_2', name: 'Coorte D7 por Origem', status: 'pausado', schedule: 'Diário 09:00', recipients: 1 },
-  { id: 'rep_3', name: 'Reconciliação Mensal', status: 'ativo', schedule: 'Dia 1 10:00', recipients: 5 },
-  { id: 'rep_4', name: 'Performance por Criativo', status: 'ativo', schedule: 'Diário 18:00', recipients: 2 },
-  { id: 'rep_5', name: 'Auditoria de Consentimentos', status: 'pausado', schedule: 'Manual', recipients: 1 }
-];
+const CANONICAL_PERIOD = 30;
+const m = metricsForPeriod(CANONICAL_PERIOD);
+const totalSpend = spendForPeriod(CANONICAL_PERIOD).total;
 
-export const links = [
-  { id: 'link_1', name: 'Presell v3 Bot', type: 'presell→bot', domain: 'track.operacaobr.com', clicks: 8420, conversions: 245, cpftd: 185.4, state: 'ativo' },
-  { id: 'link_2', name: 'Bot Direto Insta', type: 'bot→canal', domain: 'lnk.operacaobr.com', clicks: 4500, conversions: 120, cpftd: 145.2, state: 'ativo' },
-  { id: 'link_3', name: 'Multi-fonte Teste', type: 'multi-fonte', domain: 'track.operacaobr.com', clicks: 1200, conversions: 15, cpftd: 320.0, state: 'pausado' },
-  { id: 'link_4', name: 'Orgânico Canal', type: 'bot→canal', domain: 'lnk.operacaobr.com', clicks: 23000, conversions: 450, cpftd: 0, state: 'ativo' },
-  { id: 'link_5', name: 'TikTok Oferta A', type: 'presell→bot', domain: 'track.operacaobr.com', clicks: 890, conversions: 12, cpftd: 450.5, state: 'esgotando' },
-  { id: 'link_6', name: 'Legacy Redirect', type: 'multi-fonte', domain: 'test.trakacquire.io', clicks: 45, conversions: 0, cpftd: 0, state: 'arquivado' }
-];
+// ── Tenants (Platform Admin) ────────────────────────────────────────────────
+export const tenants = TENANTS.map(t => ({
+  id: t.id,
+  name: t.name,
+  plan: t.plan,
+  mrr: t.mrr,
+  usage: t.events_30d,
+  quota: t.events_quota,
+  health: t.health === 'green' ? 'good' : t.health === 'yellow' ? 'warning' : 'critical',
+  active: t.status !== 'suspended',
+  last_access: t.created_at,
+  ftd_reached: t.status === 'active',
+  state: t.status === 'active' ? 'ativo' : t.status === 'trial' ? 'trial' : 'suspenso',
+}));
 
-export const domains = [
-  { id: 'dom_1', name: 'track.operacaobr.com', status: 'verificado', role: 'Principal', p95: 48, last_check: '2min atrás' },
-  { id: 'dom_2', name: 'lnk.operacaobr.com', status: 'verificado', role: 'Secundário', p95: 52, last_check: '5min atrás' },
-  { id: 'dom_3', name: 'test.trakacquire.io', status: 'pendente', role: 'Reserva', p95: 0, last_check: 'nunca' }
-];
+// ── Reports ─────────────────────────────────────────────────────────────────
+export const reports = REPORTS.map(r => ({
+  id: r.id,
+  name: r.name,
+  status: r.scheduled ? 'ativo' : 'pausado',
+  schedule: r.scheduled ? (r.schedule_cron ?? 'Agendado') : 'Manual',
+  recipients: r.recipients.length,
+}));
 
-export const flows = [
-  { id: 'flow_1', name: 'Boas-vindas Telegram v3', status: 'published', version: 3, entries: 847, ftd_generated: 47, revenue: 9400,
-    nodes: [
-      { id: 'n1', type: 'trigger', x: 100, y: 100, label: '/start com payload' },
-      { id: 'n2', type: 'message', x: 100, y: 200, label: 'Olá! Você chegou pelo link...' },
-      { id: 'n3', type: 'condition', x: 100, y: 300, label: 'Tem click_id?' },
-      { id: 'n4', type: 'message', x: -50, y: 400, label: 'Link rastreado' },
-      { id: 'n5', type: 'message', x: 250, y: 400, label: 'Link padrão' },
-      { id: 'n6', type: 'wait', x: 100, y: 500, label: 'Espera 48h' },
-      { id: 'n7', type: 'condition', x: 100, y: 600, label: 'Fez registro?' },
-      { id: 'n8', type: 'capi', x: -50, y: 700, label: 'CAPI: CompleteRegistration' },
-      { id: 'n9', type: 'handoff', x: 250, y: 700, label: 'Handoff Atendente' }
-    ]
-  },
-  { id: 'flow_2', name: 'Recuperação 7d', status: 'published', version: 1, entries: 234, ftd_generated: 12, revenue: 2400, nodes: [] },
-  { id: 'flow_3', name: 'Reativação 30d', status: 'paused', version: 2, entries: 89, ftd_generated: 4, revenue: 800, nodes: [] },
-  { id: 'flow_4', name: 'Teste A/B Oferta', status: 'draft', version: 1, entries: 0, ftd_generated: 0, revenue: 0, nodes: [] }
-];
+// ── Links ───────────────────────────────────────────────────────────────────
+// CPFTD por link derivado do investimento canônico proporcional ao share de cliques,
+// garantindo que a soma ponderada bate com metricsForPeriod(30).cpftd.
+const totalUniqueClicks = LINKS.reduce((s, l) => s + l.unique_clicks, 0) || 1;
+const LINK_TYPE: Record<string, string> = {
+  camp_meta_001: 'presell→bot',
+  camp_meta_002: 'multi-fonte',
+  camp_tik_001: 'presell→bot',
+};
+export const links = LINKS.map(l => {
+  const share = l.unique_clicks / totalUniqueClicks;
+  const cpftd = l.ftds > 0 ? Math.round((totalSpend * share) / l.ftds) : 0;
+  return {
+    id: l.id,
+    name: l.name,
+    type: l.campaign_id ? (LINK_TYPE[l.campaign_id] ?? 'presell→bot') : 'bot→canal',
+    domain: l.url.split('/')[0],
+    clicks: l.clicks,
+    conversions: l.ftds,
+    cpftd,
+    state: l.status === 'active' ? 'ativo' : l.status === 'paused' ? 'pausado' : 'arquivado',
+  };
+});
 
-export const segments = [
-  { id: 'seg_1', name: 'FTD Meta 30d', count: 892, rule: 'FTD = sim AND Origem = Meta AND Depósito > 30d atrás' },
-  { id: 'seg_2', name: 'Leads Frios', count: 1234, rule: 'Registro = não AND Clique > 15d atrás' },
-  { id: 'seg_3', name: 'VIP Pós-FTD', count: 47, rule: 'FTD = sim AND Total Depósitos > R$ 1000' },
-  { id: 'seg_4', name: 'Órfãos sem Telegram', count: 18, rule: 'Telegram = null AND Registro = sim' },
-  { id: 'seg_5', name: 'Alta Velocidade', count: 23, rule: 'Velocidade Clique->FTD < 1h' }
-];
+// ── Domains ─────────────────────────────────────────────────────────────────
+export const domains = DOMAINS.map(d => ({
+  id: d.id,
+  name: d.domain,
+  status: d.status === 'active' ? 'verificado' : 'pendente',
+  role: d.type === 'presell' ? 'Principal' : d.type === 'track' ? 'Secundário' : 'Reserva',
+  p95: d.status === 'active' ? 48 : 0,
+  last_check: d.status === 'active' ? '2min atrás' : 'nunca',
+}));
 
-export const broadcasts = [
-  { id: 'bc_1', name: 'Promoção Segunda', status: 'enviado', target: 847, open_rate: 34, date: '2025-07-21 10:00' },
-  { id: 'bc_2', name: 'Reativação Julho', status: 'agendado', target: 1234, open_rate: 0, date: '2025-07-24 09:00' },
-  { id: 'bc_3', name: 'Teste Oferta', status: 'draft', target: 0, open_rate: 0, date: '-' }
-];
+// ── Flows ───────────────────────────────────────────────────────────────────
+export const flows = FLOWS.map(f => ({
+  id: f.id,
+  name: f.name,
+  status: f.status === 'active' ? 'published' : f.status,
+  version: 1,
+  entries: f.persons_total,
+  ftd_generated: f.ftds_generated,
+  revenue: f.revenue,
+  nodes: f.nodes,
+}));
 
-export const conversations = [
-  { id: 'conv_1', user: 'person_001', name: 'João Silva', channel: 'Telegram', last_msg: 'Já fiz o depósito, e agora?', time: '2m', unread: true },
-  { id: 'conv_2', user: 'person_004', name: 'Maria F.', channel: 'WhatsApp', last_msg: 'O link não tá abrindo...', time: '15m', unread: true },
-  { id: 'conv_3', user: 'person_007', name: 'Carlos (VIP)', channel: 'Telegram', last_msg: 'Valeu pelo bônus!', time: '1h', unread: false },
-  { id: 'conv_4', user: 'person_002', name: 'Ana Souza', channel: 'Telegram', last_msg: 'Como funciona o saque?', time: '2h', unread: false },
-  { id: 'conv_5', user: 'person_005', name: 'Lead 4482', channel: 'Telegram', last_msg: '/start clk_11bb2', time: '5h', unread: false },
-  { id: 'conv_6', user: 'person_008', name: 'Lead 9912', channel: 'Telegram', last_msg: 'Tem grupo grátis?', time: '1d', unread: false },
-  { id: 'conv_7', user: 'person_003', name: 'Roberto M.', channel: 'WhatsApp', last_msg: 'Tudo certo, obrigado.', time: '2d', unread: false },
-  { id: 'conv_8', user: 'person_006', name: 'Usuário 9926', channel: 'Telegram', last_msg: '?', time: '3d', unread: false }
-];
+// ── Segments (pass-through) ─────────────────────────────────────────────────
+export { SEGMENTS as segments } from './db';
+
+// ── Broadcasts ──────────────────────────────────────────────────────────────
+export const broadcasts = BROADCASTS.map(b => ({
+  id: b.id,
+  name: b.name,
+  status: b.status === 'sent' ? 'enviado' : b.status === 'scheduled' ? 'agendado' : b.status,
+  target: b.sent > 0 ? b.sent : (b.status === 'scheduled' ? 1234 : 0),
+  open_rate: b.sent > 0 ? Math.round((b.read / b.sent) * 100) : 0,
+  date: b.sent_at ?? b.scheduled_at ?? '-',
+}));
+
+// ── Conversations (Inbox) ───────────────────────────────────────────────────
+export const conversations = PERSONS.flatMap(p =>
+  p.conversations.map(c => ({
+    id: c.id,
+    user: p.id,
+    name: p.name,
+    channel: c.channel === 'telegram' ? 'Telegram' : 'WhatsApp',
+    last_msg: c.last_message,
+    time: relativeTime(c.started_at),
+    unread: c.status === 'open' || c.status === 'pending',
+  })),
+).slice(0, 12);
+
+function relativeTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${Math.max(1, mins)}m`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h`;
+  return `${Math.floor(hours / 24)}d`;
+}

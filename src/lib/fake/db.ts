@@ -1,14 +1,37 @@
 /**
- * TrakAcquire — Central Mock Database
+ * TrakAcquire — Central Mock Database (CANONICAL SCENARIO)
  * ──────────────────────────────────────────────────────────────────────────
- * Single source of truth for ALL prototype data.
- * Every page MUST derive numbers from this module — never hardcode.
+ * Single source of truth for ALL prototype data. Every page derives numbers
+ * from this module — never hardcode. `lib/fake/extra.ts` is a SHAPE ADAPTER
+ * over this file; it MUST NOT redefine any anchor value.
  *
- * Seed: 0xDEADBEEF (deterministic, same result every reload)
- * Period: 90 days ending 2026-07-23 (TODAY)
- * Persons: 240 total
+ * SEED: 0xDEADBEEF (deterministic — same result on every reload)
+ * PERIOD: 90 days ending 2026-07-23 (TODAY).
+ *
+ * ── ANCHOR VALUES (numbers all screens must reconcile to) ─────────────────
+ *   Persons total ............ 240 (240 personas geradas, seed fixa)
+ *   Sources .................. 144 Meta · 48 TikTok · 36 Orgânico · 12 Órfãos
+ *   FTDs canônicos ........... 89 no total (47 nos 30d · 26 nos 31–60d · 16 nos 61–90d)
+ *   Journey (90d) monotônico:  Captured ≥ Linked ≥ Registered ≥ Confirmed ≥ Reconciled
+ *   Investimento ............. spendForPeriod(days) — Meta cresce R$180→R$300, TikTok R$120/d
+ *   Custo/FTD ................ metricsForPeriod(days).cpftd = round(meta_spend / ftds)
+ *   Net deposit .............. gross_deposits − withdrawals (todas as telas)
+ *
+ * ── COMO CADA TELA DERIVA ─────────────────────────────────────────────────
+ *   Command ............ metricsForPeriod(period) + funnelData(period) + events (feed)
+ *   Analytics/Revenue .. metricsForPeriod + revenueBySource + dailySeries
+ *   Ledger ............. PERSONS.flatMap(deposits) filtered by period
+ *   Players/Player360 .. PERSONS (mesma lista, mesmos totals)
+ *   Reports/Cohorts .... cohortData() + metricsForPeriod
+ *   Reconciliation ..... allDeposits.filter(!reconciled || amount != provider_reported)
+ *   Media/Campanhas .... CAMPAIGNS + PERSONS.filter(campaign_id)
+ *   Signal Ledger ...... EVENTS (stream derivado das PERSONS/deposits)
+ *
+ * Regra: se um número em qualquer tela não vier de uma dessas funções,
+ * é violação do dataset único — abrir ADR ou removê-lo.
  * ──────────────────────────────────────────────────────────────────────────
  */
+
 
 // ── SEEDED RNG ───────────────────────────────────────────────────────────────
 function mulberry32(seed: number) {
