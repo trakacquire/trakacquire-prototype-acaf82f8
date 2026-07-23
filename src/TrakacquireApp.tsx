@@ -188,26 +188,23 @@ function Router() {
   );
 }
 
-function App() {
+export default function TrakacquireApp() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AppStateProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-            <PeriodProvider>
-              <Router />
-            </PeriodProvider>
-            <Toaster
-              position="top-right"
-              theme="dark"
-              toastOptions={{ style: { background: 'var(--graphite)', border: '1px solid var(--line)', color: 'var(--eggshell)' } }}
-            />
-          </WouterRouter>
-          <ScenarioSelector />
-        </AppStateProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <TooltipProvider>
+      <AppStateProvider>
+        <WouterRouter base="">
+          <PeriodProvider>
+            <Router />
+          </PeriodProvider>
+          <Toaster
+            position="top-right"
+            theme="dark"
+            toastOptions={{ style: { background: 'var(--graphite)', border: '1px solid var(--line)', color: 'var(--eggshell)' } }}
+          />
+        </WouterRouter>
+        <ScenarioSelector />
+      </AppStateProvider>
+    </TooltipProvider>
   );
 }
 
-export default App;
