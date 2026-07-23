@@ -163,11 +163,9 @@ export default function CommandPage() {
               </span>
               <span className="text-11 font-mono uppercase tracking-wider text-stone">Proof integrity</span>
             </div>
-            <div className="text-eggshell font-mono tabular-nums text-[28px] leading-none font-semibold">
-              {proofIntegrity.toFixed(1)}<span className="text-stone text-18">%</span>
-            </div>
-            <div className="text-11 text-stone mt-2 leading-relaxed">
-              {lastEventAgo !== null ? <>Último evento há {lastEventAgo}s ·<br/></> : null}
+            <MetricValue value={proofIntegrity.toFixed(1)} unit="%" size="xl" tone="default" />
+            <div className="text-11 text-stone mt-2 leading-relaxed font-mono tabular-nums">
+              {lastEventAgo !== null ? <>último evento há {lastEventAgo}s ·<br/></> : null}
               {pendingReconcile === 0 ? 'reconciliação D+1 completa' : `${pendingReconcile} depósitos pendentes`}
             </div>
           </div>
@@ -218,16 +216,16 @@ export default function CommandPage() {
                 <AreaChart data={chartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="ftdArea" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#7C91FF" stopOpacity={0.45} />
-                      <stop offset="100%" stopColor="#7C91FF" stopOpacity={0} />
+                      <stop offset="0%" stopColor="hsl(var(--proof-blue))" stopOpacity={0.45} />
+                      <stop offset="100%" stopColor="hsl(var(--proof-blue))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid stroke="hsl(var(--line))" strokeDasharray="2 4" vertical={false} />
-                  <XAxis dataKey="date" stroke="hsl(var(--stone))" style={{ fontSize: 10 }} tickLine={false} axisLine={false} />
-                  <YAxis stroke="hsl(var(--stone))" style={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+                  <XAxis dataKey="date" stroke="hsl(var(--stone))" style={{ fontSize: 10, fontFamily: 'var(--font-mono)' }} tickLine={false} axisLine={false} />
+                  <YAxis stroke="hsl(var(--stone))" style={{ fontSize: 10, fontFamily: 'var(--font-mono)' }} tickLine={false} axisLine={false} />
                   <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: 'hsl(var(--line))' }} />
-                  <Area type="monotone" dataKey="ftds" stroke="#7C91FF" strokeWidth={2} fill="url(#ftdArea)" name="FTDs" dot={false} />
-                  <Area type="monotone" dataKey="reconciled" stroke="#F6F1E7" strokeWidth={1.5} strokeDasharray="4 4" fill="transparent" name="Reconciliado" dot={false} />
+                  <Area type="monotone" dataKey="ftds" stroke="hsl(var(--proof-blue))" strokeWidth={2} fill="url(#ftdArea)" name="FTDs" dot={false} />
+                  <Area type="monotone" dataKey="reconciled" stroke="hsl(var(--eggshell))" strokeWidth={1.5} strokeDasharray="4 4" fill="transparent" name="Reconciliado" dot={false} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
