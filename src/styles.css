@@ -42,6 +42,7 @@
   --color-ink: hsl(var(--ink));
   --color-iron: hsl(var(--iron));
   --color-graphite: hsl(var(--graphite));
+  --color-panel: hsl(var(--panel));
   --color-zinc: hsl(var(--zinc));
   --color-line: hsl(var(--line));
   --color-eggshell: hsl(var(--eggshell));
@@ -50,6 +51,7 @@
   --color-proof-blue: hsl(var(--proof-blue));
   --color-verified: hsl(var(--verified));
   --color-warning: hsl(var(--warning));
+  --color-amber: hsl(var(--warning));
   --color-critical: hsl(var(--critical));
 
   --color-chart-1: var(--proof-blue);
@@ -69,19 +71,20 @@
 }
 
 :root {
-  /* TrakAcquire Proofline Design System */
-  --ink: 240 5% 4%;       /* #0A0A0B */
-  --iron: 240 5% 7%;      /* #121214 */
-  --graphite: 240 5% 11%; /* #1A1A1D */
-  --zinc: 240 6% 17%;     /* #28282D */
-  --line: 240 4% 23%;     /* #38383D */
-  --eggshell: 40 33% 94%; /* #F6F1E7 */
-  --stone: 45 4% 64%;     /* #A8A6A0 */
+  /* TrakAcquire Proofline Design System — tokens aligned with Product Master §4 */
+  --ink: 240 6% 3%;        /* #09090A background principal */
+  --iron: 240 5% 7%;       /* #111113 sidebar / superfície profunda */
+  --graphite: 240 5% 9%;   /* #17171A card baseline (visual paridade com painel) */
+  --panel: 240 5% 9%;      /* #171719 cards e drawers (Master §4) */
+  --zinc: 240 6% 17%;      /* #28282D superfície elevada / hover */
+  --line: 240 4% 23%;      /* #38383D bordas e separadores */
+  --eggshell: 40 33% 94%;  /* #F6F1E7 texto primário e CTA primário */
+  --stone: 45 4% 64%;      /* #A8A6A0 texto secundário */
 
-  --proof-blue: 230 100% 74%;
-  --verified: 147 72% 67%;
-  --warning: 39 83% 71%;
-  --critical: 353 81% 71%;
+  --proof-blue: 230 100% 74%;  /* #7C91FF */
+  --verified: 147 72% 67%;     /* #72E6A6 */
+  --warning: 33 87% 66%;       /* #F4B860 amber */
+  --critical: 355 100% 71%;    /* #FF6B74 */
 
   --background: var(--ink);
   --foreground: var(--eggshell);
