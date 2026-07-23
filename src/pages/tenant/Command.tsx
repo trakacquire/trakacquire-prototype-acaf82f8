@@ -2,6 +2,9 @@ import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { db } from '@/lib/fake/db';
 import { usePeriod } from '@/lib/context/PeriodContext';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { FreshnessTag } from '@/components/data/FreshnessTag';
+import { MetricValue } from '@/components/data/MetricValue';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
@@ -53,12 +56,15 @@ export default function CommandPage() {
   const statusCounts: Record<string, number> = {};
   for (const p of db.persons) statusCounts[p.status] = (statusCounts[p.status] ?? 0) + 1;
 
+  // Monotonic funnel: each stage <= previous. Enforced by clamping so the
+  // narrative of proof never inverts — Reconciled can never exceed Confirmed, etc.
   const capturedTotal = m.clicks;
-  const linkedTotal = db.persons.filter((p) => !p.is_orphan).length;
-  const registeredTotal = m.registrations;
-  const confirmedTotal = m.ftds;
-  const reconciledTotal = reconciledCount;
-  const pendingReconcile = allDeposits.length - reconciledCount;
+  const linkedRaw = db.persons.filter((p) => !p.is_orphan).length;
+  const linkedTotal = Math.min(linkedRaw, capturedTotal);
+  const registeredTotal = Math.min(m.registrations, linkedTotal);
+  const confirmedTotal = Math.min(m.ftds, registeredTotal);
+  const reconciledTotal = Math.min(reconciledCount, confirmedTotal);
+  const pendingReconcile = Math.max(0, confirmedTotal - reconciledTotal);
 
   const journey = [
     { key: 'captured',   label: 'Captured',   value: capturedTotal,   sub: 'Cliques' },
@@ -79,22 +85,25 @@ export default function CommandPage() {
     };
   });
 
-  // ── Live feed com linguagem editorial
-  const liveFeed = db.events.slice(0, 8).map((e) => {
-    const person = db.persons.find((p) => p.id === e.person_id);
-    const copy = EVENT_COPY[e.type] ?? { label: e.type, tone: 'stone' as const };
-    const origin = person
-      ? [SOURCE_LABEL[person.source] ?? person.source, person.campaign_id ? '· ' + person.campaign_id.replace(/^camp_/, '') : ''].filter(Boolean).join(' ')
-      : '—';
-    return {
-      id: e.id,
-      time: e.timestamp.slice(11, 19),
-      label: copy.label,
-      tone: copy.tone,
-      origin,
-      value: (e as any).value as number | undefined,
-    };
-  });
+  // ── Live feed em ordem cronológica decrescente (timestamp mono)
+  const liveFeed = [...db.events]
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, 8)
+    .map((e) => {
+      const person = db.persons.find((p) => p.id === e.person_id);
+      const copy = EVENT_COPY[e.type] ?? { label: e.type, tone: 'stone' as const };
+      const origin = person
+        ? [SOURCE_LABEL[person.source] ?? person.source, person.campaign_id ? '· ' + person.campaign_id.replace(/^camp_/, '') : ''].filter(Boolean).join(' ')
+        : '—';
+      return {
+        id: e.id,
+        time: e.timestamp.slice(11, 19),
+        label: copy.label,
+        tone: copy.tone,
+        origin,
+        value: (e as any).value as number | undefined,
+      };
+    });
 
   const lastEventAgo = db.events[0]
     ? Math.max(1, Math.round((Date.now() - new Date(db.events[0].timestamp).getTime()) / 1000))
@@ -115,12 +124,17 @@ export default function CommandPage() {
         {/* ── Editorial header ─────────────────────────────────────────── */}
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pt-2">
           <div>
-            <div className="text-11 font-mono uppercase tracking-[0.18em] text-stone mb-3">
-              Proofline Command
+            {/* Kicker editorial em serifa (única presença de serif no chrome) */}
+            <div className="flex items-center gap-3 mb-3 flex-wrap">
+              <span className="text-16 font-serif italic text-stone leading-none">
+                Proofline · Command
+              </span>
+              <PreviewBadge />
+              <FreshnessTag ageSeconds={lastEventAgo ?? 0} source="stream ao vivo" />
             </div>
             <h1
-              className="text-eggshell font-serif tracking-tight leading-[1.02]"
-              style={{ fontSize: 'clamp(34px, 4vw, 52px)' }}
+              className="text-eggshell font-sans font-semibold tracking-tight leading-[1.05]"
+              style={{ fontSize: 'clamp(28px, 3.2vw, 40px)' }}
             >
               Todos os sinais estão sob controle.
             </h1>
@@ -129,10 +143,10 @@ export default function CommandPage() {
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <button className="h-9 px-4 rounded-lg border border-line bg-graphite hover:bg-zinc text-13 text-eggshell transition-colors">
+            <button className="h-9 px-4 rounded-lg border border-line bg-graphite hover:bg-zinc text-13 text-eggshell transition-colors press">
               Briefing diário
             </button>
-            <button className="h-9 px-4 rounded-lg bg-eggshell text-ink text-13 font-medium hover:bg-eggshell/90 transition-colors">
+            <button className="h-9 px-4 rounded-lg bg-eggshell text-ink text-13 font-medium hover:bg-eggshell/90 transition-colors press">
               Abrir copiloto
             </button>
           </div>
