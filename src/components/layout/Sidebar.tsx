@@ -10,7 +10,7 @@ import {
   Settings, UserCircle2,
 } from 'lucide-react';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
-import { CommandBar } from '../domain/CommandBar';
+
 
 interface SidebarItemProps {
   href: string;
@@ -85,9 +85,8 @@ export function Sidebar() {
       <div className="px-3 pb-3 border-b border-line">
         <WorkspaceSwitcher />
       </div>
-      <div className="px-3 py-3 border-b border-line">
-        <CommandBar />
-      </div>
+
+
 
       <nav className="flex-1 overflow-y-auto px-2 py-4 scrollbar-thin scrollbar-thumb-line scrollbar-track-transparent">
         <SidebarGroup title="Overview">
