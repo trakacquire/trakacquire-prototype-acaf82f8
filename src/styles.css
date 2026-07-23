@@ -71,22 +71,24 @@
 }
 
 :root {
-  /* TrakAcquire Proofline Design System — hexes verified against
-     TrakPro_Product_Engineering_Master_v1.0.pdf and TrakPro_Proofline_Sales_Page_v1.html.
+  /* TrakAcquire Proofline Design System — CANONICAL D1 TOKENS.
+     Source of truth: DECISIONS.md (D1 · Proofline) > UI-SYSTEM.md §2.
+     Where the reference PDF diverges from D1, D1 WINS. No hex outside this list.
      No component may use hex literals — always reference these tokens. */
-  --ink: 240 8% 3%;        /* #09090A background principal */
-  --iron: 240 6% 7%;       /* #111113 sidebar / superfície profunda */
-  --graphite: 240 4% 9%;   /* #171719 card baseline (Master §4) */
-  --panel: 240 4% 9%;      /* #171719 cards e drawers */
-  --zinc: 240 5% 15%;      /* #252529 superfície elevada / hover (Sales page) */
-  --line: 240 4% 23%;      /* #38383D bordas e separadores */
-  --eggshell: 40 33% 94%;  /* #F6F1E7 texto primário e CTA primário */
-  --stone: 45 4% 64%;      /* #A8A6A0 texto secundário */
+  --ink:       240 8% 3%;    /* #0A0A0B fundo raiz */
+  --iron:      240 5% 8%;    /* #121214 sidebar / superfície profunda */
+  --graphite: 240 5% 11%;    /* #1A1A1D cards, drawers */
+  --panel:    240 5% 11%;    /* #1A1A1D alias para cards */
+  --zinc:     240 6% 17%;    /* #28282D superfície elevada / hover */
+  --line:     240 3% 23%;    /* #38383D bordas e separadores */
+  --eggshell: 40 33% 94%;    /* #F6F1E7 texto primário e CTA primário */
+  --stone:    45 4% 64%;     /* #A8A6A0 texto secundário */
 
-  --proof-blue: 230 100% 74%;  /* #7C91FF */
-  --verified: 147 72% 67%;     /* #72E6A6 */
-  --warning: 33 87% 66%;       /* #F4B860 amber */
-  --critical: 355 100% 71%;    /* #FF6B74 */
+  --proof-blue: 230 100% 74%; /* #7C91FF seleção, identidade, em trânsito */
+  --verified:   147 65% 68%;  /* #72E6A6 reconciliado, sucesso, FTD confirmado */
+  --warning:    38 82% 71%;   /* #F1C778 pendente, provisório, divergente */
+  --critical:   352 76% 71%;  /* #EF7D8B falha, bloqueio, órfão */
+
 
   --background: var(--ink);
   --foreground: var(--eggshell);
