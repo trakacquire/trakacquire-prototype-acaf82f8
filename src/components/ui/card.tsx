@@ -8,9 +8,10 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'rounded-xl surface-raised text-card-foreground transition-shadow',
+      'rounded-xl surface-raised text-card-foreground animate-proof-enter hover-lift',
       className,
     )}
+
     {...props}
   />
 
