@@ -173,7 +173,7 @@ export function Topbar({ breadcrumb }: TopbarProps) {
 
   return (
     <>
-      <header className="h-14 bg-iron/80 backdrop-blur border-b border-line flex items-center justify-between gap-4 px-4 lg:px-6 sticky top-0 z-20">
+      <header className="h-14 surface-glass border-b border-line/70 flex items-center justify-between gap-4 px-4 lg:px-6 sticky top-0 z-20">
         {/* Breadcrumb */}
         <div className="flex items-center gap-4 min-w-0">{breadcrumb}</div>
 
