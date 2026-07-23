@@ -124,6 +124,7 @@
 
   --font-sans-family: 'Inter', sans-serif;
   --font-mono-family: 'JetBrains Mono', monospace;
+  --font-serif-family: 'Instrument Serif', 'Times New Roman', serif;
 
   --radius: 8px;
 }
