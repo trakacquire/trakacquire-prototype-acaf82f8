@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { db } from '@/lib/fake/db';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppShell } from '@/components/layout/AppShell';
@@ -8,17 +8,28 @@ import type { SignalEvent, EventStatus } from '@/lib/fake/db';
 
 const EVENT_TYPES = ['all', 'click', 'register', 'ftd', 'deposit', 'withdrawal', 'postback', 'capi', 'webhook'];
 
-function typeColor(type: string) {
-  switch (type) {
-    case 'click': return 'bg-[var(--proof-blue)]/10 text-[var(--proof-blue)]';
-    case 'register': return 'bg-[var(--verified)]/10 text-[var(--verified)]';
-    case 'ftd': return 'bg-[var(--warning)]/10 text-[var(--warning)]';
-    case 'deposit': return 'bg-[var(--verified)]/10 text-[var(--verified)]';
-    case 'withdrawal': return 'bg-[var(--critical)]/10 text-[var(--critical)]';
-    case 'postback': return 'bg-[var(--proof-blue)]/10 text-[var(--proof-blue)]';
-    case 'capi': return 'bg-[var(--stone)]/10 text-[var(--stone)]';
-    case 'webhook': return 'bg-[var(--stone)]/10 text-[var(--stone)]';
-    default: return 'bg-[var(--zinc)] text-[var(--stone)]';
+// Editorial translations — replace raw event types with narrative phrasing.
+const TYPE_COPY: Record<string, { label: string; verb: string; tone: string }> = {
+  click:              { label: 'Clique',          verb: 'Clique capturado',        tone: 'proof-blue' },
+  register:           { label: 'Cadastro',        verb: 'Cadastro registrado',     tone: 'eggshell' },
+  ftd:                { label: 'FTD',             verb: 'FTD reconciliado',        tone: 'verified' },
+  deposit:            { label: 'Depósito',        verb: 'Depósito confirmado',     tone: 'verified' },
+  withdrawal:         { label: 'Saque',           verb: 'Saque processado',        tone: 'critical' },
+  postback:           { label: 'Postback',        verb: 'Postback recebido',       tone: 'proof-blue' },
+  capi:               { label: 'CAPI',            verb: 'Sinal enviado ao CAPI',   tone: 'stone' },
+  webhook:            { label: 'Webhook',         verb: 'Webhook confirmado',      tone: 'stone' },
+  bot_message:        { label: 'Mensagem bot',    verb: 'Bot respondeu',           tone: 'stone' },
+  conversation_start: { label: 'Conversa',        verb: 'Conversa iniciada',       tone: 'proof-blue' },
+};
+
+function toneClasses(tone: string) {
+  switch (tone) {
+    case 'verified':   return 'bg-verified/10 text-verified border-verified/20';
+    case 'proof-blue': return 'bg-proof-blue/10 text-proof-blue border-proof-blue/20';
+    case 'warning':    return 'bg-warning/10 text-warning border-warning/20';
+    case 'critical':   return 'bg-critical/10 text-critical border-critical/20';
+    case 'eggshell':   return 'bg-eggshell/10 text-eggshell border-eggshell/20';
+    default:           return 'bg-zinc text-stone border-line';
   }
 }
 
@@ -36,6 +47,34 @@ function relativeTime(isoStr: string): string {
 }
 
 export default function LiveEvents() {
+  // Build lookups for editorial origin/name resolution
+  const personMap = useMemo(() => {
+    const m = new Map<string, (typeof db.persons)[number]>();
+    for (const p of db.persons) m.set(p.id, p);
+    return m;
+  }, []);
+  const campaignMap = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const c of db.campaigns ?? []) m.set(c.id, c.name);
+    return m;
+  }, []);
+
+  function originOf(evt: SignalEvent): { source: string; campaign: string } {
+    const p = personMap.get(evt.person_id);
+    if (!p) return { source: '—', campaign: '—' };
+    const sourceMap: Record<string, string> = {
+      meta: 'Meta Ads',
+      tiktok: 'TikTok Ads',
+      telegram: 'Telegram',
+      organic: 'Orgânico',
+      direct: 'Direto',
+      orphan: 'Sem origem',
+    };
+    const source = sourceMap[p.source as string] ?? String(p.source);
+    const campaign = (p.campaign_id && campaignMap.get(p.campaign_id)) || p.utm_campaign || '—';
+    return { source, campaign };
+  }
+
   const [evts, setEvts] = useState<(SignalEvent & { _key: string })[]>(() =>
     db.events.slice(0, 40).map((e, i) => ({ ...e, _key: e.id + '_' + i }))
   );
@@ -61,52 +100,70 @@ export default function LiveEvents() {
   return (
     <AppShell breadcrumb={[{ label: 'Eventos ao Vivo' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        {/* ── Editorial header ─────────────────────────────────────────── */}
+        <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pt-2">
           <div>
-            <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-24 font-bold text-eggshell">Eventos ao Vivo</h1>
-              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--verified)]/10 border border-[var(--verified)]/20">
-                <span className="w-2 h-2 rounded-full bg-[var(--verified)] animate-pulse" />
-                <span className="text-11 text-[var(--verified)] font-medium">Conectado</span>
-              </div>
+            <div className="text-11 font-mono uppercase tracking-[0.18em] text-stone mb-3">
+              Signal Stream
             </div>
-            <p className="text-13 text-stone font-mono">{count.toLocaleString('pt-BR')} eventos hoje</p>
+            <h1
+              className="text-eggshell font-serif tracking-tight leading-[1.02]"
+              style={{ fontSize: 'clamp(30px, 3.4vw, 44px)' }}
+            >
+              O pulso da aquisição, em tempo real.
+            </h1>
+            <p className="text-stone text-14 mt-3 max-w-xl">
+              Cada linha é um sinal — capturado, confirmado e correlacionado a uma pessoa e uma campanha.
+            </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Type filter */}
-            <select
-              value={typeFilter}
-              onChange={e => setTypeFilter(e.target.value)}
-              className="bg-[var(--zinc)] border border-[var(--line)] text-[var(--eggshell)] text-13 rounded-md px-3 py-1.5 focus:outline-none focus:border-[var(--proof-blue)]"
-            >
-              {EVENT_TYPES.map(t => (
-                <option key={t} value={t}>{t === 'all' ? 'Todos os tipos' : t}</option>
-              ))}
-            </select>
-
-            {/* Pause/Resume */}
-            <button
-              onClick={() => setPaused(p => !p)}
-              className={`px-4 py-1.5 rounded-md text-13 font-medium transition-colors ${
-                paused
-                  ? 'bg-[var(--proof-blue)] text-white hover:opacity-90'
-                  : 'bg-[var(--zinc)] text-[var(--stone)] hover:text-[var(--eggshell)]'
-              }`}
-            >
-              {paused ? 'Retomar' : 'Pausar'}
-            </button>
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-verified/10 border border-verified/20">
+              <span className={`w-2 h-2 rounded-full bg-verified ${paused ? '' : 'animate-pulse'}`} />
+              <span className="text-11 text-verified font-medium">
+                {paused ? 'Pausado' : 'Conectado'}
+              </span>
+            </div>
+            <span className="text-12 font-mono text-stone tabular-nums">
+              {count.toLocaleString('pt-BR')} sinais hoje
+            </span>
           </div>
+        </header>
+
+        {/* ── Filter bar ───────────────────────────────────────────────── */}
+        <div className="flex items-center gap-3">
+          <select
+            value={typeFilter}
+            onChange={e => setTypeFilter(e.target.value)}
+            className="bg-graphite border border-line text-eggshell text-13 rounded-lg px-3 py-2 focus:outline-none focus:border-proof-blue"
+          >
+            {EVENT_TYPES.map(t => (
+              <option key={t} value={t}>
+                {t === 'all' ? 'Todos os tipos' : (TYPE_COPY[t]?.label ?? t)}
+              </option>
+            ))}
+          </select>
+
+          <button
+            onClick={() => setPaused(p => !p)}
+            className={`h-9 px-4 rounded-lg text-13 font-medium transition-colors ${
+              paused
+                ? 'bg-eggshell text-ink hover:bg-eggshell/90'
+                : 'bg-graphite border border-line text-eggshell hover:bg-zinc'
+            }`}
+          >
+            {paused ? 'Retomar stream' : 'Pausar stream'}
+          </button>
         </div>
 
-        {/* Table */}
+        {/* ── Stream ───────────────────────────────────────────────────── */}
         <div className="bg-graphite border border-line rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-line">
-                  <th className="px-4 py-3 text-left text-11 font-bold text-stone uppercase tracking-wider">Tipo</th>
+                <tr className="border-b border-line bg-iron/60">
+                  <th className="px-4 py-3 text-left text-11 font-bold text-stone uppercase tracking-wider">Evento</th>
+                  <th className="px-4 py-3 text-left text-11 font-bold text-stone uppercase tracking-wider">Origem</th>
                   <th className="px-4 py-3 text-left text-11 font-bold text-stone uppercase tracking-wider">Pessoa</th>
                   <th className="px-4 py-3 text-left text-11 font-bold text-stone uppercase tracking-wider">Status</th>
                   <th className="px-4 py-3 text-right text-11 font-bold text-stone uppercase tracking-wider">Valor</th>
@@ -116,46 +173,72 @@ export default function LiveEvents() {
               </thead>
               <tbody>
                 <AnimatePresence initial={false}>
-                  {filtered.slice(0, 50).map((evt) => (
-                    <motion.tr
-                      key={evt._key}
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.25 }}
-                      className="border-b border-line hover:bg-[var(--zinc)]/30 transition-colors"
-                    >
-                      <td className="px-4 py-2.5">
-                        <span className={`inline-block px-2 py-0.5 rounded text-11 font-medium uppercase ${typeColor(evt.type)}`}>
-                          {evt.type}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <Link href={`/players/${evt.person_id}`} className="font-mono text-12 text-[var(--proof-blue)] hover:underline">
-                          {evt.person_id}
-                        </Link>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <StatusChip status={evt.status as EventStatus} />
-                      </td>
-                      <td className="px-4 py-2.5 text-right">
-                        {evt.value != null ? (
-                          <span className="font-mono text-12 text-[var(--eggshell)]">
-                            R${evt.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  {filtered.slice(0, 50).map((evt) => {
+                    const copy = TYPE_COPY[evt.type] ?? { label: evt.type, verb: evt.type, tone: 'stone' };
+                    const origin = originOf(evt);
+                    const person = personMap.get(evt.person_id);
+                    return (
+                      <motion.tr
+                        key={evt._key}
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.22 }}
+                        className="border-b border-line/60 last:border-0 hover:bg-zinc/40 transition-colors"
+                      >
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2.5">
+                            <span className={`inline-block w-1.5 h-1.5 rounded-full ${
+                              copy.tone === 'verified' ? 'bg-verified' :
+                              copy.tone === 'proof-blue' ? 'bg-proof-blue' :
+                              copy.tone === 'critical' ? 'bg-critical' :
+                              copy.tone === 'warning' ? 'bg-warning' :
+                              'bg-stone'
+                            }`} />
+                            <div className="min-w-0">
+                              <div className="text-13 text-eggshell leading-tight">{copy.verb}</div>
+                              <div className="text-11 font-mono text-stone truncate">{evt.id}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="text-12 text-eggshell leading-tight">{origin.source}</div>
+                          <div className="text-11 text-stone truncate max-w-[180px]" title={origin.campaign}>
+                            {origin.campaign}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <Link href={`/players/${evt.person_id}`} className="block group">
+                            <div className="text-12 text-eggshell group-hover:text-proof-blue transition-colors leading-tight">
+                              {person?.name ?? 'Anônimo'}
+                            </div>
+                            <div className="text-11 font-mono text-stone">{evt.person_id}</div>
+                          </Link>
+                        </td>
+                        <td className="px-4 py-3">
+                          <StatusChip status={evt.status as EventStatus} />
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          {evt.value != null ? (
+                            <span className="font-mono text-13 text-eggshell tabular-nums">
+                              R$ {evt.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </span>
+                          ) : (
+                            <span className="text-stone text-13">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <span className={`font-mono text-12 tabular-nums ${
+                            evt.latency_ms > 500 ? 'text-warning' : 'text-stone'
+                          }`}>
+                            {evt.latency_ms}ms
                           </span>
-                        ) : (
-                          <span className="text-stone text-12">—</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-2.5 text-right">
-                        <span className={`font-mono text-12 ${evt.latency_ms > 500 ? 'text-[var(--warning)]' : 'text-[var(--stone)]'}`}>
-                          {evt.latency_ms}ms
-                        </span>
-                      </td>
-                      <td className="px-4 py-2.5 text-right">
-                        <span className="text-12 text-stone">{relativeTime(evt.timestamp)}</span>
-                      </td>
-                    </motion.tr>
-                  ))}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <span className="text-12 text-stone whitespace-nowrap">{relativeTime(evt.timestamp)}</span>
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
                 </AnimatePresence>
               </tbody>
             </table>
