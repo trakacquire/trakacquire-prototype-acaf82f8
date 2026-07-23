@@ -10,7 +10,7 @@ import {
   Settings, UserCircle2,
 } from 'lucide-react';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
-import { CommandBar } from '../domain/CommandBar';
+
 
 interface SidebarItemProps {
   href: string;
