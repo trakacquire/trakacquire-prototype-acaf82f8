@@ -70,7 +70,7 @@ const LiveDot = () => (
 
 export function Sidebar() {
   return (
-    <aside className="w-60 bg-iron border-r border-line h-[100dvh] flex-col flex-shrink-0 hidden md:flex">
+    <aside className="w-60 surface-glass border-r border-line/70 h-[100dvh] flex-col flex-shrink-0 hidden md:flex relative">
       {/* Wordmark */}
       <div className="px-5 pt-5 pb-3">
         <div className="flex items-center gap-2">
