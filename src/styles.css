@@ -161,7 +161,27 @@
   html, body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+
+  /* Proofline focus — proof-blue halo, keyboard-only */
+  :focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px hsl(var(--ink)),
+      0 0 0 4px hsl(var(--proof-blue) / 0.55);
+    border-radius: inherit;
+    transition: box-shadow 120ms ease-out;
+  }
+
+  ::selection {
+    background: hsl(var(--proof-blue) / 0.35);
+    color: hsl(var(--eggshell));
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :root { --motion-fast: 140ms; --motion-base: 220ms; --motion-slow: 420ms; }
+  }
 }
+
 
 @utility text-11 { font-size: 11px; line-height: 14px; }
 @utility text-12 { font-size: 12px; line-height: 16px; }
