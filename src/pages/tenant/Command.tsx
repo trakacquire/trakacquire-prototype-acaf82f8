@@ -85,7 +85,8 @@ export default function CommandPage() {
     };
   });
 
-  // ── Live feed em ordem cronológica decrescente (timestamp mono)
+  // ── Live feed em ordem cronológica decrescente (timestamp mono, data curta)
+  const nowMs = Date.now();
   const liveFeed = [...db.events]
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
     .slice(0, 8)
@@ -95,9 +96,16 @@ export default function CommandPage() {
       const origin = person
         ? [SOURCE_LABEL[person.source] ?? person.source, person.campaign_id ? '· ' + person.campaign_id.replace(/^camp_/, '') : ''].filter(Boolean).join(' ')
         : '—';
+      const ts = new Date(e.timestamp);
+      const ageMin = (nowMs - ts.getTime()) / 60000;
+      const time = ageMin < 60
+        ? `há ${Math.max(1, Math.round(ageMin))}m`
+        : ageMin < 60 * 24
+          ? `há ${Math.round(ageMin / 60)}h`
+          : `${String(ts.getUTCDate()).padStart(2, '0')}/${String(ts.getUTCMonth() + 1).padStart(2, '0')} ${e.timestamp.slice(11, 16)}`;
       return {
         id: e.id,
-        time: e.timestamp.slice(11, 19),
+        time,
         label: copy.label,
         tone: copy.tone,
         origin,
@@ -251,7 +259,7 @@ export default function CommandPage() {
             <ul className="flex-1 space-y-3">
               {liveFeed.map((evt) => (
                 <li key={evt.id} className="flex items-start gap-3">
-                  <span className="font-mono text-11 text-stone/80 tabular-nums shrink-0 w-14 pt-0.5">{evt.time}</span>
+                  <span className="font-mono text-11 text-stone/80 tabular-nums shrink-0 w-16 pt-0.5">{evt.time}</span>
                   <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${TONE_DOT[evt.tone]}`} />
                   <div className="flex-1 min-w-0">
                     <div className="text-eggshell text-13 leading-tight truncate">{evt.label}</div>
