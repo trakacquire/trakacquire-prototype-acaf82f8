@@ -1,6 +1,5 @@
 import React from 'react';
 import { Route, Switch, Router as WouterRouter, Redirect } from 'wouter';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from 'sonner';
 import { AppStateProvider } from '@/lib/context/AppStateContext';
