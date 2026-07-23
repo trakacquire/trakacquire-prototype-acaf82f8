@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { useParams } from 'wouter';

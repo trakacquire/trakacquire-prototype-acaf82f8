@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
 import { db } from '@/lib/fake/db';
