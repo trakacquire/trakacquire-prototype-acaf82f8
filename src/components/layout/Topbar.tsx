@@ -15,8 +15,8 @@ function BriefingDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (
   const today = new Date('2026-07-23T12:00:00.000Z');
   const dateLabel = today.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
 
-  const ftdToday = db.persons.filter(p => p.first_deposit_at && p.first_deposit_at.startsWith('2026-07-23')).length;
-  const netDeposit = db.persons.reduce((acc, p) => acc + (p.total_deposit ?? 0) - (p.total_withdrawal ?? 0), 0);
+  const ftdToday = db.persons.filter(p => (p as any).ftd_at?.startsWith?.('2026-07-23') || (p as any).last_deposit_at?.startsWith?.('2026-07-23')).length;
+  const netDeposit = db.persons.reduce((acc, p) => acc + ((p as any).total_deposited ?? 0) - ((p as any).total_withdrawn ?? 0), 0);
   const divergent = db.persons.filter(p => p.status === 'Divergent').length;
 
   const highlights = [
