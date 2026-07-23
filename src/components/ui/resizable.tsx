@@ -1,7 +1,6 @@
 'use client';
 
-import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
-const ResizablePrimitive = { PanelGroup, Panel, PanelResizeHandle };
+import * as ResizablePrimitive from 'react-resizable-panels';
 import { cn } from '@/lib/utils';
 import { GripVertical } from 'lucide-react';
 
