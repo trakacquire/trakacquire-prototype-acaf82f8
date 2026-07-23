@@ -62,12 +62,15 @@ export default function LiveEvents() {
   function originOf(evt: SignalEvent): { source: string; campaign: string } {
     const p = personMap.get(evt.person_id);
     if (!p) return { source: '—', campaign: '—' };
-    const source =
-      p.source === 'meta' ? 'Meta Ads' :
-      p.source === 'tiktok' ? 'TikTok Ads' :
-      p.source === 'telegram' ? 'Telegram' :
-      p.source === 'organic' ? 'Orgânico' :
-      p.source === 'direct' ? 'Direto' : String(p.source);
+    const sourceMap: Record<string, string> = {
+      meta: 'Meta Ads',
+      tiktok: 'TikTok Ads',
+      telegram: 'Telegram',
+      organic: 'Orgânico',
+      direct: 'Direto',
+      orphan: 'Sem origem',
+    };
+    const source = sourceMap[p.source as string] ?? String(p.source);
     const campaign = (p.campaign_id && campaignMap.get(p.campaign_id)) || p.utm_campaign || '—';
     return { source, campaign };
   }
