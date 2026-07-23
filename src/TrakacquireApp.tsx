@@ -91,7 +91,7 @@ import Profile from '@/pages/tenant/Profile';
 import LiveEvents from '@/pages/tenant/LiveEvents';
 import Approvals from '@/pages/tenant/Approvals';
 
-const queryClient = new QueryClient();
+
 
 function Router() {
   return (
