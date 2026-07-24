@@ -117,17 +117,71 @@ export default function RevenuePage() {
           emptyDescription="Nenhum depósito reconciliado dentro do recorte atual."
           emptyPrerequisite="Confirme se o adapter TAP está publicado e sincronizando."
         >
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <MetricCard label="Receita Bruta" value={'R$ ' + m.gross_deposits.toLocaleString('pt-BR')} evidenceData={evGross} />
-            <MetricCard label="Deduções" value={'R$ ' + m.withdrawals.toLocaleString('pt-BR')} evidenceData={evDeducoes} />
-            <MetricCard label="Receita Líquida" value={'R$ ' + m.net_deposits.toLocaleString('pt-BR')} evidenceData={evNet} />
-            <MetricCard label="Comissões" value={'R$ ' + m.payouts.toLocaleString('pt-BR')} evidenceData={evPayout} />
-            <MetricCard label="Lucro" value={'R$ ' + m.gross_margin.toLocaleString('pt-BR')} evidenceData={evLucro} />
-            <MetricCard label="CPFTD" value={'R$ ' + m.cpftd.toLocaleString('pt-BR')} evidenceData={evCpftd} />
+          {/* H2 · Report builder — grid 270/1fr/1fr · hero-serif · BarRows gradiente */}
+          <div className="grid gap-4 lg:grid-cols-[270px_1fr_1fr]">
+            {/* Coluna 1 · Hero number em Instrument Serif */}
+            <button
+              onClick={() => {}}
+              className="text-left bg-graphite border border-line rounded-xl p-5"
+            >
+              <div className="eyebrow mb-2">Receita líquida · {period}d</div>
+              <div className="font-serif text-eggshell leading-none tabular-nums" style={{ fontSize: 38 }}>
+                R$ {m.net_deposits.toLocaleString('pt-BR')}
+              </div>
+              <div className="text-11 text-stone mt-3">Bruto R$ {m.gross_deposits.toLocaleString('pt-BR')} − deduções R$ {m.withdrawals.toLocaleString('pt-BR')}</div>
+              <div className="mt-4 flex gap-2">
+                <MetricCard label="Lucro" value={'R$ ' + m.gross_margin.toLocaleString('pt-BR')} evidenceData={evLucro} />
+              </div>
+            </button>
+
+            {/* Coluna 2 · BarRows por origem com gradiente proof-blue → eggshell */}
+            <div className="bg-graphite border border-line rounded-xl p-5">
+              <div className="eyebrow mb-3">Receita líquida por origem</div>
+              <div className="space-y-2.5">
+                {(() => {
+                  const maxNet = Math.max(...sourceData.map((r) => r.net), 1);
+                  return sourceData.map((r) => (
+                    <button
+                      key={r.source}
+                      onClick={() => openEvidence?.(buildEvidence({
+                        label: `Receita · ${r.source}`,
+                        value: 'R$ ' + r.net.toLocaleString('pt-BR'),
+                        formula: 'sum(net_deposit) where source == ' + r.source,
+                        source: 'Adapter TAP + Meta',
+                      }))}
+                      className="w-full text-left group"
+                    >
+                      <div className="flex items-baseline justify-between text-12 mb-1">
+                        <span className="text-eggshell">{r.source}</span>
+                        <span className="font-mono tabular-nums text-stone">R$ {r.net.toLocaleString('pt-BR')}</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-line overflow-hidden">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${(r.net / maxNet) * 100}%`,
+                            background: 'linear-gradient(90deg, hsl(var(--proof-blue)) 0%, hsl(var(--eggshell)) 100%)',
+                          }}
+                        />
+                      </div>
+                    </button>
+                  ));
+                })()}
+              </div>
+            </div>
+
+            {/* Coluna 3 · métricas de custo/margem */}
+            <div className="grid grid-cols-1 gap-3">
+              <MetricCard label="Comissões" value={'R$ ' + m.payouts.toLocaleString('pt-BR')} evidenceData={evPayout} />
+              <MetricCard label="CPFTD" value={'R$ ' + m.cpftd.toLocaleString('pt-BR')} evidenceData={evCpftd} />
+              <MetricCard label="Deduções" value={'R$ ' + m.withdrawals.toLocaleString('pt-BR')} evidenceData={evDeducoes} />
+              <MetricCard label="Bruto" value={'R$ ' + m.gross_deposits.toLocaleString('pt-BR')} evidenceData={evGross} />
+            </div>
           </div>
 
           <div className="bg-graphite border border-line rounded-xl p-4 mt-6">
             <h3 className="text-14 font-semibold text-eggshell mb-4">Depósitos diários — últimos {period}d</h3>
+
             <ResponsiveContainer width="100%" height={256}>
               <BarChart data={chartData}>
                 <XAxis dataKey="date" stroke="hsl(var(--stone))" style={{ fontSize: 11 }} />
