@@ -6,7 +6,7 @@ import {
   Puzzle, Globe, Link2,
   Radio, Activity, UserSquare, ShieldAlert,
   Zap, Megaphone,
-  DollarSign, ShieldCheck,
+  DollarSign, ShieldCheck, FileText,
   Settings, UserCircle2, Construction,
 } from 'lucide-react';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
