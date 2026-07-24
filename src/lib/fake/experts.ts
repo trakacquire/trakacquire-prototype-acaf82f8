@@ -4,7 +4,7 @@
  * Regras (Fase R · Bloco 1.4):
  * - Determinístico a partir do índice da person (não muda por reload).
  * - Cobre 100% das personas meta/tiktok/organic — nunca as orphan.
- * - NÃO altera nenhum total canônico (78/36/R$ 12.013/R$ 334/R$ 19.618),
+ * - NÃO altera nenhum total canônico (5.000 cliques · 75 cadastros · 36 FTDs · R$ 12.013 · R$ 334 · R$ 19.618),
  *   é somente atributo derivado.
  */
 
