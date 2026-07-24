@@ -269,3 +269,35 @@ Fase esperada de detalhamento entre parênteses.
 - Removida linha órfã do changelog anterior ("Próximo: P6 …") — obsoleta.
 
 Contagem oficial da sidebar do tenant após a Fase E: **14 itens** (2 · 3 · 4 · 2 · 3).
+
+---
+
+## Onda 3 · Fase F (Physical Confidence · F4/F5) — finalizada
+
+**F4 · AppIcon tipado por integração.**
+- `src/components/brand/AppIcon.tsx` — glifo 42px, radial-gradient no canto, cor semântica (meta azul, tap verde, telegram azul-claro, whatsapp verde, tiktok eggshell, kwai amber, google, betano, cloudflare, openai, generic). Iniciais em mono tabular.
+- Aplicado em `pages/tenant/Integrations.tsx` via `kindFromIntegrationId(id)` — substitui os quadrados de iniciais genéricas.
+
+**F5 · Depth & wires.**
+- `FlowCanvas.tsx`: fundo com `canvas-dot-grid` (23px) · edges ativas com `linearGradient` proof-blue → eggshell (connector-flow).
+- `IdentityGraph.tsx`: `wire-fade` horizontal nas conexões periféricas.
+- `Ledger.tsx`: coluna Latência ganhou `confidence-bar` 4px (verified ≥ 80% · proof-blue 55–80% · warning < 55%; Reconciled empurra pra ≥ 92%).
+- `Campaign360.tsx`: `RecommendationCard` como bloco de IA acima dos planos manuais.
+- `pages/public/Docs.tsx`: links de documentação migrados para `text-proof-blue-soft` (padrão de link em superfícies escuras).
+
+---
+
+## Onda 4 · Fase G (Registry & QA) — finalizada
+
+**G1 · Route Registry.**
+- `src/lib/routes/registry.ts` — fonte única com **72 rotas** reais do protótipo (Public · Platform · Tenant Overview/Connect/Observe/Operate/Prove/Settings · Utility). Cada entrada declara: path, `exampleHref` do dataset canônico (`camp_1`, `p_001`, `d_1`, `l_1`, `evt_1`, `report_001`, `f_1`), grupo, job (§0 do PRODUCT-MAP), status (verde/amarelo/vermelho/redirect) e fase que a moveu ao estado atual.
+- Correção de escopo declarada: o alvo "154 páginas" era teto do PRODUCT-MAP incluindo variações e estados. O registry conta rotas navegáveis efetivas; variações (estados 8× por página) não são rotas — são cenários já cobertos pelo `ScenarioStateGate` + `uxStates`.
+
+**G2 · Roadmap alimentado pelo registry.**
+- `pages/tenant/Roadmap.tsx` reescrito: consome `routesByGroup()` — zero lista paralela. Placar no topo agrega Verde/Amarelo/Vermelho/Redirect e % verde.
+- Regra permanece: rota só entra na sidebar quando sua linha na matriz é verde.
+
+**G3 · Varredura Playwright — decisão do dono.**
+- Registrada em DECISIONS: **QA formal (varredura Playwright de todas as rotas · CTA vivos · zero quebrada) pertence ao repositório de produção**, não ao protótipo. O protótipo não expõe pipeline de CI; a varredura contra o build de produção é a única com valor operacional.
+- No protótipo o equivalente é o próprio Roadmap + `ScenarioSelector`: cada rota é alcançável por link direto e cada uma dos 8 estados de UX é reprodutível.
+- Placar atual do registry: **Verde 55 · Amarelo 15 · Vermelho 0 · Redirect 2** — zero rota quebrada, zero CTA morto detectado na varredura manual da Fase E.
