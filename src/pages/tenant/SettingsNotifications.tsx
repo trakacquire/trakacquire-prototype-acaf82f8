@@ -1,15 +1,21 @@
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { Bell, Mail, MessageSquare, AlertTriangle } from 'lucide-react';
 
 export default function SettingsNotificationsPage() {
   return (
-    <AppShell breadcrumb={[{ label: 'Settings' }, { label: 'Notifications' }]}>
+    <AppShell breadcrumb={[{ label: 'Configurações' }, { label: 'Notificações' }]}>
       <div className="max-w-4xl mx-auto space-y-6">
         <div>
-          <h1 className="text-24 font-bold text-eggshell mb-1">Notificações</h1>
-          <p className="text-13 text-stone">Configure como e quando você quer receber alertas</p>
+          <div className="text-11 font-serif italic text-stone mb-1">Sinal · Canais de alerta</div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-24 font-bold text-eggshell">Notificações</h1>
+            <PreviewBadge />
+          </div>
+          <p className="text-13 text-stone mt-1">Configure como e quando você quer receber alertas</p>
         </div>
+
 
         <div className="bg-graphite border border-line rounded-xl p-6 space-y-6">
           <div className="flex items-center gap-3">
