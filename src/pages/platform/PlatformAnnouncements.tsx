@@ -5,12 +5,17 @@ import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 export default function PlatformAnnouncementsPage() {
   return (
     <PlatformShell breadcrumb={[{ label: 'Announcements' }]}>
-      <div className="max-w-7xl mx-auto sp<PlatformPageHeader kicker="Platform · Comms" title="Avisos In-App" />
-          <button className="bg-eggshell text-ink px-4 py-2 rounded-md font-medium text-14 hover:bg-white transition-colors">
-            Novo Aviso
-          </button>
-        </div>
-        
+      <div className="max-w-7xl mx-auto space-y-6">
+        <PlatformPageHeader
+          kicker="Platform · Comms"
+          title="Avisos In-App"
+          actions={
+            <button className="bg-eggshell text-ink px-4 py-2 rounded-md font-medium text-14 hover:bg-white transition-colors">
+              Novo Aviso
+            </button>
+          }
+        />
+
         <div className="space-y-4">
           <div className="bg-graphite border border-line rounded-xl p-4 flex justify-between items-center">
             <div>

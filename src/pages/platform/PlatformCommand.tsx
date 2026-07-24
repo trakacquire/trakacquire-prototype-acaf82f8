@@ -4,8 +4,9 @@ import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 
 export default function PlatformCommandPage() {
   return (
-    <AppShell breadcrumb={[{ label: 'Platform Admin', href: '/platform' }, { label: 'Command' }]}><PlatformPageHeader kicker="Platform · Overview" title="Platform Command" />   <p className="text-14 text-stone">Visão global da infraestrutura SaaS.</p>
-        </div>
+    <AppShell breadcrumb={[{ label: 'Platform Admin', href: '/platform' }, { label: 'Command' }]}>
+      <div className="max-w-7xl mx-auto space-y-8">
+        <PlatformPageHeader kicker="Platform · Overview" title="Platform Command" description="Visão global da infraestrutura SaaS." />
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-graphite border border-line rounded-xl p-4">

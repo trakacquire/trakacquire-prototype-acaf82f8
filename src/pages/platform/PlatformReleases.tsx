@@ -13,11 +13,13 @@ export default function PlatformReleasesPage() {
   const columns = [
     { header: 'Tenant', accessorKey: 'tenant', cell: (r: any) => <span className="font-medium text-14">{r.tenant}</span> },
     { header: 'Database Schema', accessorKey: 'schema', cell: (r: any) => <span className="font-mono text-13 px-2 py-0.5 rounded bg-zinc">{r.schema}</span> },
-    { header: 'Rollout', accessorKey: 'rollout', cell: (r: any) => <span className="text-13 text-stone">{r.rollout}</span> }
+    { header: 'Rollout', accessorKey: 'rollout', cell: (r: any) => <span className="font-mono text-13 text-stone">{r.rollout}</span> }
   ];
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Release<PlatformPageHeader kicker="Platform · Releases" title="Releases" />e-y-6">
+    <PlatformShell breadcrumb={[{ label: 'Releases & Schema' }]}>
+      <div className="max-w-7xl mx-auto space-y-6">
+        <PlatformPageHeader kicker="Platform · Releases" title="Releases" description="Migrações de schema e rollout por tenant." />
         <DataTable data={releases} columns={columns} />
       </div>
     </PlatformShell>
