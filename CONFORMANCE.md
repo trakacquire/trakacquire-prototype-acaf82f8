@@ -124,13 +124,14 @@ Fase esperada de detalhamento entre parênteses.
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| SettingsGeneral | ❌ | ➖ | ➖ | ✅ | ⏳ | ➖ | ✅ | ➖ | ❌ | ✅ | P7 |
-| SettingsTeam | ❌ | ➖ | ➖ | ✅ | ⏳ | ➖ | ✅ | ✅ | ❌ | ❌ | P7 |
-| SettingsBilling | ❌ | ➖ | ➖ | ✅ | ⏳ | ➖ | ✅ | ✅ | ❌ | ❌ | P7 |
-| SettingsAPI | ❌ | ➖ | ➖ | ✅ | ⏳ | ➖ | ✅ | ➖ | ❌ | ❌ | P7 |
-| SettingsNotifications | ❌ | ➖ | ➖ | ✅ | ⏳ | ➖ | ✅ | ➖ | ❌ | ❌ | P7 |
-| SettingsAudit | ❌ | ➖ | ✅ | ✅ | ⏳ | ➖ | ✅ | ✅ | ❌ | ❌ | P7 |
-| Profile | ❌ | ➖ | ➖ | ✅ | ⏳ | ➖ | ✅ | ➖ | ❌ | ✅ | P7 |
+| SettingsGeneral | ✅ | ➖ | ➖ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ✅ | **P7 ✔** |
+| SettingsTeam | ✅ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P7 ✔** |
+| SettingsBilling | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P7 ✔** |
+| SettingsAPI | ✅ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P7 ✔** |
+| SettingsNotifications | ✅ | ➖ | ➖ | ✅ | ➖ | ✅ | ✅ | ➖ | ✅ | ✅ | **P7 ✔** |
+| SettingsAudit | ✅ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P7 ✔** |
+| Profile | ✅ | ➖ | ✅ | ✅ | ➖ | ✅ | ✅ | ➖ | ✅ | ✅ | **P7 ✔** |
+
 
 ---
 
