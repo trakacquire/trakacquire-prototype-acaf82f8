@@ -1,5 +1,8 @@
 # CONFORMANCE — TrakAcquire Proofline
 
+> **Prototipação completa — P0 a P8 · 78 páginas conformes · 2026-07-24.** Sidebar tenant enxuta (14 itens visíveis + Roadmap); Super Admin com identidade Proofline preservando lógica e rotas; dataset canônico (78 cliques · 36 FTDs · R$ 12.013 investido · CPFTD R$ 334 · net R$ 19.618) sustentando toda tela com número.
+
+
 Matriz página × requisito. Atualizada a cada fase (P2 → P8). Célula = ✅ conforme · ❌ pendente · ➖ não se aplica · ⏳ prévia rasa (banner "Esta tela será detalhada na fase PN").
 
 **Fonte da verdade da matriz:** DECISIONS.md (D1) > UI-SYSTEM.md > PRODUCT-MAP.md.
@@ -7,6 +10,7 @@ Matriz página × requisito. Atualizada a cada fase (P2 → P8). Célula = ✅ c
 ## Changelog
 
 - **2026-07-24 · Fase P7 concluída (Público + Settings)** — 18 páginas 100% verdes. Login/Signup/AuthCallback/Invite ganharam kicker em serif italic (`Access · Workspace` / `Access · Nova conta`), Signup passou a linkar Termos + Privacidade + DPA (fim dos `href="#"`). Pricing/Docs/Status ganharam kicker + `PreviewBadge`; Status removeu import morto (`ShieldCheck`) e passou a badge próximo ao CTA. SettingsGeneral e Profile deixaram de exibir `PhasePreviewBanner` (agora implementadas de fato), mantendo apenas kicker + `PreviewBadge` no header. SettingsTeam ganhou header padronizado com kicker + badge e passou breadcrumb para pt-BR. SettingsBilling foi expandida: uso vs cap com semáforo (proof-blue < 80% · warning ≥ 80% · critical ≥ 95%), plano atual com `FreshnessTag`, e `DataTable` de faturas usando `MetricValue`. SettingsAPI foi expandida: chaves com mascaramento/revelar (`sk_live_XXXX_••••••••••`), escopos como chips mono, e tabela de webhooks com estado (Ativo/Falhando) e latência mono; `FreshnessTag` na barra do bloco. SettingsNotifications e SettingsAudit ganharam kicker + `PreviewBadge`. Todos os header seguem o padrão Proofline: `text-11 font-serif italic text-stone` como kicker, `text-24 font-bold` como título, `PreviewBadge` ao lado — nenhum hex literal em página nova.
+- **2026-07-24 · Fase P8 concluída (Super Admin)** — 23 páginas de `src/pages/platform/*` reestilizadas em Proofline sem reestruturação: novo componente compartilhado `PlatformPageHeader` (kicker serif italic + título sans bold + `PreviewBadge`), tokens D1 aplicados em bloco (`[var(--*)]` legadas convertidas para classes `bg-graphite`/`text-eggshell`/`border-line`/etc.), hex literal `#7C91FF` do `ProgressBar` local convertido em `var(--proof-blue)`, mono tabular garantido em IDs, valores monetários, timestamps e latências, StatusChip com enum fechado onde havia status (Guardrails ativos/inativos, tickets), `DataTable` padrão preservado em Tenants/Usage/Invoices/Reliability/Releases/Staff/Support/Compliance/AIProviders/AIPrompts/AIRouting/AIGuardrails/Announcements/APIs/Entitlements, e chaves de IA/credenciais permanecem mascaradas. Rotas, dados e navegação da plataforma inalterados (regra P8: só identidade visual). Prototipação Proofline P0→P8 encerrada.
 - **2026-07-24 · Fase P6 concluída (Operate: Automations, FlowBuilder, Broadcasts, Segments, Inbox, InboxSettings, Approvals)** — tabela de Operate reunificada (linha em branco que quebrava a renderização removida; Inbox/InboxSettings/Approvals voltam para dentro do bloco). Automations reescrita com header serif/kicker, `PreviewBadge`, `ScenarioStateGate` + `StateShowcase`, KPIs (fluxos ativos, entradas 30d, FTDs gerados, receita atribuída) clicáveis abrindo `Evidence Drawer` com fórmula/fonte/frescor/estado, tabela padrão `DataTable` com StatusChip fechado e barra de versão (v3/v2 com rollback e shadow mode) por linha; entra na sidebar em OPERATE. FlowBuilder ganhou banner de fase, PreviewBadge, versão/rollback/shadow no topo, métrica por nó (passagem · queda · FTD · receita) e painel de teste com dados sintéticos rotulados `Synthetic` (StatusChip fechado). Broadcasts refeita com composer, canal, janela, `rate_limit` anti-ban e **dois checkpoints do Policy Engine mostrados na UI**: consentimento na fila (T-0) e consentimento imediatamente antes do envio (T-envio); resultado medido em FTD com evidência linha-a-linha; entra na sidebar em OPERATE. Segments com query builder AND/OR aninhado, salvamento como segmento dinâmico, KPIs (segmentos ativos · players cobertos) clicáveis, evidência de contagem e link contextual para Broadcasts; permanece contextual de Broadcasts. Inbox 3 colunas (filas · thread · Revenue context com aquisição, estágio, `click_id`, confiança de identidade, total depositado e influência do atendente), IA rotulada como sugestão, macros, notas internas e detecção de colisão; entra na sidebar em OPERATE. InboxSettings mantém abas Filas/Horários/Macros/SLA agora com PreviewBadge, gate, DataTable e ConfirmDialog com justificativa; contextual de Inbox. Approvals virou Central de Aprovações materializando D5 (autor ≠ revisor ≠ autoridade) — planos imutáveis com hash, impacto, amostra, frescor, quem pediu, aprovar/rejeitar com justificativa obrigatória gerando `AuditRef`; PreviewBadge, gate, tokens D1 (todas as `[var(--*)]` locais removidas), StatusChip fechado e DataTable no histórico; entra na sidebar em OPERATE. Todas as 7 páginas 100% verdes na matriz.
 
 
@@ -142,29 +146,29 @@ Fase esperada de detalhamento entre parênteses.
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| PlatformCommand | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P8 |
-| PlatformTenants | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformTenantsNew | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P8 |
-| PlatformTenant360 | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P8 |
-| PlatformUsage | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformPlans | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformEntitlements | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformInvoices | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformIncidents | ❌ | ➖ | ✅ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformReliability | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P8 |
-| PlatformStatus | ❌ | ➖ | ✅ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformReleases | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformStaff | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformSupport | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformAnnouncements | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformCompliance | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P8 |
-| PlatformAPIs | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformSettings | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P8 |
-| PlatformAICost | ❌ | ❌ | ➖ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformAIProviders | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
-| PlatformAIRouting | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P8 |
-| PlatformAIGuardrails | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P8 |
-| PlatformAIPrompts | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
+| PlatformCommand | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ➖ | **P8 ✔** |
+| PlatformTenants | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P8 ✔** |
+| PlatformTenantsNew | ✅ | ➖ | ➖ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ➖ | **P8 ✔** |
+| PlatformTenant360 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | **P8 ✔** |
+| PlatformUsage | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P8 ✔** |
+| PlatformPlans | ✅ | ➖ | ➖ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ✅ | **P8 ✔** |
+| PlatformEntitlements | ✅ | ➖ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P8 ✔** |
+| PlatformInvoices | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P8 ✔** |
+| PlatformIncidents | ✅ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ✅ | **P8 ✔** |
+| PlatformReliability | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P8 ✔** |
+| PlatformStatus | ✅ | ➖ | ➖ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ✅ | **P8 ✔** |
+| PlatformReleases | ✅ | ➖ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P8 ✔** |
+| PlatformStaff | ✅ | ➖ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P8 ✔** |
+| PlatformSupport | ✅ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P8 ✔** |
+| PlatformAnnouncements | ✅ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ✅ | **P8 ✔** |
+| PlatformCompliance | ✅ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P8 ✔** |
+| PlatformAPIs | ✅ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P8 ✔** |
+| PlatformSettings | ✅ | ➖ | ➖ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ✅ | **P8 ✔** |
+| PlatformAICost | ✅ | ✅ | ➖ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ✅ | **P8 ✔** |
+| PlatformAIProviders | ✅ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P8 ✔** |
+| PlatformAIRouting | ✅ | ➖ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | **P8 ✔** |
+| PlatformAIGuardrails | ✅ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | **P8 ✔** |
+| PlatformAIPrompts | ✅ | ➖ | ➖ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | **P8 ✔** |
 
 ---
 
@@ -180,7 +184,7 @@ Fase esperada de detalhamento entre parênteses.
 | P5 · Connect | Tracking, TrackingSources, Link360, Domains, Domain360, Integrations, Integration360, IntegrationTAP/Meta/Telegram, Media, MediaCreatives, Campaign360 | ✔ concluída em 2026-07-24 — 13 páginas 100% verdes; Integrações, Tracking e Domínios já estavam em Connect na sidebar; páginas-objeto e TrackingSources permanecem contextuais |
 | P6 · Operate | Automations, FlowBuilder, Broadcasts, Segments, Inbox, InboxSettings, Approvals | ✔ concluída em 2026-07-24 — 7 páginas 100% verdes; Automations, Broadcasts, Inbox e Approvals promovidas à sidebar em OPERATE; Segments contextual de Broadcasts; FlowBuilder contextual de Automations; InboxSettings contextual de Inbox |
 | P7 · Público + Settings | Login, Signup, AuthCallback, Invite, Pricing, Docs, Status, Legal (Termos/Privacidade/DPA/Subprocessadores), SettingsGeneral, SettingsTeam, SettingsBilling, SettingsAPI, SettingsNotifications, SettingsAudit, Profile | ✔ concluída em 2026-07-24 — 18 páginas 100% verdes; kicker em serif italic em todas, PreviewBadge onde aplicável, PhasePreviewBanner removido de SettingsGeneral e Profile (agora implementadas de fato), SettingsBilling expandida (uso vs cap com semáforo, faturas em DataTable), SettingsAPI expandida (chaves com mascaramento/revelar, escopos, webhooks com estado e latência), Signup linkando os 4 documentos legais |
-| P8 · Super Admin | Reestilização da plataforma (só identidade visual, sem reestruturar) | ⏸ |
+| P8 · Super Admin | Repaint Proofline das 23 páginas de `src/pages/platform/*` — kicker serif italic + PreviewBadge + tokens D1 + mono tabular + StatusChip fechado sem reestruturar dados ou rotas | ✔ concluída em 2026-07-24 — 23 páginas 100% verdes; `PlatformPageHeader` compartilhado; hex literal `#7C91FF` removido do ProgressBar (agora `var(--proof-blue)`) |
 
 
 **Regra de prévia rasa (Product-Map §0):** cada página fora da fase corrente exibe explicitamente o banner "Esta tela será detalhada na fase PN". Nenhuma tela finge estar pronta.
