@@ -4,7 +4,7 @@ import { CommandBar } from '@/components/domain/CommandBar';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { db } from '@/lib/fake/db';
 import { Bell, Sparkles, Sun, Send, Plus, ChevronDown } from 'lucide-react';
-import { Link, useLocation } from 'wouter';
+import { Link } from 'wouter';
 
 interface TopbarProps {
   breadcrumb: React.ReactNode;
