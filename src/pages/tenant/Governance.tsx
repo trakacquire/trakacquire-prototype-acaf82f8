@@ -1,5 +1,7 @@
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { PhasePreviewBanner } from '@/components/state/PhasePreviewBanner';
 import { DataTable } from '@/components/data/DataTable';
 import { Shield, AlertTriangle, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { useAppState } from '@/lib/context/AppStateContext';
@@ -183,9 +185,10 @@ export default function GovernancePage() {
   return (
     <AppShell breadcrumb={[{ label: 'Governança' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
+          <PhasePreviewBanner phase="P4" scope="Regras versionadas, kill switches auditados" />
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-24 font-bold text-eggshell mb-1">Governança & Compliance</h1>
+            <div className="flex flex-wrap items-center gap-3"><h1 className="text-24 font-bold text-eggshell mb-1">Governança & Compliance</h1><PreviewBadge /></div>
             <p className="text-13 text-stone">Regras de fraude, compliance e segurança</p>
           </div>
           

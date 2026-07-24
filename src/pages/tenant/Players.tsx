@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'wouter';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { PhasePreviewBanner } from '@/components/state/PhasePreviewBanner';
 import { StatusChip } from '@/components/domain/StatusChip';
 import { db } from '@/lib/fake/db';
 
@@ -36,8 +38,9 @@ export default function PlayersPage() {
     <AppShell breadcrumb={[{ label: 'Players' }]}>
       <div className="max-w-7xl mx-auto space-y-4">
 
+          <PhasePreviewBanner phase="P3" scope="Grafo de identidade, Player 360, timeline" />
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-          <h1 className="text-24 font-bold text-eggshell">Players</h1>
+          <div className="flex flex-wrap items-center gap-3"><h1 className="text-24 font-bold text-eggshell">Players</h1><PreviewBadge /></div>
           <span className="text-13 text-stone font-mono">{filtered.length} resultados</span>
         </div>
 

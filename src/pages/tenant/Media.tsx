@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'wouter';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { PhasePreviewBanner } from '@/components/state/PhasePreviewBanner';
 import { StatusChip } from '@/components/domain/StatusChip';
 import { db } from '@/lib/fake/db';
 
@@ -20,8 +22,9 @@ export default function MediaPage() {
     <AppShell breadcrumb={[{ label: 'Media' }]}>
       <div className="max-w-7xl mx-auto space-y-8">
 
+          <PhasePreviewBanner phase="P5" scope="Campaign 360, criativos, gasto vs FTD" />
         <div className="flex justify-between items-center">
-          <h1 className="text-24 font-bold text-eggshell">Media Console</h1>
+          <div className="flex flex-wrap items-center gap-3"><h1 className="text-24 font-bold text-eggshell">Media Console</h1><PreviewBadge /></div>
           <button className="bg-eggshell text-ink px-4 py-2 rounded-md font-medium text-14 hover:bg-white transition-colors">
             Gerenciar Conexões
           </button>

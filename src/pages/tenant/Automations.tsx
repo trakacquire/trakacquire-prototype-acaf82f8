@@ -1,5 +1,7 @@
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { PhasePreviewBanner } from '@/components/state/PhasePreviewBanner';
 import { DataTable } from '@/components/data/DataTable';
 import { flows } from '@/lib/fake/extra';
 import { useLocation } from 'wouter';
@@ -22,8 +24,9 @@ export default function AutomationsPage() {
   return (
     <AppShell breadcrumb={[{ label: 'Automations' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
+          <PhasePreviewBanner phase="P6" scope="Flow builder, gatilhos e ações" />
         <div className="flex justify-between items-end">
-          <h1 className="text-24 font-bold text-eggshell">Automations & Flows</h1>
+          <div className="flex flex-wrap items-center gap-3"><h1 className="text-24 font-bold text-eggshell">Automations & Flows</h1><PreviewBadge /></div>
           <button className="bg-eggshell text-ink px-4 py-2 rounded-md font-medium text-14 hover:bg-white transition-colors">
             Criar Fluxo
           </button>

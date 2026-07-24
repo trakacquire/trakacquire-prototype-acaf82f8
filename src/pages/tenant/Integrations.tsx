@@ -1,6 +1,8 @@
 import React from 'react';
 import { useLocation } from 'wouter';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { PhasePreviewBanner } from '@/components/state/PhasePreviewBanner';
 import { db } from '@/lib/fake/db';
 import { StatusChip } from '@/components/domain/StatusChip';
 
@@ -73,8 +75,9 @@ export default function IntegrationsPage() {
   return (
     <AppShell breadcrumb={[{ label: 'Integrações' }]}>
       <div className="max-w-7xl mx-auto space-y-8">
+          <PhasePreviewBanner phase="P5" scope="Setup TAP/Meta/Telegram, health checks, credenciais" />
         <div>
-          <h1 className="text-24 font-bold text-[var(--eggshell)] mb-2">Hub de Integrações</h1>
+          <div className="flex flex-wrap items-center gap-3"><h1 className="text-24 font-bold text-[var(--eggshell)] mb-2">Hub de Integrações</h1><PreviewBadge /></div>
           <p className="text-14 text-[var(--stone)]">
             Conecte fontes de aquisição, canais de mensagem e provedores de receita.
           </p>
