@@ -1,9 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import { AppShell, useEvidence } from '@/components/layout/AppShell';
-import { PreviewBadge } from '@/components/data/PreviewBadge';
-import { FreshnessTag } from '@/components/data/FreshnessTag';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
+
 import { buildEvidence } from '@/lib/evidence';
 import { db } from '@/lib/fake/db';
 import { StatusPill, CardFooter, MicroStatRow, type IntegrationPillState } from '@/components/ui/proofline';
@@ -110,7 +109,7 @@ export default function IntegrationsPage() {
                 <span className="w-1 h-1 rounded-full bg-warning" />
                 Prévia
                 <span className="chip-honest-sep" />
-                <FreshnessTagInline seconds={ageAgo(lastEventFor('ftd'))} />
+                ao vivo · há {ageAgo(lastEventFor('ftd'))}s
                 <span className="chip-honest-sep" />
                 <span className={totalErrors > 0 ? 'text-warning' : 'text-verified'}>
                   {totalProd}/{integrations.length} em produção · {totalErrors} erros 24h
