@@ -1,13 +1,15 @@
-export type EventStatus = 
-  | 'Captured' 
-  | 'Linked' 
-  | 'Confirmed' 
-  | 'Reconciled' 
-  | 'Divergent' 
-  | 'Failed' 
-  | 'Policy blocked' 
-  | 'Orphan' 
-  | 'Synthetic';
+export type EventStatus =
+  | 'Captured'
+  | 'Linked'
+  | 'Confirmed'
+  | 'Reconciled'
+  | 'Divergent'
+  | 'Failed'
+  | 'Policy blocked'
+  | 'Orphan'
+  | 'Synthetic'
+  | 'Stale'
+  | 'Sandbox';
 
 export type IntegrationState = 'disabled' | 'sandbox' | 'pilot' | 'production' | 'policy-blocked';
 
