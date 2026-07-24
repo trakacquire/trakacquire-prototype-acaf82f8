@@ -183,95 +183,103 @@ export default function LiveEvents() {
           </button>
         </div>
 
-        {/* ── Stream ───────────────────────────────────────────────────── */}
-        <div className="bg-graphite border border-line rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-line bg-iron/60">
-                  <th className="px-4 py-3 text-left text-11 font-bold text-stone uppercase tracking-wider">Evento</th>
-                  <th className="px-4 py-3 text-left text-11 font-bold text-stone uppercase tracking-wider">Origem</th>
-                  <th className="px-4 py-3 text-left text-11 font-bold text-stone uppercase tracking-wider">Pessoa</th>
-                  <th className="px-4 py-3 text-left text-11 font-bold text-stone uppercase tracking-wider">Status</th>
-                  <th className="px-4 py-3 text-right text-11 font-bold text-stone uppercase tracking-wider">Valor</th>
-                  <th className="px-4 py-3 text-right text-11 font-bold text-stone uppercase tracking-wider">Latência</th>
-                  <th className="px-4 py-3 text-right text-11 font-bold text-stone uppercase tracking-wider">Quando</th>
-                </tr>
-              </thead>
-              <tbody>
-                <AnimatePresence initial={false}>
-                  {filtered.slice(0, 50).map((evt) => {
-                    const copy = TYPE_COPY[evt.type] ?? { label: evt.type, verb: evt.type, tone: 'stone' };
-                    const origin = originOf(evt);
-                    const person = personMap.get(evt.person_id);
-                    return (
-                      <motion.tr
-                        key={evt._key}
-                        initial={{ opacity: 0, y: -8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.22 }}
-                        className="border-b border-line/60 last:border-0 hover:bg-zinc/40 transition-colors"
-                      >
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2.5">
-                            <span className={`inline-block w-1.5 h-1.5 rounded-full ${
-                              copy.tone === 'verified' ? 'bg-verified' :
-                              copy.tone === 'proof-blue' ? 'bg-proof-blue' :
-                              copy.tone === 'critical' ? 'bg-critical' :
-                              copy.tone === 'warning' ? 'bg-warning' :
-                              'bg-stone'
-                            }`} />
-                            <div className="min-w-0">
-                              <div className="text-13 text-eggshell leading-tight">{copy.verb}</div>
-                              <div className="text-11 font-mono text-stone truncate">{evt.id}</div>
+        {/* ── Stream com gate de cenário (8 estados) ──────────────────── */}
+        <ScenarioStateGate
+          emptyTitle="Sem sinais no stream"
+          emptyDescription="Nenhum evento chegou nos últimos 5 minutos."
+          degradedIntegration="TAP Postback"
+        >
+          <div className="bg-graphite border border-line rounded-xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-line bg-iron/60">
+                    <th className="px-4 py-3 text-left text-11 font-bold text-stone uppercase tracking-wider">Evento</th>
+                    <th className="px-4 py-3 text-left text-11 font-bold text-stone uppercase tracking-wider">Origem</th>
+                    <th className="px-4 py-3 text-left text-11 font-bold text-stone uppercase tracking-wider">Pessoa</th>
+                    <th className="px-4 py-3 text-left text-11 font-bold text-stone uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-3 text-right text-11 font-bold text-stone uppercase tracking-wider">Valor</th>
+                    <th className="px-4 py-3 text-right text-11 font-bold text-stone uppercase tracking-wider">Latência</th>
+                    <th className="px-4 py-3 text-right text-11 font-bold text-stone uppercase tracking-wider">Quando</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <AnimatePresence initial={false}>
+                    {filtered.slice(0, 50).map((evt) => {
+                      const copy = TYPE_COPY[evt.type] ?? { label: evt.type, verb: evt.type, tone: 'stone' };
+                      const origin = originOf(evt);
+                      const person = personMap.get(evt.person_id);
+                      return (
+                        <motion.tr
+                          key={evt._key}
+                          initial={{ opacity: 0, y: -8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.22 }}
+                          className="border-b border-line/60 last:border-0 hover:bg-zinc/40 transition-colors"
+                        >
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2.5">
+                              <span className={`inline-block w-1.5 h-1.5 rounded-full ${
+                                copy.tone === 'verified' ? 'bg-verified' :
+                                copy.tone === 'proof-blue' ? 'bg-proof-blue' :
+                                copy.tone === 'critical' ? 'bg-critical' :
+                                copy.tone === 'warning' ? 'bg-warning' :
+                                'bg-stone'
+                              }`} />
+                              <div className="min-w-0">
+                                <div className="text-13 text-eggshell leading-tight">{copy.verb}</div>
+                                <div className="text-11 font-mono text-stone truncate tabular-nums">{evt.id}</div>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="text-12 text-eggshell leading-tight">{origin.source}</div>
-                          <div className="text-11 text-stone truncate max-w-[180px]" title={origin.campaign}>
-                            {origin.campaign}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <Link href={`/players/${evt.person_id}`} className="block group">
-                            <div className="text-12 text-eggshell group-hover:text-proof-blue transition-colors leading-tight">
-                              {person?.name ?? 'Anônimo'}
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="text-12 text-eggshell leading-tight">{origin.source}</div>
+                            <div className="text-11 text-stone truncate max-w-[180px]" title={origin.campaign}>
+                              {origin.campaign}
                             </div>
-                            <div className="text-11 font-mono text-stone">{evt.person_id}</div>
-                          </Link>
-                        </td>
-                        <td className="px-4 py-3">
-                          <StatusChip status={evt.status as EventStatus} />
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          {evt.value != null ? (
-                            <span className="font-mono text-13 text-eggshell tabular-nums">
-                              R$ {evt.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </td>
+                          <td className="px-4 py-3">
+                            <Link href={`/players/${evt.person_id}`} className="block group">
+                              <div className="text-12 text-eggshell group-hover:text-proof-blue transition-colors leading-tight">
+                                {person?.name ?? 'Anônimo'}
+                              </div>
+                              <div className="text-11 font-mono text-stone tabular-nums">{evt.person_id}</div>
+                            </Link>
+                          </td>
+                          <td className="px-4 py-3">
+                            <StatusChip status={evt.status as EventStatus} />
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <MetricValue
+                              value={evt.value != null ? `R$ ${evt.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '—'}
+                              size="sm"
+                              tone={evt.status === 'Reconciled' ? 'verified' : evt.status === 'Divergent' ? 'warning' : 'default'}
+                              onOpenEvidence={() => openEvidenceFor(evt)}
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <span className={`font-mono text-12 tabular-nums ${
+                              evt.latency_ms > 500 ? 'text-warning' : 'text-stone'
+                            }`}>
+                              {evt.latency_ms}ms
                             </span>
-                          ) : (
-                            <span className="text-stone text-13">—</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <span className={`font-mono text-12 tabular-nums ${
-                            evt.latency_ms > 500 ? 'text-warning' : 'text-stone'
-                          }`}>
-                            {evt.latency_ms}ms
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <span className="text-12 text-stone whitespace-nowrap">{relativeTime(evt.timestamp)}</span>
-                        </td>
-                      </motion.tr>
-                    );
-                  })}
-                </AnimatePresence>
-              </tbody>
-            </table>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <span className="text-12 text-stone whitespace-nowrap tabular-nums">{relativeTime(evt.timestamp)}</span>
+                          </td>
+                        </motion.tr>
+                      );
+                    })}
+                  </AnimatePresence>
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </ScenarioStateGate>
       </div>
+
+      <EvidenceDrawer isOpen={!!evidence} onClose={() => setEvidence(null)} data={evidence} />
     </AppShell>
   );
 }
+
