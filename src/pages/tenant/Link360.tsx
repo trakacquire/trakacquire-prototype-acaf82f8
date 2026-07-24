@@ -190,7 +190,9 @@ export default function Link360Page() {
             </div>
           )}
 
+          {tab === 'ab' && (
             <div className="bg-graphite border border-line rounded-xl p-5 space-y-3">
+
               <h3 className="text-14 font-semibold text-eggshell">Split A/B</h3>
               <div className="grid grid-cols-2 gap-3">
                 {[{ v: 'A', share: 50, conv: (conv * 0.95).toFixed(1) }, { v: 'B', share: 50, conv: (conv * 1.05).toFixed(1) }].map((v) => (
