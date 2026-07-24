@@ -132,7 +132,7 @@ export default function PlayersPage() {
                     </td>
                     <td className="px-4 py-3 font-mono text-13 text-right text-eggshell">R$ {p.total_deposited.toLocaleString('pt-BR')}</td>
                     <td className="px-4 py-3 text-right">
-                      <Link href={`/players/${p.id}`} className="text-[var(--proof-blue)] text-12 font-medium hover:underline">
+                      <Link href={`/players/${p.id}`} className="text-proof-blue text-12 font-medium hover:underline">
                         Ver →
                       </Link>
                     </td>
