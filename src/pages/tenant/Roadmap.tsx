@@ -65,7 +65,7 @@ const GROUPS: PhaseGroup[] = [
   {
     phase: 'P5',
     title: 'Connect',
-    status: 'planejada',
+    status: 'em-andamento',
     scope: '360º de domínios, links, integrações, campanhas e mídia',
     pages: [
       { title: 'Domain 360', href: '/domains/d_1', matrix: '1/9' },
