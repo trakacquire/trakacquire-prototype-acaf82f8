@@ -97,7 +97,7 @@ Fase esperada de detalhamento entre parênteses.
 | FlowBuilder | ❌ | ➖ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P6 |
 | Broadcasts | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P6 |
 | Segments | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P6 |
-| Cohorts | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P4 |
+| Cohorts | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | **P4 ✔** (contextual de Receita) |
 | Campaign360 | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P5 |
 | Media | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ✅ | P5 |
 | MediaCreatives | ❌ | ➖ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P5 |
