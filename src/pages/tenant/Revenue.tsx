@@ -1,5 +1,7 @@
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { PhasePreviewBanner } from '@/components/state/PhasePreviewBanner';
 import { MetricCard } from '@/components/data/MetricCard';
 import { db } from '@/lib/fake/db';
 import { usePeriod } from '@/lib/context/PeriodContext';
@@ -30,6 +32,7 @@ export default function RevenuePage() {
     <AppShell breadcrumb={[{ label: 'Revenue' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
 
+          <PhasePreviewBanner phase="P4" scope="Reconciliação, coortes, DRE por origem" />
         {/* 6 MetricCards: 2 rows × 3 */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <MetricCard label="Receita Bruta" value={'R$ ' + m.gross_deposits.toLocaleString('pt-BR')} />

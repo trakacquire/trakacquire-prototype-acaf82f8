@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'wouter';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { StatusChip } from '@/components/domain/StatusChip';
 import { db } from '@/lib/fake/db';
 import { ChevronRight } from 'lucide-react';
@@ -50,7 +51,7 @@ export default function LedgerPage() {
       <div className="max-w-7xl mx-auto space-y-4">
 
         <div>
-          <h1 className="text-24 font-bold text-eggshell mb-2">Signal Ledger</h1>
+          <div className="flex flex-wrap items-center gap-3"><h1 className="text-24 font-bold text-eggshell mb-2">Signal Ledger</h1><PreviewBadge /></div>
           <p className="text-14 text-stone">Registros financeiros: cadastros, FTDs, depósitos e saques.</p>
         </div>
 
@@ -115,7 +116,7 @@ export default function LedgerPage() {
                       <span className={`px-2 py-0.5 rounded text-11 font-medium ${typeBadgeClass(evt.type)}`}>{evt.type}</span>
                     </td>
                     <td className="px-4 py-2">
-                      <Link href={`/identity/${evt.person_id}`} className="font-mono text-12 text-[var(--proof-blue)] hover:underline">
+                      <Link href={`/identity/${evt.person_id}`} className="font-mono text-12 text-proof-blue hover:underline">
                         {evt.person_id}
                       </Link>
                     </td>

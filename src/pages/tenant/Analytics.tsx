@@ -1,5 +1,7 @@
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { PhasePreviewBanner } from '@/components/state/PhasePreviewBanner';
 import { MetricCard } from '@/components/data/MetricCard';
 import { StatusChip } from '@/components/domain/StatusChip';
 import { db } from '@/lib/fake/db';
@@ -83,6 +85,7 @@ export default function AnalyticsPage() {
     <AppShell breadcrumb={[{ label: 'Analytics' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
 
+          <PhasePreviewBanner phase="P4" scope="Coortes, análise por origem/campanha, funil por criativo" />
         {/* 4 MetricCards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <MetricCard label="Cliques" value={m.clicks.toLocaleString('pt-BR')} />

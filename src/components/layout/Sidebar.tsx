@@ -2,12 +2,12 @@ import React from 'react';
 import { Link, useLocation } from 'wouter';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, BarChart3, FileText, CheckSquare,
+  LayoutDashboard, BarChart3,
   Puzzle, Globe, Link2,
-  Activity, Users, UserSquare, ShieldAlert, MonitorPlay, Radio,
-  Zap, Filter, Send, MessageSquare, Megaphone,
-  DollarSign, Scale, GitBranch, ShieldCheck,
-  Settings, UserCircle2,
+  Radio, Activity, UserSquare,
+  Zap, Megaphone,
+  DollarSign, ShieldCheck,
+  Settings, UserCircle2, Construction,
 } from 'lucide-react';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
 
@@ -86,51 +86,45 @@ export function Sidebar() {
         <WorkspaceSwitcher />
       </div>
 
-
-
+      {/*
+        Sidebar curada (14 itens visíveis). Regra: página só volta à sidebar
+        quando a linha dela na matriz CONFORMANCE.md está verde. Tudo o mais
+        continua roteável via links contextuais, ⌘K e /roadmap.
+      */}
       <nav className="flex-1 overflow-y-auto px-2 py-4 scrollbar-thin scrollbar-thumb-line scrollbar-track-transparent">
         <SidebarGroup title="Overview">
           <SidebarItem href="/command" icon={<LayoutDashboard className="w-4 h-4" />} label="Command" />
           <SidebarItem href="/analytics" icon={<BarChart3 className="w-4 h-4" />} label="Analytics" />
-          <SidebarItem href="/reports" icon={<FileText className="w-4 h-4" />} label="Relatórios" />
-          <SidebarItem href="/approvals" icon={<CheckSquare className="w-4 h-4" />} label="Aprovações" />
         </SidebarGroup>
 
         <SidebarGroup title="Connect">
           <SidebarItem href="/integrations" icon={<Puzzle className="w-4 h-4" />} label="Integrações" />
-          <SidebarItem href="/domains" icon={<Globe className="w-4 h-4" />} label="Domínios" />
           <SidebarItem href="/tracking" icon={<Link2 className="w-4 h-4" />} label="Tracking / Links" />
+          <SidebarItem href="/domains" icon={<Globe className="w-4 h-4" />} label="Domínios" />
         </SidebarGroup>
 
         <SidebarGroup title="Observe">
           <SidebarItem href="/live" icon={<Radio className="w-4 h-4" />} label="Eventos ao vivo" badge={<LiveDot />} />
           <SidebarItem href="/ledger" icon={<Activity className="w-4 h-4" />} label="Signal Ledger" />
-          <SidebarItem href="/identity" icon={<Users className="w-4 h-4" />} label="Grafo de identidade" />
-          <SidebarItem href="/players" icon={<UserSquare className="w-4 h-4" />} label="Jogadores" />
-          <SidebarItem href="/signals" icon={<ShieldAlert className="w-4 h-4" />} label="Saúde CAPI" />
-          <SidebarItem href="/monitoring" icon={<MonitorPlay className="w-4 h-4" />} label="Monitoramento" />
+          <SidebarItem href="/players" icon={<UserSquare className="w-4 h-4" />} label="Players" />
         </SidebarGroup>
 
         <SidebarGroup title="Operate">
           <SidebarItem href="/automations" icon={<Zap className="w-4 h-4" />} label="Automações" />
-          <SidebarItem href="/segments" icon={<Filter className="w-4 h-4" />} label="Segmentos" />
-          <SidebarItem href="/broadcasts" icon={<Send className="w-4 h-4" />} label="Broadcasts" />
-          <SidebarItem href="/inbox" icon={<MessageSquare className="w-4 h-4" />} label="Caixa de entrada" />
           <SidebarItem href="/media" icon={<Megaphone className="w-4 h-4" />} label="Mídia" />
         </SidebarGroup>
 
         <SidebarGroup title="Prove">
           <SidebarItem href="/revenue" icon={<DollarSign className="w-4 h-4" />} label="Receita" />
-          <SidebarItem href="/revenue/reconciliation" icon={<Scale className="w-4 h-4" />} label="Reconciliação" />
-          <SidebarItem href="/revenue/cohorts" icon={<GitBranch className="w-4 h-4" />} label="Coortes" />
           <SidebarItem href="/governance" icon={<ShieldCheck className="w-4 h-4" />} label="Governança" />
         </SidebarGroup>
       </nav>
 
-      {/* Footer — Settings & Profile */}
+      {/* Footer — Settings, Profile e Roadmap */}
       <div className="border-t border-line px-2 py-3 space-y-px">
         <SidebarItem href="/settings/general" icon={<Settings className="w-4 h-4" />} label="Configurações" />
         <SidebarItem href="/profile" icon={<UserCircle2 className="w-4 h-4" />} label="Perfil" />
+        <SidebarItem href="/roadmap" icon={<Construction className="w-4 h-4" />} label="Em construção" />
       </div>
     </aside>
   );

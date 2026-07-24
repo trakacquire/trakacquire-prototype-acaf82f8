@@ -1,12 +1,15 @@
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { PhasePreviewBanner } from '@/components/state/PhasePreviewBanner';
 import { User, Mail, Shield, Bell, Key } from 'lucide-react';
 
 export default function ProfilePage() {
   return (
     <AppShell breadcrumb={[{ label: 'Settings' }, { label: 'Profile' }]}>
       <div className="max-w-3xl mx-auto space-y-6">
-        <h1 className="text-24 font-bold text-eggshell">Meu Perfil</h1>
+          <PhasePreviewBanner phase="P7" scope="Perfil, MFA, sessões" />
+        <div className="flex flex-wrap items-center gap-3"><h1 className="text-24 font-bold text-eggshell">Meu Perfil</h1><PreviewBadge /></div>
 
         <div className="bg-graphite border border-line rounded-xl p-6 space-y-6">
           <div className="flex items-center gap-4">

@@ -1,5 +1,7 @@
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { PhasePreviewBanner } from '@/components/state/PhasePreviewBanner';
 import { DataTable } from '@/components/data/DataTable';
 import { links } from '@/lib/fake/extra';
 import { useLocation } from 'wouter';
@@ -19,9 +21,10 @@ export default function TrackingPage() {
   return (
     <AppShell breadcrumb={[{ label: 'Tracking Links' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
+          <PhasePreviewBanner phase="P5" scope="Split A/B, atribuição multi-touch, deep links" />
         <div className="flex justify-between items-end">
           <div>
-            <h1 className="text-24 font-bold text-eggshell mb-2">Links</h1>
+            <div className="flex flex-wrap items-center gap-3"><h1 className="text-24 font-bold text-eggshell mb-2">Links</h1><PreviewBadge /></div>
             <p className="text-14 text-stone">Gerencie URLs rastreáveis e splits.</p>
           </div>
           <button className="bg-eggshell text-ink px-4 py-2 rounded-md font-medium text-14 hover:bg-white transition-colors">
