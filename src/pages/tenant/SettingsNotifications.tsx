@@ -8,7 +8,7 @@ export default function SettingsNotificationsPage() {
     <AppShell breadcrumb={[{ label: 'Configurações' }, { label: 'Notificações' }]}>
       <div className="max-w-4xl mx-auto space-y-6">
         <div>
-          <div className="kicker mb-1">Sinal · Canais de alerta</div>
+          <div className="kicker mb-1">Settings · Notificações</div>
           <div className="flex items-center gap-3">
             <h1 className="text-24 font-bold text-eggshell">Notificações</h1>
             <PreviewBadge />

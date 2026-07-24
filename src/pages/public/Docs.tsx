@@ -44,7 +44,7 @@ export default function DocsPage() {
         </aside>
         
         <main className="flex-1 p-6 md:p-12 overflow-y-auto">
-          <div className="kicker mb-2">Guia · Início</div>
+          <div className="kicker mb-2">Público · Docs</div>
           <h1 className="text-32 font-bold text-eggshell mb-4">Início</h1>
           <p className="text-16 text-stone mb-8 max-w-3xl">
             Bem-vindo à documentação do TrakAcquire. Aprenda a instrumentar sua operação de iGaming para provar a origem exata de cada FTD, cruzando dados de anúncios, mensagens e provedores de receita.

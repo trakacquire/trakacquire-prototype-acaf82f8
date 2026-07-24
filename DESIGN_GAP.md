@@ -208,3 +208,16 @@ Roadmap.
 ### Typecheck
 
 `bunx tsgo --noEmit` → limpo.
+
+---
+
+## Onda Polimento Fino — Tipografia & Espaçamento (2026-07-24)
+
+| # | Ajuste | Escopo | Resultado |
+|---|--------|--------|-----------|
+| P1 | Kickers normalizados ao padrão `<Grupo> · <Página>` | 20 páginas (public + tenant, incl. Command, Analytics, Cohorts, Governance, Report*, Reports, Revenue, Segments, todas as Settings, Docs, Pricing, Signup, Status) | Sentence-case consistente; `/` substituído por `·`; sem duplicidade "Proofline · Command" |
+| P2 | Chip único do Command funde PRÉVIA + freshness + reconciliação + estado do cenário | `Command.tsx` | `StateShowcase` inlined via `ScenarioChipSegment` — estado do cenário não some, vira 4º segmento do chip-honest |
+| P3 | Breadcrumb padrão `<Workspace> / <Página>` clicável em todos os níveis | `AppShell.tsx` | Workspace real do dataset canônico como raiz; separador `/` sutil; nível 1 exibe só workspace clicando p/ `/command` |
+| P4 | Escala tipográfica e de espaçamento | `styles.css` (revalidada) | Já alinhadas à escala aprovada (9/10/11/13/15/20/27/34/38; 4/8/12/16/24/32/40); line-height 1.15 títulos, 1.5 corpo, 1.2 mono |
+
+Nota reauditada: **95→96/100** — polimento fino elimina desalinhamentos de nomenclatura e concentra o meta-estado do Command em um único chip; próxima virada de fidelidade depende de refinos por página, não mais de sistema.

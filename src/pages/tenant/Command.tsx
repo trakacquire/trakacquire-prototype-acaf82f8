@@ -5,7 +5,8 @@ import { usePeriod } from '@/lib/context/PeriodContext';
 // PreviewBadge + FreshnessTag consolidados no chip-honest do header (Onda H1).
 
 import { MetricValue } from '@/components/data/MetricValue';
-import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
+import { ScenarioStateGate } from '@/components/state/ScenarioStateGate';
+import { useDemoScenario } from '@/components/domain/ScenarioSelector';
 import { TargetKpi } from '@/components/data/TargetKpi';
 import { BottleneckPanel } from '@/components/data/BottleneckPanel';
 import { RadarPanel } from '@/components/data/RadarPanel';
@@ -46,6 +47,35 @@ const TONE_DOT: Record<string, string> = {
   warning: 'bg-warning',
   stone: 'bg-stone/60',
 };
+
+// Segmento inline do chip único — sinaliza o estado do cenário sem ocupar chip próprio.
+function ScenarioChipSegment() {
+  const scenario = useDemoScenario();
+  const label: Record<string, string> = {
+    normal: 'Success',
+    degraded: 'Integration degraded',
+    dlq_full: 'Partial (DLQ)',
+    divergencias: 'Partial (divergências)',
+    sem_dados: 'Empty',
+    erro_sistema: 'Error',
+  };
+  const tone: Record<string, string> = {
+    normal: 'text-verified',
+    degraded: 'text-warning',
+    dlq_full: 'text-warning',
+    divergencias: 'text-warning',
+    sem_dados: 'text-stone',
+    erro_sistema: 'text-critical',
+  };
+  return (
+    <span
+      className={tone[scenario] ?? tone.normal}
+      title="Estado atual do cenário — troque no chip 🎬 Demo."
+    >
+      {label[scenario] ?? label.normal}
+    </span>
+  );
+}
 
 export default function CommandPage() {
   const { period } = usePeriod();
@@ -142,12 +172,12 @@ export default function CommandPage() {
         {/* ── Onda H1 · header enxuto: 1 eyebrow + 1 h1 + 1 subtitle + chip único ── */}
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pt-2">
           <div className="min-w-0">
-            <div className="eyebrow mb-2">Proofline · Command</div>
+            <div className="eyebrow mb-2">Overview · Command</div>
             <h1 className="page-title">Todos os sinais estão sob controle.</h1>
             <p className="page-subtitle mt-1.5 max-w-xl">
               Uma visão objetiva da aquisição, identidade, receita e integridade das integrações.
             </p>
-            {/* Chip honesto — funde PRÉVIA + estado + freshness (estados não somem, se organizam) */}
+            {/* Chip honesto — funde PRÉVIA + freshness + reconciliação + estado do cenário */}
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <span className="chip-honest">
                 <span className="w-1 h-1 rounded-full bg-warning" />
@@ -156,8 +186,9 @@ export default function CommandPage() {
                 {lastEventAgo !== null ? <>ao vivo · há {lastEventAgo}s</> : 'sem eventos'}
                 <span className="chip-honest-sep" />
                 <span className="text-verified">{pendingReconcile === 0 ? 'reconciliado D+1' : `${pendingReconcile} pendentes`}</span>
+                <span className="chip-honest-sep" />
+                <ScenarioChipSegment />
               </span>
-              <StateShowcase />
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">

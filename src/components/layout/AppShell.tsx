@@ -3,7 +3,8 @@ import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { EvidenceDrawer } from '../data/EvidenceDrawer';
 import { Link, useLocation } from 'wouter';
-import { ChevronRight, LayoutDashboard, Puzzle, Activity, Megaphone, DollarSign } from 'lucide-react';
+import { LayoutDashboard, Puzzle, Activity, Megaphone, DollarSign } from 'lucide-react';
+import { workspaces } from '@/lib/fake';
 import { cn } from '@/lib/utils';
 
 interface AppShellProps {
@@ -34,22 +35,23 @@ const MOBILE_TABS = [
 export function AppShell({ children, breadcrumb = [] }: AppShellProps) {
   const [evidenceData, setEvidenceData] = useState<any | null>(null);
   const [location] = useLocation();
+  const workspaceName = workspaces?.[0]?.name ?? 'Operação Brasil';
 
-  // E9 — nível 1 (sem pai navegável): esconde a trilha e mostra só o wordmark.
-  const isLevel1 = breadcrumb.length <= 1;
-
+  // Padrão "<Workspace> / <Página>" — workspace sempre clicável (→ /command).
   const breadcrumbNode = (
-    <div className="flex items-center text-sm">
-      <span className="text-stone">TrakAcquire</span>
-      {!isLevel1 && breadcrumb.map((item, idx) => (
+    <div className="flex items-center text-13 min-w-0">
+      <Link href="/command" className="text-stone hover:text-eggshell transition-colors truncate">
+        {workspaceName}
+      </Link>
+      {breadcrumb.map((item, idx) => (
         <React.Fragment key={idx}>
-          <ChevronRight className="w-4 h-4 text-line mx-1" />
-          {item.href ? (
-            <Link href={item.href} className="text-stone hover:text-eggshell transition-colors">
+          <span className="text-stone/40 mx-1.5 shrink-0">/</span>
+          {item.href && idx < breadcrumb.length - 1 ? (
+            <Link href={item.href} className="text-stone hover:text-eggshell transition-colors truncate">
               {item.label}
             </Link>
           ) : (
-            <span className="text-eggshell font-medium">{item.label}</span>
+            <span className="text-eggshell font-medium truncate">{item.label}</span>
           )}
         </React.Fragment>
       ))}
