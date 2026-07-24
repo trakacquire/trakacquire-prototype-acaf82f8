@@ -8,6 +8,30 @@
 
 ---
 
+## Changelog — Onda A (Build Pack v1.0)
+
+**Precedência confirmada pelo dono:**
+`(1) identidade visual aprovada (paleta D1 + shell 5 grupos)` > `(2) DECISIONS.md / UI-SYSTEM.md` > `(3) Build Pack v1.0` (usado apenas para ARQUITETURA e SPEC funcional).
+
+**Entregas desta onda:**
+- **A0** · Workspace card no `WorkspaceSwitcher` já cabe em uma linha e mantém badge `LIVE` — verificado, sem regressão.
+- **A1** · `EventStatus` expandido para 11 estados (adicionados `Stale` e `Sandbox`); `StatusChip` renderiza os dois com tintas Proofline (warning / proof-blue).
+- **A2** · No Command, o `chip-honest` de meta-estado passa a ficar **colado à linha do `h1`** (não mais em linha separada abaixo do subtítulo).
+- **A3** · Topbar ganha `Environment Indicator` permanente (`Sandbox · prévia`, tinta warning, mono uppercase).
+- **A4** · Topbar ganha menu global `+ Criar` com atalhos para Link de tracking, Fluxo, Segmento e Relatório.
+- **A6** · Novo primitivo canônico `ApprovalCard` (`src/components/data/ApprovalCard.tsx`) com risco tri-nível, escopo, justificativa e `AuditRef`.
+- **A7** · `EvidenceDrawer` completa 8 campos do Build Pack: `attribution` + `confidence %`, `reversals`, `auditRef` + alerta explícito quando `state = Provisório`. `evidence.ts` traz defaults canônicos.
+- **A8** · `FreshnessTag` default agora diz **"Dados atualizados há N min"** (elimina "ao vivo" ambíguo).
+- **A5 / A9** · Registry e varredura CTA-infinitivo permanecem parciais (ver seção "Pendências pós-Onda A" abaixo).
+
+**Pendências pós-Onda A (para próxima rodada):**
+- A5 · registry atinge hoje 79 rotas mapeadas; 75 rotas do Build Pack faltam ser inventariadas em bloco "Previstas".
+- A9 · varredura global de CTAs no infinitivo (`Ver → Consultar`, `Ir → Abrir`) ainda precisa ser aplicada nas telas P5/P6 legadas.
+
+---
+
+
+
 ## Changelog — Fidelidade final da tela de Integrações
 
 - **Ref versionada:** `reference/preview-3.html` commitada fora de `src/`; extração numérica do bloco `.integration` (padding 16, min-height 148, radius 12, catalog `repeat(auto-fill, minmax(280px, 320px))`, gap 4).

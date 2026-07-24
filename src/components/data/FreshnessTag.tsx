@@ -34,10 +34,10 @@ export function FreshnessTag({ ageSeconds, label, source, level, className }: Fr
   const text =
     label ??
     (ageSeconds !== undefined
-      ? `há ${formatAge(ageSeconds)}${source ? ` · ${source}` : ''}`
+      ? `Dados atualizados há ${formatAge(ageSeconds)}${source ? ` · ${source}` : ''}`
       : source
         ? source
-        : 'ao vivo');
+        : 'Dados atualizados agora');
 
   return (
     <span className={cn('chip-honest', className)} style={{ color: tint }}>

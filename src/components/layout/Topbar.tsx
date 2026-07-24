@@ -3,7 +3,8 @@ import { usePeriod } from '@/lib/context/PeriodContext';
 import { CommandBar } from '@/components/domain/CommandBar';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { db } from '@/lib/fake/db';
-import { Bell, Sparkles, Sun, Send } from 'lucide-react';
+import { Bell, Sparkles, Sun, Send, Plus, ChevronDown } from 'lucide-react';
+import { Link } from 'wouter';
 
 interface TopbarProps {
   breadcrumb: React.ReactNode;
@@ -186,6 +187,43 @@ export function Topbar({ breadcrumb }: TopbarProps) {
 
         {/* Right: actions compactas */}
         <div className="flex items-center gap-1.5 flex-1 basis-0 justify-end">
+          {/* A3 · Environment badge — sempre visível */}
+          <span
+            className="hidden md:inline-flex items-center gap-1.5 h-[26px] px-2 rounded-md border border-warning/30 bg-warning/8 text-[10.5px] font-mono uppercase tracking-[0.14em] text-warning"
+            title="Ambiente atual — dados fictícios de prévia"
+          >
+            <span className="w-1 h-1 rounded-full bg-warning" />
+            Sandbox · prévia
+          </span>
+
+          {/* A4 · Global create menu */}
+          <div className="relative group hidden md:block">
+            <button
+              className="inline-flex items-center gap-1 h-[30px] px-2.5 rounded-md border border-[hsl(var(--eggshell)/0.10)] hover:bg-[hsl(var(--eggshell)/0.04)] text-12 text-eggshell transition-colors"
+              title="Criar novo recurso"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Criar
+              <ChevronDown className="w-3 h-3 text-stone" />
+            </button>
+            <div className="absolute top-full right-0 mt-1.5 w-[180px] surface-floating rounded-[9px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 p-1">
+              {[
+                { label: 'Link de tracking', to: '/tracking' },
+                { label: 'Fluxo', to: '/automations' },
+                { label: 'Segmento', to: '/segments' },
+                { label: 'Relatório', to: '/reports' },
+              ].map((it) => (
+                <Link
+                  key={it.to}
+                  href={it.to}
+                  className="block px-2.5 py-2 text-13 text-eggshell hover:bg-white/[0.04] rounded-md"
+                >
+                  {it.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
           {/* Period — chip discreto */}
           <select
             value={period}
@@ -196,6 +234,7 @@ export function Topbar({ breadcrumb }: TopbarProps) {
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
+
 
           {/* Briefing */}
           <button

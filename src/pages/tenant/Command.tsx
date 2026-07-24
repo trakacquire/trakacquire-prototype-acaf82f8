@@ -169,37 +169,38 @@ export default function CommandPage() {
     <AppShell breadcrumb={[{ label: 'Command' }]}>
       <div className="max-w-7xl mx-auto space-y-8">
 
-        {/* ── Onda H1 · header enxuto: 1 eyebrow + 1 h1 + 1 subtitle + chip único ── */}
+        {/* ── Onda H1 · header enxuto + Onda A · chip colado à linha do h1 ── */}
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pt-2">
           <div className="min-w-0">
             <div className="eyebrow mb-2">Overview · Command</div>
-            <h1 className="page-title">Todos os sinais estão sob controle.</h1>
-            <p className="page-subtitle mt-1.5 max-w-xl">
-              Uma visão objetiva da aquisição, identidade, receita e integridade das integrações.
-            </p>
-            {/* Chip honesto — funde PRÉVIA + freshness + reconciliação + estado do cenário */}
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span className="chip-honest">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <h1 className="page-title">Todos os sinais estão sob controle.</h1>
+              {/* A2 · chip único de meta-estado colado ao h1 (não em linha separada) */}
+              <span className="chip-honest self-center">
                 <span className="w-1 h-1 rounded-full bg-warning" />
                 Prévia
                 <span className="chip-honest-sep" />
-                {lastEventAgo !== null ? <>ao vivo · há {lastEventAgo}s</> : 'sem eventos'}
+                {lastEventAgo !== null ? <>Dados atualizados há {lastEventAgo}s</> : 'sem eventos'}
                 <span className="chip-honest-sep" />
                 <span className="text-verified">{pendingReconcile === 0 ? 'reconciliado D+1' : `${pendingReconcile} pendentes`}</span>
                 <span className="chip-honest-sep" />
                 <ScenarioChipSegment />
               </span>
             </div>
+            <p className="page-subtitle mt-1.5 max-w-xl">
+              Uma visão objetiva da aquisição, identidade, receita e integridade das integrações.
+            </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button className="h-9 px-4 rounded-[9px] border border-line bg-graphite hover:bg-zinc text-13 text-eggshell transition-colors press">
-              Briefing diário
+              Abrir briefing
             </button>
             <button className="btn-eggshell h-9 px-4 text-13">
-              Abrir copiloto
+              Consultar copiloto
             </button>
           </div>
         </header>
+
 
 
         {/* ── KPI row (Proof integrity + 4 métricas Proofline) ─────────── */}
