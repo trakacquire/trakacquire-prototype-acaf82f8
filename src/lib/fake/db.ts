@@ -1048,7 +1048,7 @@ export function cohortData(): Array<{ week: string; entered: number; d0: number;
 
 // Funnel breakdown
 export function funnelData(days: number): Array<{ stage: string; count: number; pct_prev: number }> {
-  const clicks = PERSONS.filter(p => p.clicked_at && isInLastDays(p.clicked_at, days)).length;
+  const clicks = Math.round(CANONICAL_CLICKS_30D * (days / 30));
   const regs = PERSONS.filter(p => p.registered_at && isInLastDays(p.registered_at, days)).length;
   const ftds = PERSONS.filter(p => p.ftd_at && isInLastDays(p.ftd_at, days)).length;
   const repeat = PERSONS.filter(p => p.deposits.filter(d => d.type === 'repeat' && isInLastDays(d.at, days)).length > 0).length;
@@ -1059,6 +1059,12 @@ export function funnelData(days: number): Array<{ stage: string; count: number; 
     { stage: 'Depósito Recorrente', count: repeat, pct_prev: ftds > 0 ? Math.round((repeat / ftds) * 1000) / 10 : 0 },
   ];
 }
+
+/** Identidades resolvidas (Linked) — cliques amarrados a uma pessoa via cookie/UTM/telegram_id. */
+export function journeyLinked(days: number): number {
+  return PERSONS.filter(p => p.clicked_at && isInLastDays(p.clicked_at, days)).length;
+}
+
 
 // ── PRIMARY EXPORT ────────────────────────────────────────────────────────────
 export const db = {
