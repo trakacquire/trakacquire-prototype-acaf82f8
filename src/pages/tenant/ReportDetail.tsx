@@ -4,6 +4,8 @@ import { useParams } from 'wouter';
 import { db } from '@/lib/fake/db';
 import { toast } from 'sonner';
 import { StatusChip } from '@/components/domain/StatusChip';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
 import {
   Dialog,
   DialogContent,
@@ -11,7 +13,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Play, FileDown, Calendar, Clock } from 'lucide-react';
+import { Play, FileDown, Calendar, Clock, Lock } from 'lucide-react';
 
 const fmt = (v: number) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 const fmtDate = (iso: string) => new Date(iso).toLocaleDateString('pt-BR');
