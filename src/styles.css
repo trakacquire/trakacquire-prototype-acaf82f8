@@ -107,19 +107,18 @@
 
   --background: var(--ink);
   --foreground: var(--eggshell);
-  /* border/input consumidos por hsl(var(--border)) nos componentes shadcn.
-     Apontar direto para o hairline (eggshell 6% alpha) unifica toda borda. */
-  --border: var(--eggshell) / 0.06;
-  --input: var(--eggshell) / 0.06;
+  /* Onda H1 · borda default .09 · alinha shadcn ao novo piso hairline. */
+  --border: var(--eggshell) / 0.09;
+  --input: var(--eggshell) / 0.09;
   --ring: var(--proof-blue);
 
   --card: var(--graphite);
   --card-foreground: var(--eggshell);
-  --card-border: var(--eggshell) / 0.06;
+  --card-border: var(--eggshell) / 0.09;
 
   --popover: var(--graphite);
   --popover-foreground: var(--eggshell);
-  --popover-border: var(--eggshell) / 0.06;
+  --popover-border: var(--eggshell) / 0.09;
 
 
   --primary: var(--eggshell);
@@ -139,7 +138,7 @@
 
   --sidebar: var(--iron);
   --sidebar-foreground: var(--eggshell);
-  --sidebar-border: var(--eggshell) / 0.06;
+  --sidebar-border: var(--eggshell) / 0.09;
 
   --chart-1: var(--proof-blue);
   --chart-2: var(--verified);
@@ -151,7 +150,8 @@
   --font-mono-family: 'JetBrains Mono', monospace;
   --font-serif-family: 'Instrument Serif', 'Times New Roman', serif;
 
-  --radius: 8px;
+  /* Onda H1 · raio padrão 14 (12 fica reservado a painéis menores via rounded-xl). */
+  --radius: 14px;
 
   /* Proofline depth system — physical confidence (Fase F) */
   --shadow-flat: 0 1px 0 0 hsl(0 0% 100% / 0.02) inset, 0 1px 2px 0 hsl(0 0% 0% / 0.4);
