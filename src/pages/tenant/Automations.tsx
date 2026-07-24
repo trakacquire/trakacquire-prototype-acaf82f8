@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'wouter';
 import { AppShell, useEvidence } from '@/components/layout/AppShell';
 import { PreviewBadge } from '@/components/data/PreviewBadge';
@@ -9,6 +9,8 @@ import { buildEvidence } from '@/lib/evidence';
 import { FLOWS } from '@/lib/fake/db';
 import { toast } from 'sonner';
 import { GitBranch, RotateCcw, Eye } from 'lucide-react';
+import FlowCanvas from '@/components/flow/FlowCanvas';
+
 
 const fmt = {
   int: (n: number) => n.toLocaleString('pt-BR'),
