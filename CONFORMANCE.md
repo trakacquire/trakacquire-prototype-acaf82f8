@@ -54,7 +54,7 @@ Fase esperada de detalhamento entre parênteses.
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Command | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | ⏳ | ✅ | **P1 ✔** (banner de estados na P3) |
+| Command | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ✅ | **P1/P3 ✔** |
 | Analytics | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ❌ | ❌ | ✅ | P4 |
 | Revenue | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ❌ | ❌ | ✅ | P4 |
 
