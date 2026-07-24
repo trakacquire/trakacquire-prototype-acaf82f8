@@ -4,6 +4,12 @@ Matriz página × requisito. Atualizada a cada fase (P2 → P8). Célula = ✅ c
 
 **Fonte da verdade da matriz:** DECISIONS.md (D1) > UI-SYSTEM.md > PRODUCT-MAP.md.
 
+## Changelog
+
+- **2026-07-24 · Fase P2 concluída (LiveEvents, Ledger, Monitoring)** — as três páginas ganharam os 8 estados de UX via `ScenarioStateGate` (encaixa no ScenarioSelector já existente), Evidence Drawer em todo número (via `MetricValue` + payload `buildEvidence`), breadcrumb "Observe / …", tokens D1 sanitizados, mono tabular em ID/valor/timestamp/latência e (Ledger) mobile reordenado por prioridade — filtros antes da tabela, colunas secundárias colapsadas em subtexto da primária. Monitoring foi promovida à sidebar em OBSERVE (Command · Analytics · Integrações · Tracking · Domínios · **Live · Ledger · Monitoring · Players** · Automações · Mídia · Receita · Governança + rodapé). `Signals`, `EventDetail` e `Reconciliation` permanecem em `/roadmap` até fecharem suas linhas.
+- **2026-07-24 · P2 em pausa entre iterações** — próximas rodadas retomam por **P3 (Identity Graph + Players + Player360 + IdentityDetail)** e seguem P4→P8. Guilhotina de 150%: qualquer estouro corta escopo da fase e segue.
+
+
 ## Legenda das colunas
 
 | Sigla | Requisito |
