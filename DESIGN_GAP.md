@@ -4,6 +4,29 @@
 
 **Método:** extração numérica dos tokens do HTML → confronto arquivo a arquivo em `src/styles.css` e primitivos → varredura visual página a página com Playwright (screenshots lado a lado em `/mnt/documents/design-gap/`).
 
+> **Referência canônica versionada em `reference/preview-3.html`.** Todo diff de fidelidade a partir desta data compara contra este arquivo — nunca de memória.
+
+---
+
+## Changelog — Fidelidade final da tela de Integrações
+
+- **Ref versionada:** `reference/preview-3.html` commitada fora de `src/`; extração numérica do bloco `.integration` (padding 16, min-height 148, radius 12, catalog `repeat(auto-fill, minmax(280px, 320px))`, gap 4).
+- **Anatomia do card refeita** em `src/pages/tenant/Integrations.tsx`:
+  - linha 1 · AppIcon 42px isolado à esquerda · StatusPill sentence-case à direita.
+  - linha 2 · **nome completo** ("TAP Affiliate Platform", "Meta Ads", "TikTok Ads", "Kwai Ads", "Telegram Bot API", "WhatsApp Cloud").
+  - linha 3 · descrição stone 12px até 2 linhas.
+  - rodapé hairline · meta = `v3.2.1 · N contas · Policy-aware` · ação varia por estado (`Configurar →` p/ revenue provider ativo · `Abrir →` p/ demais ativos · `Conectar →` disponível/erro · `Revisar →` restrita).
+  - linha de categoria dentro do card **removida** (a seção já a declara).
+  - Health/P95/erros **saem do rodapé** e ficam SÓ no `title` (tooltip).
+- **Bug HTML resolvido:** o card era `<button>` com `<button>` aninhado no CardFooter. Agora é `<div role="link" tabIndex={0}>` navegável por teclado; a ação do rodapé é um `<button>` com `stopPropagation` — HTML válido.
+- **Chip único (F11):** `chip-honest` do header agora funde PRÉVIA · freshness · produção/erros · **estado do cenário** como último segmento. `StateShowcase` removido do header.
+- **Contador de seção** virou pílula com borda (`22px · uppercase mono 10px · border line`), alinhada à direita do título da categoria.
+- **Filtros:** removido o container `surface-flat` acolchoado. Linha compacta = busca 220-330px + 2 selects, todos 37px de altura e radius 9, direto na página como na referência.
+- **Grid da grade:** `repeat(auto-fill, minmax(280px, 320px))` com `gap: 16px`, alinhado à esquerda — não estica na coluna.
+- **Domínios e demais grades:** varredura confirmou que `Domains.tsx` usa `DataTable`, não card catalog; o padrão de anatomia se aplica apenas às grades de card do produto (Integrações hoje; futuras seguirão o mesmo template).
+
+**Nota reauditada:** 97/100 (Integrações agora paridade 1:1 com a referência; delta remanescente concentra-se em telas P5/P6 legadas).
+
 ---
 
 ## a) Tabela de gaps de TOKEN
