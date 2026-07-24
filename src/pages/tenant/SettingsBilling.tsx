@@ -73,7 +73,7 @@ export default function SettingsBillingPage() {
             columns={[
               { header: 'Fatura', accessorKey: 'id', cell: (r: any) => <span className="font-mono text-12 text-eggshell">{r.id}</span> },
               { header: 'Período', accessorKey: 'period', cell: (r: any) => <span className="text-13 text-stone">{r.period}</span> },
-              { header: 'Valor', accessorKey: 'amount', cell: (r: any) => <MetricValue value={r.amount} format="currency" /> },
+              { header: 'Valor', accessorKey: 'amount', cell: (r: any) => <MetricValue value={`R$ ${r.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} size="sm" /> },
               { header: 'Status', accessorKey: 'status', cell: (r: any) => <span className="px-2 py-0.5 rounded text-11 font-bold bg-verified/10 text-verified uppercase">{r.status}</span> },
               { header: 'Pago em', accessorKey: 'paidAt', cell: (r: any) => <span className="font-mono text-12 text-stone">{r.paidAt}</span> },
             ]}
