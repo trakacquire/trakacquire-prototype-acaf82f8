@@ -63,7 +63,7 @@ const CONFIGS: Record<string, IntegrationConfig> = {
     setupSteps: [
       { label: 'Conectar Business Manager', description: 'OAuth com system user token de longa duração.', test: 'GET /me/businesses', done: true, evidence: 'BM identificado · 1 pixel ativo' },
       { label: 'Escolher pixel + Dataset', description: 'Pixel 340124… linkado ao Dataset CAPI.', test: 'Test event helper', done: true, evidence: 'Test event 200 · match quality 8.4/10' },
-      { label: 'Mapear parâmetros de matching', description: 'fbc, fbp, em (SHA-256), ph (SHA-256) — liga/desliga por campo.', test: 'Cobertura por evento', done: true, evidence: '78 eventos · fbc 100% · em 92% · ph 61%' },
+      { label: 'Mapear parâmetros de matching', description: 'fbc, fbp, em (SHA-256), ph (SHA-256) — liga/desliga por campo.', test: 'Cobertura por evento', done: true, evidence: '5.000 eventos · fbc 100% · em 92% · ph 61%' },
       { label: 'Deduplicação pixel × CAPI', description: 'event_id compartilhado nos dois canais.', test: 'Deduplication rate', done: true, evidence: 'Dedup 97.3% · sem eventos órfãos' },
     ],
     special: 'meta',
