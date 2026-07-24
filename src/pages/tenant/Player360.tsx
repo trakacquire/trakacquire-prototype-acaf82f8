@@ -473,6 +473,7 @@ export default function Player360Page({ params }: { params: { id: string } }) {
             </div>
           </div>
         )}
+        </ScenarioStateGate>
       </div>
 
       {/* Conversation dialog */}
