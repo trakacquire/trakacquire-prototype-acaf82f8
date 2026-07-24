@@ -5,10 +5,12 @@ import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { StatusChip } from '@/components/domain/StatusChip';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
 import { db } from '@/lib/fake/db';
+import { EXPERTS, expertForPerson } from '@/lib/fake/experts';
 
 export default function PlayersPage() {
   const [search, setSearch] = useState('');
   const [srcFilter, setSrcFilter] = useState('all');
+  const [expertFilter, setExpertFilter] = useState<'all' | string>('all');
   const [ftdOnly, setFtdOnly] = useState(false);
   const [page, setPage] = useState(0);
 
@@ -18,7 +20,9 @@ export default function PlayersPage() {
     const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.id.includes(search);
     const matchSrc = srcFilter === 'all' || p.source === srcFilter;
     const matchFtd = !ftdOnly || !!p.ftd_at;
-    return matchSearch && matchSrc && matchFtd;
+    const exp = expertForPerson(p.id);
+    const matchExp = expertFilter === 'all' || exp?.id === expertFilter;
+    return matchSearch && matchSrc && matchFtd && matchExp;
   });
 
   const pageSize = 25;
@@ -70,6 +74,14 @@ export default function PlayersPage() {
           >
             {sources.map(s => <option key={s} value={s}>{s === 'all' ? 'Todas as origens' : s}</option>)}
           </select>
+          <select
+            value={expertFilter}
+            onChange={e => { setExpertFilter(e.target.value); setPage(0); }}
+            className="bg-zinc border border-line text-eggshell rounded-md px-3 py-1.5 text-13 outline-none focus:border-proof-blue"
+          >
+            <option value="all">Todos os Experts</option>
+            {EXPERTS.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+          </select>
           <label className="flex items-center gap-2 cursor-pointer text-13 text-stone">
             <input
               type="checkbox"
@@ -90,6 +102,7 @@ export default function PlayersPage() {
                   <th className="px-4 py-3 text-12 font-bold text-stone uppercase">ID</th>
                   <th className="px-4 py-3 text-12 font-bold text-stone uppercase">Nome</th>
                   <th className="px-4 py-3 text-12 font-bold text-stone uppercase">Origem</th>
+                  <th className="px-4 py-3 text-12 font-bold text-stone uppercase hidden md:table-cell">Expert</th>
                   <th className="px-4 py-3 text-12 font-bold text-stone uppercase text-right">Score</th>
                   <th className="px-4 py-3 text-12 font-bold text-stone uppercase">Status</th>
                   <th className="px-4 py-3 text-12 font-bold text-stone uppercase text-center">FTD</th>
@@ -98,12 +111,17 @@ export default function PlayersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
-                {paged.map(p => (
+                {paged.map(p => {
+                  const exp = expertForPerson(p.id);
+                  return (
                   <tr key={p.id} className="hover:bg-zinc transition-colors">
                     <td className="px-4 py-3 font-mono text-11 text-stone">{p.id}</td>
                     <td className="px-4 py-3 text-13 text-eggshell">{p.name}</td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded text-11 font-medium ${srcBadgeClass(p.source)}`}>{p.source}</span>
+                    </td>
+                    <td className="px-4 py-3 text-12 text-eggshell hidden md:table-cell">
+                      {exp ? exp.name : <span className="text-stone">—</span>}
                     </td>
                     <td className="px-4 py-3 font-mono text-13 text-stone text-right">{p.score}</td>
                     <td className="px-4 py-3"><StatusChip status={p.status} /></td>
