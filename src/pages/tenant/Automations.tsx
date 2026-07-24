@@ -222,7 +222,9 @@ export default function AutomationsPage() {
               <DataTable data={rows} columns={columns} onRowClick={(f) => setLocation(`/automations/${f.id}`)} />
             )}
           </div>
-
+        </ScenarioStateGate>
+      </div>
     </AppShell>
+
   );
 }
