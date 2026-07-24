@@ -46,7 +46,9 @@ export default function FlowCanvas({ flowObj, onNodeSelect, onDeleteNode, onNode
   }));
 
   // ── Convert db edges → ReactFlow edges ─────────────────────────────────────
+  // Edges com gradiente proof-blue → eggshell (F.5 · connector-flow).
   const isActive = flowObj.status === 'active';
+  const EDGE_STROKE = 'url(#flow-connector-gradient)';
   const initialEdges: Edge[] = flowObj.edges.map((e) => ({
     id: e.id,
     source: e.source,
@@ -54,7 +56,7 @@ export default function FlowCanvas({ flowObj, onNodeSelect, onDeleteNode, onNode
     label: e.label,
     animated: isActive,
     type: 'smoothstep',
-    style: { stroke: 'hsl(var(--line))', strokeWidth: 2 },
+    style: { stroke: isActive ? EDGE_STROKE : 'hsl(var(--eggshell) / 0.10)', strokeWidth: 2 },
     labelStyle: {
       fill: 'hsl(var(--stone))',
       fontSize: 11,
