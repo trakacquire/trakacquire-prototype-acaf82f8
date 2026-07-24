@@ -2,8 +2,8 @@ import React from 'react';
 import { AppShell, useEvidence } from '@/components/layout/AppShell';
 import { db } from '@/lib/fake/db';
 import { usePeriod } from '@/lib/context/PeriodContext';
-import { PreviewBadge } from '@/components/data/PreviewBadge';
-import { FreshnessTag } from '@/components/data/FreshnessTag';
+// PreviewBadge + FreshnessTag consolidados no chip-honest do header (Onda H1).
+
 import { MetricValue } from '@/components/data/MetricValue';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
 import { TargetKpi } from '@/components/data/TargetKpi';
