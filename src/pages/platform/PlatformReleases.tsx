@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { DataTable } from '@/components/data/DataTable';
 
 export default function PlatformReleasesPage() {
@@ -16,8 +17,7 @@ export default function PlatformReleasesPage() {
   ];
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Releases & Schema' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
+    <PlatformShell breadcrumb={[{ label: 'Release<PlatformPageHeader kicker="Platform · Releases" title="Releases" />e-y-6">
         <h1 className="text-24 font-bold text-eggshell">Releases</h1>
         <DataTable data={releases} columns={columns} />
       </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { db } from '@/lib/fake/db';
 import { StatusChip } from '@/components/domain/StatusChip';
 import type { EventStatus } from '@/lib/types';
@@ -19,9 +20,7 @@ export default function PlatformAIProvidersPage() {
   }
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Provedores de IA' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
-        <h1 className="text-24 font-bold text-eggshell">Provedores de IA</h1>
+    <PlatformShell breadcrumb={[{ label: 'Proved<PlatformPageHeader kicker="Platform · AI Providers" title="Provedores de IA" />        <h1 className="text-24 font-bold text-eggshell">Provedores de IA</h1>
 
         {/* Stat cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

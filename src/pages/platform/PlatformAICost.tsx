@@ -1,11 +1,10 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 
 export default function PlatformAICostPage() {
   return (
-    <PlatformShell breadcrumb={[{ label: 'AI Cost' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
-        <h1 className="text-24 font-bold text-eggshell">AI Cost Monitoring</h1>
+    <PlatformShell breadcrumb={[{ label<PlatformPageHeader kicker="Platform · AI Cost" title="AI Cost Monitoring" />      <h1 className="text-24 font-bold text-eggshell">AI Cost Monitoring</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-graphite border border-line rounded-xl p-6">

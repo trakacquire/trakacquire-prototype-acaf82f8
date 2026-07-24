@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { StatusChip } from '@/components/domain/StatusChip';
 import type { EventStatus } from '@/lib/types';
 
@@ -28,9 +29,7 @@ export default function PlatformAIGuardrailsPage() {
   }
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Guardrails de IA' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
-        <h1 className="text-24 font-bold text-eggshell">Guardrails de IA e Mascaramento de PII</h1>
+    <PlatformShell breadcrumb={[{ label: 'Guardr<PlatformPageHeader kicker="Platform · AI Guardrails" title="Guardrails de IA e Mascaramento de PII" />"text-24 font-bold text-eggshell">Guardrails de IA e Mascaramento de PII</h1>
 
         {/* Stat cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

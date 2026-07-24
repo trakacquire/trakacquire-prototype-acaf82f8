@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { DataTable } from '@/components/data/DataTable';
 
 export default function PlatformReliabilityPage() {
@@ -17,9 +18,7 @@ export default function PlatformReliabilityPage() {
   ];
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Reliability' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
-        <h1 className="text-24 font-bold text-eggshell">Confiabilidade & SLOs</h1>
+    <PlatformShell breadcrumb={[{ label: 'R<PlatformPageHeader kicker="Platform · SLOs" title="Confiabilidade & SLOs" />   <h1 className="text-24 font-bold text-eggshell">Confiabilidade & SLOs</h1>
         <DataTable data={slos} columns={columns} />
       </div>
     </PlatformShell>

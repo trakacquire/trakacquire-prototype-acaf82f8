@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { DataTable } from '@/components/data/DataTable';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Activity, Users, Database, TrendingUp } from 'lucide-react';
@@ -70,8 +71,7 @@ export default function PlatformUsagePage() {
   ];
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Usage & Quotas' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
+    <PlatformShell breadcrumb={[{ label: 'Usag<PlatformPageHeader kicker="Platform · Usage" title="Usage & Quotas" />>
         <h1 className="text-24 font-bold text-eggshell">Usage & Quotas</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

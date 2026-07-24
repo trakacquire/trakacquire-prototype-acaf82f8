@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 
 const prompts = [
   { id: 'p1', name: 'radar_analyzer',  version: 'v3', env: 'produção', author: 'sistema',               updated: '2026-07-20' },
@@ -11,9 +12,7 @@ const prompts = [
 
 export default function PlatformAIPromptsPage() {
   return (
-    <PlatformShell breadcrumb={[{ label: 'Registro de Prompts' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
-        <h1 className="text-24 font-bold text-eggshell">Registro de Prompts</h1>
+    <PlatformShell breadcrumb={[{ label: 'Registro <PlatformPageHeader kicker="Platform · AI Prompts" title="Registro de Prompts" />     <h1 className="text-24 font-bold text-eggshell">Registro de Prompts</h1>
 
         <div className="bg-graphite border border-line rounded-xl overflow-hidden">
           <div className="overflow-x-auto">

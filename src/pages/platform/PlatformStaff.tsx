@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { DataTable } from '@/components/data/DataTable';
 
 export default function PlatformStaffPage() {
@@ -17,9 +18,7 @@ export default function PlatformStaffPage() {
   ];
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Platform Staff' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
-        <h1 className="text-24 font-bold text-eggshell">Equipe Plataforma</h1>
+    <PlatformShell breadcrumb={[{ label: 'Plat<PlatformPageHeader kicker="Platform · IAM" title="Equipe Plataforma" />       <h1 className="text-24 font-bold text-eggshell">Equipe Plataforma</h1>
         <DataTable data={staff} columns={columns} />
       </div>
     </PlatformShell>

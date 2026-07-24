@@ -1,12 +1,11 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { Settings, Database, Shield, Bell } from 'lucide-react';
 
 export default function PlatformSettingsPage() {
   return (
-    <PlatformShell breadcrumb={[{ label: 'Platform Settings' }]}>
-      <div className="max-w-4xl mx-auto space-y-6">
-        <h1 className="text-24 font-bold text-eggshell">Platform Settings</h1>
+    <PlatformShell breadcrumb={[{ label: 'Platfor<PlatformPageHeader kicker="Platform · Settings" title="Platform Settings" />       <h1 className="text-24 font-bold text-eggshell">Platform Settings</h1>
 
         <div className="bg-graphite border border-line rounded-xl p-6 space-y-6">
           <div className="flex items-center gap-3">

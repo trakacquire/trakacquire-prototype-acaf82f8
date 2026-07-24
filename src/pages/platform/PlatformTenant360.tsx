@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useState } from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { db } from '@/lib/fake/db';
 import { useAppState } from '@/lib/context/AppStateContext';
 import { UserCircle } from 'lucide-react';
@@ -11,7 +12,7 @@ import { StatusChip } from '@/components/domain/StatusChip';
 import type { EventStatus } from '@/lib/types';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function ProgressBar({ value, max, color = '#7C91FF' }: { value: number; max: number; color?: string }) {
+function ProgressBar({ value, max, color = 'var(--proof-blue)' }: { value: number; max: number; color?: string }) {
   const pct = max <= 0 ? 100 : Math.min(100, (value / max) * 100);
   return (
     <div className="w-full h-2 bg-zinc rounded-full overflow-hidden">
@@ -176,9 +177,7 @@ export default function PlatformTenant360Page({ params }: { params: { id: string
     <PlatformShell breadcrumb={[{ label: 'Tenants', href: '/platform/tenants' }, { label: tenant.name }]}>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="bg-graphite border border-line rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1 className="text-24 font-bold text-eggshell">{tenant.name}</h1>
+        <div className="bg-graphite border border-line rounded-xl p-6 flex flex-col md:flex-row jus<PlatformPageHeader kicker="Platform · Tenant 360" title="{tenant.name}" />           <h1 className="text-24 font-bold text-eggshell">{tenant.name}</h1>
             <div className="flex items-center gap-3 mt-2 flex-wrap">
               <span className="inline-flex items-center px-2 py-0.5 rounded border border-line bg-zinc text-11 uppercase font-bold text-stone">
                 {plan}

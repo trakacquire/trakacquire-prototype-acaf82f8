@@ -1,11 +1,10 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 
 export default function PlatformStatusPage() {
   return (
-    <PlatformShell breadcrumb={[{ label: 'Status Page Control' }]}>
-      <div className="max-w-3xl mx-auto space-y-6">
-        <h1 className="text-24 font-bold text-eggshell mb-6">Status Page Control</h1>
+    <PlatformShell breadcrumb={[{ label: 'Status Pa<PlatformPageHeader kicker="Platform · Status" title="Status Page Control" /><h1 className="text-24 font-bold text-eggshell mb-6">Status Page Control</h1>
         
         <div className="bg-graphite border border-line rounded-xl p-6">
           <h2 className="text-18 font-medium text-eggshell mb-4">Publicar Atualização Pública</h2>

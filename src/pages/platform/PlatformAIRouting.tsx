@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { toast } from 'sonner';
 
 interface RoutingRow {
@@ -40,9 +41,7 @@ export default function PlatformAIRoutingPage() {
 
   return (
     <PlatformShell breadcrumb={[{ label: 'Roteamento de IA' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-24 font-bold text-eggshell">Roteamento de Modelos de IA</h1>
+      <div className="max-w-7xl mx-auto space<PlatformPageHeader kicker="Platform · AI Routing" title="Roteamento de Modelos de IA" /> className="text-24 font-bold text-eggshell">Roteamento de Modelos de IA</h1>
           <button
             onClick={handleSaveAll}
             className="px-4 py-2 rounded-md text-14 font-medium bg-eggshell text-ink hover:bg-white transition-colors"

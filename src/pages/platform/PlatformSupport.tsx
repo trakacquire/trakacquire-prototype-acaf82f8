@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { DataTable } from '@/components/data/DataTable';
 import { MessageSquare, Clock, CheckCircle2 } from 'lucide-react';
 
@@ -64,9 +65,7 @@ export default function PlatformSupportPage() {
   ];
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Support' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
-        <h1 className="text-24 font-bold text-eggshell">Support & Changelog</h1>
+    <PlatformShell breadcrumb={[{ label<PlatformPageHeader kicker="Platform · Support" title="Support & Changelog" />     <h1 className="text-24 font-bold text-eggshell">Support & Changelog</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-graphite border border-line rounded-xl p-4">

@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { db } from '@/lib/fake/db';
 import { StatusChip } from '@/components/domain/StatusChip';
 import type { EventStatus } from '@/lib/types';
@@ -39,8 +40,7 @@ export default function PlatformInvoicesPage() {
   }
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Faturas' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
+    <PlatformShell breadcrumb={[{ label<PlatformPageHeader kicker="Platform · Finance" title="Faturas" />ce-y-6">
         <h1 className="text-24 font-bold text-eggshell">Faturas</h1>
 
         {/* Stat card */}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { db } from '@/lib/fake/db';
 import { StatusChip } from '@/components/domain/StatusChip';
 import type { EventStatus } from '@/lib/types';
@@ -19,9 +20,7 @@ export default function PlatformAPIsPage() {
   }
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Registro de APIs' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
-        <h1 className="text-24 font-bold text-eggshell">Registro de APIs</h1>
+    <PlatformShell breadcrumb={[{ label: 'Regist<PlatformPageHeader kicker="Platform · API Surface" title="Registro de APIs" />        <h1 className="text-24 font-bold text-eggshell">Registro de APIs</h1>
 
         {/* Stat card */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

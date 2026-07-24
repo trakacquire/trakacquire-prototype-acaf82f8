@@ -1,12 +1,10 @@
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 
 export default function PlatformCommandPage() {
   return (
-    <AppShell breadcrumb={[{ label: 'Platform Admin', href: '/platform' }, { label: 'Command' }]}>
-      <div className="max-w-7xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-24 font-bold text-eggshell mb-2">Platform Command</h1>
+    <AppShell breadcrumb={[{ label: 'Platform Admin', href: '/platform' }, { label: 'Command' }]}><PlatformPageHeader kicker="Platform · Overview" title="Platform Command" />   <h1 className="text-24 font-bold text-eggshell mb-2">Platform Command</h1>
           <p className="text-14 text-stone">Visão global da infraestrutura SaaS.</p>
         </div>
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { DataTable } from '@/components/data/DataTable';
 
 export default function PlatformCompliancePage() {
@@ -16,8 +17,7 @@ export default function PlatformCompliancePage() {
   ];
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Compliance & DSR' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
+    <PlatformShell breadcrumb={[{ label: 'Compli<PlatformPageHeader kicker="Platform · Compliance" title="Compliance" />y-6">
         <h1 className="text-24 font-bold text-eggshell">Compliance</h1>
         
         <div>

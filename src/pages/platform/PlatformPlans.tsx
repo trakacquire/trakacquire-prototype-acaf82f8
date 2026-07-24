@@ -1,13 +1,11 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { Check } from 'lucide-react';
 
 export default function PlatformPlansPage() {
   return (
-    <PlatformShell breadcrumb={[{ label: 'Plans' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-24 font-bold text-eggshell mb-2">Plans & Pricing</h1>
+    <PlatformShell breadcrumb={[{ label: 'Plans' }]}><PlatformPageHeader kicker="Platform · Billing" title="Plans & Pricing" />    <h1 className="text-24 font-bold text-eggshell mb-2">Plans & Pricing</h1>
           <p className="text-14 text-stone">Configuração dos pacotes oferecidos aos tenants.</p>
         </div>
 
