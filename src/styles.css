@@ -137,7 +137,7 @@
 
   --sidebar: var(--iron);
   --sidebar-foreground: var(--eggshell);
-  --sidebar-border: var(--line);
+  --sidebar-border: var(--eggshell) / 0.06;
 
   --chart-1: var(--proof-blue);
   --chart-2: var(--verified);
