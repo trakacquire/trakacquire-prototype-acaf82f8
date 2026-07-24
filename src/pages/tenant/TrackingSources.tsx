@@ -1,253 +1,111 @@
-import React from 'react';
-import { AppShell } from '@/components/layout/AppShell';
-import { DataTable } from '@/components/data/DataTable';
+import React, { useMemo } from 'react';
+import { AppShell, useEvidence } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { FreshnessTag } from '@/components/data/FreshnessTag';
+import { MetricValue } from '@/components/data/MetricValue';
 import { StatusChip } from '@/components/domain/StatusChip';
-import { db } from '@/lib/fake/db';
-import type { EventStatus } from '@/lib/fake/db';
+import { DataTable, ColumnDef } from '@/components/data/DataTable';
+import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
+import { buildEvidence } from '@/lib/evidence';
+import { revenueBySource, spendForPeriod, metricsForPeriod } from '@/lib/fake/db';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-const fmtMoney = (v: number) =>
-  'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-const SOURCE_ICON: Record<string, string> = {
-  meta: '📘',
-  tiktok: '🎵',
-  organic: '🌱',
-  orphan: '👻',
-};
+interface SourceRow {
+  source: string;
+  platform: 'meta' | 'tiktok' | 'organic' | 'orphan';
+  macro: string;
+  spend: number;
+  ftds: number;
+  cpftd: number;
+  snapshotAt: string;
+  status: 'Confirmed' | 'Captured' | 'Orphan';
+}
 
 export default function TrackingSourcesPage() {
-  // Build source data dynamically from db
-  const srcData = [
-    {
-      source: 'meta',
-      label: 'Meta Ads',
-      persons: db.persons.filter(p => p.source === 'meta'),
-      links: db.links.filter(l =>
-        db.persons.filter(p => p.source === 'meta').some(p => p.campaign_id === l.campaign_id)
-      ),
-    },
-    {
-      source: 'tiktok',
-      label: 'TikTok Ads',
-      persons: db.persons.filter(p => p.source === 'tiktok'),
-      links: db.links.filter(l =>
-        db.persons.filter(p => p.source === 'tiktok').some(p => p.campaign_id === l.campaign_id)
-      ),
-    },
-    {
-      source: 'organic',
-      label: 'Orgânico',
-      persons: db.persons.filter(p => p.source === 'organic'),
-      links: [],
-    },
-    {
-      source: 'orphan',
-      label: 'Órfãos',
-      persons: db.persons.filter(p => p.is_orphan),
-      links: [],
-    },
-  ];
+  const { openEvidence } = useEvidence();
+  const isMobile = useIsMobile();
 
-  // Summary table rows
-  const summaryRows = srcData.map(s => {
-    const ftdsCount = s.persons.filter(p => p.ftd_at).length;
-    // Estimate spend for this source (meta/tiktok from spendForPeriod, others 0)
-    const spend30 = s.source === 'meta'
-      ? db.spendForPeriod(30).meta
-      : s.source === 'tiktok'
-      ? db.spendForPeriod(30).tiktok
-      : 0;
-    const cpftd = ftdsCount > 0 ? spend30 / ftdsCount : 0;
-    const activeLinks = s.links.filter(l => l.status === 'active').length;
-    const chipStatus: EventStatus = s.source === 'orphan' ? 'Orphan' : 'Confirmed';
-    return {
-      label: s.label,
-      source: s.source,
-      pessoas: s.persons.length,
-      ftds: ftdsCount,
-      linksAtivos: activeLinks,
-      cpftd,
-      chipStatus,
+  const rows: SourceRow[] = useMemo(() => {
+    const rev = revenueBySource(30);
+    const macros: Record<string, string> = {
+      'Meta Ads': 'utm_source=meta&utm_campaign={{campaign.name}}&fbclid={{fbclid}}',
+      'TikTok Ads': 'utm_source=tiktok&utm_campaign={{campaign.name}}&ttclid={{ttclid}}',
+      'Orgânico': 'utm_source=organic&utm_medium=bio',
+      'Orphan': '—',
     };
-  });
+    const plat: Record<string, SourceRow['platform']> = { 'Meta Ads': 'meta', 'TikTok Ads': 'tiktok', 'Orgânico': 'organic', 'Orphan': 'orphan' };
+    return rev.map((r) => ({
+      source: r.source,
+      platform: plat[r.source],
+      macro: macros[r.source],
+      spend: r.spend,
+      ftds: r.ftds,
+      cpftd: r.cpftd,
+      snapshotAt: '2026-07-22 04:00',
+      status: r.source === 'Orphan' ? 'Orphan' : r.ftds === 0 ? 'Captured' : 'Confirmed',
+    }));
+  }, []);
 
-  const summaryCols = [
-    {
-      header: 'Origem',
-      accessorKey: 'label' as const,
-      cell: (r: typeof summaryRows[0]) => (
-        <div className="flex items-center gap-2">
-          <span className="text-18">{SOURCE_ICON[r.source] ?? '•'}</span>
-          <span className="text-14 font-medium text-[var(--eggshell)]">{r.label}</span>
-        </div>
-      ),
-    },
-    {
-      header: 'Pessoas',
-      accessorKey: 'pessoas' as const,
-      cell: (r: typeof summaryRows[0]) => (
-        <span className="font-mono text-13">{r.pessoas.toLocaleString('pt-BR')}</span>
-      ),
-    },
-    {
-      header: 'FTDs',
-      accessorKey: 'ftds' as const,
-      cell: (r: typeof summaryRows[0]) => (
-        <span className="font-mono text-13 text-[var(--verified)]">{r.ftds}</span>
-      ),
-    },
-    {
-      header: 'Links Ativos',
-      accessorKey: 'linksAtivos' as const,
-      cell: (r: typeof summaryRows[0]) => (
-        <span className="font-mono text-13">{r.linksAtivos}</span>
-      ),
-    },
-    {
-      header: 'CPFTD',
-      accessorKey: 'cpftd' as const,
-      cell: (r: typeof summaryRows[0]) => (
-        <span className="font-mono text-13">
-          {r.cpftd > 0 ? fmtMoney(r.cpftd) : '—'}
-        </span>
-      ),
-    },
-    {
-      header: 'Status',
-      accessorKey: 'chipStatus' as const,
-      cell: (r: typeof summaryRows[0]) => <StatusChip status={r.chipStatus} />,
-    },
+  const spend = spendForPeriod(30);
+  const m30 = metricsForPeriod(30);
+
+  const columns: ColumnDef<SourceRow>[] = [
+    { header: 'Fonte', accessorKey: 'source', cell: (r) => (
+      <div className="flex flex-col">
+        <span className="text-13 font-semibold text-eggshell">{r.source}</span>
+        <span className="text-11 font-mono text-stone">{r.platform}</span>
+      </div>
+    ) },
+    { header: 'Template de macro', accessorKey: 'macro', cell: (r) => (
+      <code className="font-mono text-11 text-eggshell truncate block max-w-[320px]">{r.macro}</code>
+    ), className: isMobile ? 'hidden' : '' },
+    { header: 'Status', accessorKey: 'status', cell: (r) => <StatusChip status={r.status} /> },
+    { header: 'Investimento', accessorKey: 'spend', cell: (r) => (
+      <MetricValue value={`R$ ${r.spend.toLocaleString('pt-BR')}`} size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: `Spend · ${r.source}`, value: `R$ ${r.spend.toLocaleString('pt-BR')}`, formula: 'spendForPeriod(30).' + r.platform, source: 'Plataforma (snapshot D+2)', freshness: 'snapshot 2026-07-22 04:00 · congelado', state: 'Reconciliado' }))} />
+    ), className: 'text-right' },
+    { header: 'FTDs', accessorKey: 'ftds', cell: (r) => (
+      <MetricValue value={r.ftds.toLocaleString('pt-BR')} size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: `FTDs · ${r.source}`, value: r.ftds.toLocaleString('pt-BR'), formula: 'revenueBySource(30).ftds', source: 'TAP postback' }))} />
+    ), className: 'text-right' },
+    { header: 'CPFTD', accessorKey: 'cpftd', cell: (r) => (
+      <MetricValue value={r.cpftd > 0 ? `R$ ${r.cpftd.toLocaleString('pt-BR')}` : '—'} size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: `CPFTD · ${r.source}`, value: `R$ ${r.cpftd.toLocaleString('pt-BR')}`, formula: 'spend / ftds', source: 'Cross · plataforma × TAP' }))} />
+    ), className: 'text-right' },
   ];
 
-  // Links table
-  type LinkRow = typeof db.links[0];
-
-  const linkCols = [
-    {
-      header: 'ID',
-      accessorKey: 'id' as const,
-      cell: (l: LinkRow) => (
-        <span className="font-mono text-12 text-[var(--stone)]">{l.id}</span>
-      ),
-    },
-    {
-      header: 'Nome',
-      accessorKey: 'name' as const,
-      cell: (l: LinkRow) => (
-        <span className="text-14 text-[var(--eggshell)]">{l.name}</span>
-      ),
-    },
-    {
-      header: 'URL',
-      accessorKey: 'url' as const,
-      cell: (l: LinkRow) => (
-        <span className="font-mono text-12 text-[var(--proof-blue)] truncate max-w-[180px] block">{l.url}</span>
-      ),
-    },
-    {
-      header: 'Cliques',
-      accessorKey: 'clicks' as const,
-      cell: (l: LinkRow) => (
-        <span className="font-mono text-13">{l.clicks.toLocaleString('pt-BR')}</span>
-      ),
-    },
-    {
-      header: 'Registros',
-      accessorKey: 'registrations' as const,
-      cell: (l: LinkRow) => (
-        <span className="font-mono text-13">{l.registrations.toLocaleString('pt-BR')}</span>
-      ),
-    },
-    {
-      header: 'FTDs',
-      accessorKey: 'ftds' as const,
-      cell: (l: LinkRow) => (
-        <span className="font-mono text-13 text-[var(--verified)]">{l.ftds}</span>
-      ),
-    },
-    {
-      header: 'Criado',
-      accessorKey: 'created_at' as const,
-      cell: (l: LinkRow) => (
-        <span className="text-13 text-[var(--stone)]">
-          {new Date(l.created_at).toLocaleDateString('pt-BR')}
-        </span>
-      ),
-    },
-    {
-      header: 'Status',
-      accessorKey: 'status' as const,
-      cell: (l: LinkRow) => {
-        const s =
-          l.status === 'active' ? 'Confirmed'
-          : l.status === 'paused' ? 'Divergent'
-          : 'Orphan';
-        return <StatusChip status={s as any} />;
-      },
-    },
-  ];
-
-  // Cards for each source
   return (
-    <AppShell breadcrumb={[{ label: 'Rastreamento', href: '/tracking' }, { label: 'Origens' }]}>
+    <AppShell breadcrumb={[{ label: 'Connect', href: '/integrations' }, { label: 'Tracking', href: '/tracking' }, { label: 'Fontes &amp; custos' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Page title */}
-        <div>
-          <h1 className="text-24 font-bold text-[var(--eggshell)] mb-1">Origens de Rastreamento</h1>
-          <p className="text-13 text-[var(--stone)]">Distribuição de pessoas, FTDs e links por origem de tráfego</p>
-        </div>
+        <header>
+          <div className="flex items-center gap-3 mb-2 flex-wrap">
+            <span className="text-14 font-serif italic text-stone leading-none">Connect · Fontes &amp; custos</span>
+            <PreviewBadge />
+            <FreshnessTag ageSeconds={60 * 60 * 32} source="Snapshot D+2 · Meta/TikTok Ads" />
+            <StateShowcase />
+          </div>
+          <h1 className="text-eggshell font-sans font-semibold tracking-tight text-24">Custo por fonte, com snapshot congelado.</h1>
+          <p className="text-stone text-13 mt-2 max-w-xl">Templates de macro por plataforma e snapshot diário D+2. Não confunda com Analytics: aqui o número é o que a plataforma reportou, não o que reconciliamos com o Ledger.</p>
+        </header>
 
-        {/* Source cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {srcData.map(s => {
-            const ftdsCount = s.persons.filter(p => p.ftd_at).length;
-            const spend30 = s.source === 'meta'
-              ? db.spendForPeriod(30).meta
-              : s.source === 'tiktok'
-              ? db.spendForPeriod(30).tiktok
-              : 0;
-            const cpftd = ftdsCount > 0 ? spend30 / ftdsCount : 0;
-            return (
-              <div key={s.source} className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-4 space-y-2">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-20">{SOURCE_ICON[s.source] ?? '•'}</span>
-                  <span className="text-14 font-medium text-[var(--eggshell)]">{s.label}</span>
-                </div>
-                <div className="flex justify-between text-13">
-                  <span className="text-[var(--stone)]">Pessoas</span>
-                  <span className="font-mono text-[var(--eggshell)]">{s.persons.length.toLocaleString('pt-BR')}</span>
-                </div>
-                <div className="flex justify-between text-13">
-                  <span className="text-[var(--stone)]">FTDs</span>
-                  <span className="font-mono text-[var(--verified)]">{ftdsCount}</span>
-                </div>
-                <div className="flex justify-between text-13">
-                  <span className="text-[var(--stone)]">CPFTD</span>
-                  <span className="font-mono text-[var(--eggshell)]">{cpftd > 0 ? fmtMoney(cpftd) : '—'}</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <ScenarioStateGate emptyTitle="Nenhuma fonte configurada">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <KPI label="Investimento total" value={`R$ ${spend.total.toLocaleString('pt-BR')}`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Investimento 30d', value: `R$ ${spend.total.toLocaleString('pt-BR')}`, formula: 'meta + tiktok', source: 'Plataformas de mídia' }))} />
+            <KPI label="Meta" value={`R$ ${spend.meta.toLocaleString('pt-BR')}`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Meta spend', value: `R$ ${spend.meta.toLocaleString('pt-BR')}`, formula: 'sum(daily_spend.meta) 30d', source: 'Meta Ads API' }))} />
+            <KPI label="TikTok" value={`R$ ${spend.tiktok.toLocaleString('pt-BR')}`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'TikTok spend', value: `R$ ${spend.tiktok.toLocaleString('pt-BR')}`, formula: 'sum(daily_spend.tiktok) 30d', source: 'TikTok Ads API' }))} />
+            <KPI label="CPFTD global" value={`R$ ${m30.cpftd.toLocaleString('pt-BR')}`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'CPFTD global', value: `R$ ${m30.cpftd.toLocaleString('pt-BR')}`, formula: 'total_spend / ftds', source: 'Command canônico' }))} />
+          </div>
 
-        {/* Summary table */}
-        <div>
-          <h2 className="text-16 font-medium text-[var(--eggshell)] mb-3">Resumo por Origem</h2>
-          <DataTable data={summaryRows} columns={summaryCols} searchPlaceholder="Filtrar origens..." />
-        </div>
-
-        {/* All links table */}
-        <div>
-          <h2 className="text-16 font-medium text-[var(--eggshell)] mb-3">Links de Rastreamento</h2>
-          {db.links.length > 0 ? (
-            <DataTable data={db.links} columns={linkCols} searchPlaceholder="Buscar links..." />
-          ) : (
-            <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl py-12 text-center">
-              <p className="text-14 text-[var(--stone)]">Nenhum link de rastreamento cadastrado.</p>
-            </div>
-          )}
-        </div>
+          <DataTable data={rows} columns={columns} />
+        </ScenarioStateGate>
       </div>
     </AppShell>
+  );
+}
+
+function KPI({ label, value, tone = 'default', onOpenEvidence }: { label: string; value: string; tone?: 'default' | 'verified' | 'warning' | 'critical'; onOpenEvidence?: () => void }) {
+  const cls = tone === 'verified' ? 'text-verified' : tone === 'warning' ? 'text-warning' : tone === 'critical' ? 'text-critical' : 'text-eggshell';
+  return (
+    <button type="button" onClick={onOpenEvidence} className="text-left rounded-xl border border-line bg-graphite hover:border-stone transition-colors p-4">
+      <div className="text-11 font-mono uppercase tracking-wider text-stone mb-2">{label}</div>
+      <div className={`font-mono tabular-nums text-24 leading-none font-semibold ${cls}`}>{value}</div>
+    </button>
   );
 }

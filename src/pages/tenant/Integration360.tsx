@@ -1,380 +1,478 @@
-// @ts-nocheck
-import React, { useState } from 'react';
-import { AppShell } from '@/components/layout/AppShell';
-import { useParams } from 'wouter';
-import { db } from '@/lib/fake/db';
-import { useAppState } from '@/lib/context/AppStateContext';
-import { toast } from 'sonner';
-import ConfirmDialog from '@/components/domain/ConfirmDialog';
+import React, { useMemo, useState } from 'react';
+import { useParams, Link } from 'wouter';
+import { AppShell, useEvidence } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { FreshnessTag } from '@/components/data/FreshnessTag';
+import { MetricValue } from '@/components/data/MetricValue';
+import { IntegrationStateBadge } from '@/components/data/IntegrationStateBadge';
 import { StatusChip } from '@/components/domain/StatusChip';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { RefreshCw } from 'lucide-react';
+import { DataTable, ColumnDef } from '@/components/data/DataTable';
+import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
+import { buildEvidence } from '@/lib/evidence';
+import { db, SignalEvent } from '@/lib/fake/db';
+import { useIsMobile } from '@/hooks/use-mobile';
+import type { IntegrationState } from '@/lib/types';
+import { Copy, Check } from 'lucide-react';
 
-const fmtDate = (iso: string | undefined) => iso ? new Date(iso).toLocaleDateString('pt-BR') : '—';
-const fmtDT = (iso: string) => new Date(iso).toLocaleString('pt-BR');
+type Tab = 'visao' | 'setup' | 'eventos' | 'saude' | 'logs' | 'historico';
 
-function relativeTime(iso: string): string {
-  const diff = (new Date('2026-07-23T12:00:00.000Z').getTime() - new Date(iso).getTime()) / 1000;
+interface IntegrationConfig {
+  id: string;
+  name: string;
+  category: string;
+  state: IntegrationState;
+  adapterVersion: string;
+  scopes: string[];
+  endpoint: string;
+  credentials: Array<{ label: string; masked: string }>;
+  eventTypes: string[];
+  setupSteps: Array<{ label: string; description: string; test: string; done: boolean; evidence?: string }>;
+  special?: 'tap' | 'meta' | 'telegram';
+}
+
+const CONFIGS: Record<string, IntegrationConfig> = {
+  tap: {
+    id: 'tap', name: 'TAP', category: 'Provedor de Receita', state: 'production', adapterVersion: '2.1.0',
+    scopes: ['deposits:read', 'withdrawals:read', 'reports:read', 'postbacks:write'],
+    endpoint: 'https://api.tap.bet/v2',
+    credentials: [
+      { label: 'Client ID', masked: 'tap_cli_••••••••••••3f2a' },
+      { label: 'Client Secret', masked: '••••••••••••••••••••7f11' },
+      { label: 'Postback signing secret', masked: 'sig_••••••••••••••ce93' },
+    ],
+    eventTypes: ['ftd', 'deposit', 'withdrawal', 'postback'],
+    setupSteps: [
+      { label: 'Registrar aplicação no TAP', description: 'Criar OAuth app com escopo mínimo (deposits/withdrawals/reports).', test: 'Ping /v2/health', done: true, evidence: '200 OK · 87ms · 2026-07-22 09:11' },
+      { label: 'Configurar URL de postback', description: 'Copiar a URL abaixo e colar no painel TAP → Webhooks.', test: 'Enviar postback de teste', done: true, evidence: 'Postback recebido e assinado · sig OK' },
+      { label: 'Habilitar reconciliação com Reporting API', description: 'Cronjob a cada 15 min compara postback × Reporting API.', test: 'Job piloto (24h)', done: true, evidence: '96 batches · 0 divergências · última: 2026-07-23 11:52' },
+      { label: 'Promover adapter a Production', description: 'Aprovação do Approval Center + trava de policy engine.', test: 'Policy check', done: true, evidence: 'Aprovado por João Oliveira · 2026-07-15' },
+    ],
+    special: 'tap',
+  },
+  meta: {
+    id: 'meta', name: 'Meta CAPI', category: 'Aquisição', state: 'production', adapterVersion: '17.0.4',
+    scopes: ['ads_management', 'business_management', 'catalog_management'],
+    endpoint: 'https://graph.facebook.com/v17.0',
+    credentials: [
+      { label: 'Business Manager ID', masked: 'bm_••••••••7712' },
+      { label: 'Pixel ID', masked: 'px_••••••••3401' },
+      { label: 'System User Token', masked: 'EAAB••••••••••••••••••gZDZD' },
+    ],
+    eventTypes: ['capi', 'click'],
+    setupSteps: [
+      { label: 'Conectar Business Manager', description: 'OAuth com system user token de longa duração.', test: 'GET /me/businesses', done: true, evidence: 'BM identificado · 1 pixel ativo' },
+      { label: 'Escolher pixel + Dataset', description: 'Pixel 340124… linkado ao Dataset CAPI.', test: 'Test event helper', done: true, evidence: 'Test event 200 · match quality 8.4/10' },
+      { label: 'Mapear parâmetros de matching', description: 'fbc, fbp, em (SHA-256), ph (SHA-256) — liga/desliga por campo.', test: 'Cobertura por evento', done: true, evidence: '78 eventos · fbc 100% · em 92% · ph 61%' },
+      { label: 'Deduplicação pixel × CAPI', description: 'event_id compartilhado nos dois canais.', test: 'Deduplication rate', done: true, evidence: 'Dedup 97.3% · sem eventos órfãos' },
+    ],
+    special: 'meta',
+  },
+  telegram: {
+    id: 'telegram', name: 'Telegram Bot', category: 'Mensageria', state: 'production', adapterVersion: '6.0.1',
+    scopes: ['bot:send', 'bot:receive', 'chat:members:read'],
+    endpoint: 'https://api.telegram.org',
+    credentials: [
+      { label: 'Bot Token', masked: '78••••••••••••••••••••RcAB' },
+      { label: 'Webhook Secret', masked: 'wh_••••••••••••••••bE21' },
+    ],
+    eventTypes: ['bot_message', 'conversation_start'],
+    setupSteps: [
+      { label: 'Criar bot no @BotFather', description: 'Nome, handle, comandos e privacidade.', test: 'GET /getMe', done: true, evidence: '@operacaobr_bot ativo' },
+      { label: 'Registrar webhook', description: 'setWebhook com secret_token para validar chamadas.', test: 'GET /getWebhookInfo', done: true, evidence: 'pending_update_count = 0' },
+      { label: 'Gerar deep links ?start=', description: 'Um link por campanha; carrega click_id opaco.', test: 'Deep link gerador', done: true, evidence: '4 links ativos · último gerado hoje' },
+      { label: 'Habilitar reply automation', description: 'Fluxo Boas-vindas FTD assumindo a conversa.', test: 'Fluxo piloto (24h)', done: true, evidence: '312 conversas · CTR 41%' },
+    ],
+    special: 'telegram',
+  },
+  tiktok: {
+    id: 'tiktok', name: 'TikTok Events', category: 'Aquisição', state: 'pilot', adapterVersion: '1.3.2',
+    scopes: ['events:write', 'ads:read'],
+    endpoint: 'https://business-api.tiktok.com/open_api/v1.3',
+    credentials: [
+      { label: 'Access Token', masked: 'tt_••••••••••••••••dd12' },
+      { label: 'Pixel Code', masked: 'C0O••••••••••••7' },
+    ],
+    eventTypes: ['click'],
+    setupSteps: [
+      { label: 'Autorizar app', description: 'OAuth business API.', test: 'GET /oauth2/access_token', done: true, evidence: '200 OK' },
+      { label: 'Configurar Pixel', description: 'Vincular pixel code ao adapter.', test: 'Ping /event/track/', done: true, evidence: '202 aceito' },
+      { label: 'Mapear parâmetros', description: 'click_id (ttclid), user props.', test: 'Cobertura', done: true, evidence: 'ttclid 94%' },
+      { label: 'Promover a Production', description: 'Depende de 7d sem erros.', test: 'Erros últimos 7d', done: false, evidence: '5 erros em 24h · aguardando 7d limpos' },
+    ],
+  },
+  betano: {
+    id: 'betano', name: 'Betano', category: 'Provedor de Receita', state: 'sandbox', adapterVersion: '1.0.0-rc.3',
+    scopes: ['deposits:read'],
+    endpoint: 'https://sandbox.betano.dev/v1',
+    credentials: [{ label: 'API Key', masked: 'bn_sbx_••••••••••••abcd' }],
+    eventTypes: ['ftd'],
+    setupSteps: [
+      { label: 'Solicitar credenciais sandbox', description: 'Formulário assinado enviado ao TAM.', test: 'E-mail confirmado', done: true, evidence: 'ticket #BN-1091' },
+      { label: 'Rodar suíte de conformidade', description: '38 endpoints obrigatórios.', test: 'Suite v1.0', done: false, evidence: '24/38 verdes · 14 pendentes' },
+      { label: 'Aprovação Approval Center', description: 'Promoção sandbox → pilot.', test: 'Aprovação', done: false },
+      { label: 'Promoção a Production', description: 'Após 30d de pilot sem incidentes.', test: '—', done: false },
+    ],
+  },
+};
+
+function relativeTime(iso: string, now = new Date('2026-07-23T12:00:00.000Z')): string {
+  const diff = (now.getTime() - new Date(iso).getTime()) / 1000;
   if (diff < 60) return `${Math.floor(diff)}s atrás`;
   if (diff < 3600) return `${Math.floor(diff / 60)}min atrás`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h atrás`;
   return `${Math.floor(diff / 86400)}d atrás`;
 }
 
-type Tab = 'visao_geral' | 'configuracao' | 'eventos' | 'saude' | 'historico';
-
 export default function Integration360Page() {
   const params = useParams<{ id: string }>();
-  const integrationId = params.id || 'tap';
-  const { dispatch } = useAppState();
+  const { openEvidence } = useEvidence();
+  const isMobile = useIsMobile();
+  const config = CONFIGS[params.id || 'tap'] ?? CONFIGS.tap;
+  const [tab, setTab] = useState<Tab>('visao');
+  const [copied, setCopied] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<Tab>('visao_geral');
-  const [connected, setConnected] = useState(true);
-  const [disconnectOpen, setDisconnectOpen] = useState(false);
+  const events = useMemo(() => db.events.filter((e) => config.eventTypes.includes(e.type)).slice(0, 40), [config]);
+  const p95 = useMemo(() => {
+    const s = events.map((e) => e.latency_ms).sort((a, b) => a - b);
+    return s[Math.floor(s.length * 0.95)] ?? 0;
+  }, [events]);
+  const errors = events.filter((e) => e.status === 'Failed').length;
+  const health = events.length ? ((events.length - errors) / events.length) * 100 : 100;
 
-  type IntegrationConfig = {
-    name: string;
-    category: string;
-    version: string;
-    endpoint: string;
-    health: number;
-    errors24h: number;
-    lastSync: string | undefined;
+  const postbackUrl = `https://ingest.trakacquire.com/webhook/${config.id}/${'p_' + config.id.slice(0,3)}f1a2b3c4`;
+
+  const copy = (v: string, key: string) => {
+    navigator.clipboard.writeText(v);
+    setCopied(key);
+    setTimeout(() => setCopied(null), 1500);
   };
 
-  const configs: Record<string, IntegrationConfig> = {
-    tap: {
-      name: 'TAP',
-      category: 'Provedor de Receita',
-      version: 'v2.1',
-      endpoint: 'https://api.tap.bet/v2/postback',
-      health: 98.7,
-      errors24h: 2,
-      lastSync: db.events.filter(e => e.type === 'ftd').slice(-1)[0]?.timestamp,
-    },
-    meta: {
-      name: 'Meta CAPI',
-      category: 'Aquisição',
-      version: 'v17.0',
-      endpoint: 'https://graph.facebook.com/v17.0/events',
-      health: 99.2,
-      errors24h: 0,
-      lastSync: db.events.filter(e => e.type === 'capi').slice(-1)[0]?.timestamp,
-    },
-    tiktok: {
-      name: 'TikTok Events',
-      category: 'Aquisição',
-      version: 'v1.3',
-      endpoint: 'https://business-api.tiktok.com/open_api/v1.3/event/track/',
-      health: 97.1,
-      errors24h: 5,
-      lastSync: db.events.filter(e => e.type === 'click').slice(-1)[0]?.timestamp,
-    },
-    telegram: {
-      name: 'Telegram Bot',
-      category: 'Mensageria',
-      version: 'v6.0',
-      endpoint: 'https://api.telegram.org/bot{token}/sendMessage',
-      health: 99.9,
-      errors24h: 0,
-      lastSync: db.events.filter(e => e.type === 'bot_message').slice(-1)[0]?.timestamp,
-    },
-  };
-
-  const config: IntegrationConfig = configs[integrationId] ?? configs.tap;
-
-  const recentEvents = db.events.filter(e => {
-    if (integrationId === 'tap') return e.type === 'ftd' || e.type === 'deposit';
-    if (integrationId === 'meta') return e.type === 'capi';
-    if (integrationId === 'tiktok') return e.type === 'click';
-    if (integrationId === 'telegram') return e.type === 'bot_message';
-    return false;
-  }).slice(0, 20);
-
-  // Health chart: seed 7 values from integrationId
-  const healthSeed = integrationId.split('').reduce((s, c) => s + c.charCodeAt(0), 0);
-  const healthData = Array.from({ length: 7 }, (_, i) => {
-    const base = config.health;
-    const jitter = ((healthSeed * (i + 1)) % 30) / 10 - 1.5;
-    return {
-      dia: `D-${6 - i}`,
-      saude: Math.min(100, Math.max(90, +(base + jitter).toFixed(1))),
-    };
-  });
-
-  // Historical log entries
-  const histLog = [
-    { at: '2026-07-22T10:00:00Z', acao: 'Integração conectada', detalhe: `${config.name} conectada com sucesso`, tipo: 'sucesso' },
-    { at: '2026-07-20T14:30:00Z', acao: 'Sincronização automática', detalhe: '248 eventos sincronizados', tipo: 'info' },
-    { at: '2026-07-19T09:15:00Z', acao: 'Teste de webhook', detalhe: 'Payload de teste enviado e recebido com sucesso', tipo: 'sucesso' },
-    { at: '2026-07-18T16:45:00Z', acao: 'Configuração atualizada', detalhe: 'Endpoint atualizado para nova versão', tipo: 'info' },
-    { at: '2026-07-15T08:00:00Z', acao: 'Alerta de latência', detalhe: 'Latência acima de 2000ms detectada por 5 min', tipo: 'aviso' },
+  const eventColumns: ColumnDef<SignalEvent>[] = [
+    { header: 'ID', accessorKey: 'id', cell: (e) => <Link href={`/ledger/${e.id}`} className="font-mono text-11 text-proof-blue hover:underline">{e.id}</Link> },
+    { header: 'Tipo', accessorKey: 'type', cell: (e) => <span className="font-mono text-11 text-eggshell">{e.type}</span> },
+    { header: 'Status', accessorKey: 'status', cell: (e) => <StatusChip status={e.status} /> },
+    { header: 'Pessoa', accessorKey: 'person_id', cell: (e) => <Link href={`/identity/${e.person_id}`} className="font-mono text-11 text-proof-blue hover:underline">{e.person_id}</Link>, className: isMobile ? 'hidden' : '' },
+    { header: 'Latência', accessorKey: 'latency_ms', cell: (e) => <span className="font-mono text-11 text-stone tabular-nums">{e.latency_ms}ms</span>, className: 'text-right' },
+    { header: 'Quando', accessorKey: 'timestamp', cell: (e) => <span className="font-mono text-11 text-stone tabular-nums">{relativeTime(e.timestamp)}</span>, className: 'text-right' },
   ];
 
-  const typeChipLabel = (type: string) => {
-    const map: Record<string, string> = {
-      ftd: 'FTD', deposit: 'Depósito', capi: 'CAPI', click: 'Clique',
-      bot_message: 'Bot', postback: 'Postback', register: 'Registro',
-      webhook: 'Webhook', withdrawal: 'Saque',
-    };
-    return map[type] ?? type;
-  };
-
-  const handleSync = () => {
-    toast('Sincronização iniciada…');
-    setTimeout(() => toast.success('Sincronização concluída.'), 2000);
-  };
-
-  const handleDisconnect = (reason?: string) => {
-    setConnected(false);
-    toast('Integração desconectada.');
-    dispatch({
-      type: 'APPEND_AUDIT',
-      entry: {
-        timestamp: new Date().toISOString(),
-        user: 'João Oliveira',
-        action: 'Integração desconectada',
-        object: config.name,
-        detail: reason ?? 'Desconectado manualmente.',
-      },
-    });
-  };
-
-  const tooltipStyle = {
-    contentStyle: {
-      background: 'var(--graphite)',
-      border: '1px solid var(--line)',
-      color: 'var(--eggshell)',
-      borderRadius: '8px',
-    },
-  };
-
-  const tabs: { id: Tab; label: string }[] = [
-    { id: 'visao_geral', label: 'Visão Geral' },
-    { id: 'configuracao', label: 'Configuração' },
+  const tabs: Array<{ id: Tab; label: string }> = [
+    { id: 'visao', label: 'Visão' },
+    { id: 'setup', label: 'Setup guiado' },
     { id: 'eventos', label: 'Eventos' },
     { id: 'saude', label: 'Saúde' },
+    { id: 'logs', label: 'Logs' },
     { id: 'historico', label: 'Histórico' },
   ];
 
   return (
-    <AppShell breadcrumb={[{ label: 'Integrações', href: '/integrations' }, { label: config.name }]}>
+    <AppShell breadcrumb={[{ label: 'Connect', href: '/integrations' }, { label: 'Integrações', href: '/integrations' }, { label: config.name }]}>
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-6 flex flex-col md:flex-row justify-between items-start gap-4">
+        <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
           <div>
-            <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-24 font-bold text-[var(--eggshell)]">{config.name}</h1>
-              <StatusChip status={connected ? 'Confirmed' : 'Orphan'} />
+            <div className="flex items-center gap-3 mb-2 flex-wrap">
+              <span className="text-14 font-serif italic text-stone leading-none">Connect · {config.category}</span>
+              <PreviewBadge />
+              <IntegrationStateBadge state={config.state} adapterVersion={config.adapterVersion} />
+              <FreshnessTag ageSeconds={events[0] ? Math.max(1, Math.round((Date.now() - new Date(events[0].timestamp).getTime()) / 1000)) : 999999} source={`Adapter ${config.name}`} />
+              <StateShowcase />
             </div>
-            <div className="text-13 text-[var(--stone)]">{config.category} · {config.version}</div>
+            <h1 className="text-eggshell font-sans font-semibold tracking-tight text-24">{config.name}</h1>
+            <p className="text-stone text-13 mt-2 max-w-xl">Um template só. Cada aba responde a um job: entender o estado, provar o setup, ler eventos, monitorar saúde, auditar mudanças.</p>
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={handleSync}
-              className="flex items-center gap-2 bg-[var(--proof-blue)] text-white px-3 py-1.5 rounded-md font-medium text-13 hover:opacity-90 transition-opacity"
-            >
-              <RefreshCw className="w-4 h-4" /> Sincronizar agora
-            </button>
-            {connected && (
-              <button
-                onClick={() => setDisconnectOpen(true)}
-                className="flex items-center gap-2 bg-[var(--zinc)] text-[var(--critical)] border border-[var(--critical)]/30 px-3 py-1.5 rounded-md font-medium text-13 hover:bg-[var(--iron)] transition-colors"
-              >
-                Desconectar
-              </button>
-            )}
-          </div>
-        </div>
+        </header>
 
-        {/* Tabs */}
-        <div className="border-b border-[var(--line)] flex gap-6 overflow-x-auto">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`pb-3 text-14 font-medium whitespace-nowrap border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? 'text-[var(--eggshell)] border-[var(--proof-blue)]'
-                  : 'text-[var(--stone)] border-transparent hover:text-[var(--eggshell)]'
-              }`}
-            >
-              {tab.label}
-            </button>
+        <div className="border-b border-line flex gap-6 overflow-x-auto">
+          {tabs.map((t) => (
+            <button key={t.id} onClick={() => setTab(t.id)} className={`pb-3 text-13 font-medium whitespace-nowrap border-b-2 transition-colors ${tab === t.id ? 'text-eggshell border-proof-blue' : 'text-stone border-transparent hover:text-eggshell'}`}>{t.label}</button>
           ))}
         </div>
 
-        {/* Tab: Visão Geral */}
-        {activeTab === 'visao_geral' && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-4">
-                <div className="text-12 text-[var(--stone)] mb-1">Saúde</div>
-                <div className={`text-24 font-mono font-bold ${config.health >= 99 ? 'text-[var(--verified)]' : config.health >= 95 ? 'text-[var(--warning)]' : 'text-[var(--critical)]'}`}>
-                  {config.health}%
-                </div>
-                <div className="mt-2 h-2 rounded-full bg-[var(--zinc)]">
-                  <div
-                    className={`h-2 rounded-full ${config.health >= 99 ? 'bg-[var(--verified)]' : config.health >= 95 ? 'bg-[var(--warning)]' : 'bg-[var(--critical)]'}`}
-                    style={{ width: `${config.health}%` }}
-                  />
-                </div>
+        <ScenarioStateGate emptyTitle="Sem eventos deste adapter" emptyDescription={`${config.name} não recebeu chamadas no período.`} degradedIntegration={config.name}>
+          {tab === 'visao' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <KPI label="Saúde" value={`${health.toFixed(1)}%`} tone={health >= 99 ? 'verified' : health >= 95 ? 'warning' : 'critical'} onOpenEvidence={() => openEvidence(buildEvidence({ label: `Saúde · ${config.name}`, value: `${health.toFixed(1)}%`, formula: '1 - (failed_events / total_events)', source: `Adapter ${config.name} v${config.adapterVersion}` }))} />
+                <KPI label="Erros" value={String(errors)} tone={errors > 0 ? 'warning' : 'verified'} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Erros recentes', value: String(errors), formula: 'count(events) where status == "Failed"', source: config.name, state: errors > 0 ? 'Provisório' : 'Reconciliado' }))} />
+                <KPI label="P95" value={`${p95}ms`} tone={p95 > 800 ? 'critical' : 'default'} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Latência P95', value: `${p95}ms`, formula: 'percentile(events.latency_ms, 0.95)', source: config.name }))} />
+                <KPI label="Eventos (amostra)" value={String(events.length)} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Eventos amostrados', value: String(events.length), formula: 'events where type in adapter.eventTypes', source: config.name }))} />
               </div>
-              <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-4">
-                <div className="text-12 text-[var(--stone)] mb-1">Erros (24h)</div>
-                <div className={`text-24 font-mono font-bold ${config.errors24h > 0 ? 'text-[var(--critical)]' : 'text-[var(--verified)]'}`}>
-                  {config.errors24h}
-                </div>
-              </div>
-              <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-4">
-                <div className="text-12 text-[var(--stone)] mb-1">Última sincronização</div>
-                <div className="text-14 font-medium text-[var(--eggshell)]">{fmtDate(config.lastSync)}</div>
-              </div>
-              <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-4">
-                <div className="text-12 text-[var(--stone)] mb-1">Eventos (30d)</div>
-                <div className="text-24 font-mono font-bold text-[var(--eggshell)]">{recentEvents.length}</div>
-              </div>
-            </div>
-            <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-4">
-              <div className="text-12 text-[var(--stone)] mb-1">Endpoint</div>
-              <div className="font-mono text-13 text-[var(--eggshell)] break-all">{config.endpoint}</div>
-            </div>
-          </div>
-        )}
 
-        {/* Tab: Configuração */}
-        {activeTab === 'configuracao' && (
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-6 space-y-4">
-            <h2 className="text-16 font-medium text-[var(--eggshell)] mb-2">Configuração</h2>
-            <div>
-              <label className="block text-12 font-medium text-[var(--stone)] mb-1.5">Endpoint (somente leitura)</label>
-              <input
-                type="text"
-                value={config.endpoint}
-                readOnly
-                className="w-full bg-[var(--zinc)] border border-[var(--line)] rounded-md px-3 py-2 text-14 text-[var(--eggshell)] font-mono outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-12 font-medium text-[var(--stone)] mb-1.5">Chave de API</label>
-              <input
-                type="password"
-                defaultValue="pk_live_••••••••••••••••••••••xyz"
-                readOnly
-                className="w-full bg-[var(--zinc)] border border-[var(--line)] rounded-md px-3 py-2 text-14 text-[var(--eggshell)] font-mono outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-12 font-medium text-[var(--stone)] mb-1.5">URL do Webhook</label>
-              <input
-                type="text"
-                defaultValue={`https://app.trakacquire.com/webhook/${integrationId}`}
-                readOnly
-                className="w-full bg-[var(--zinc)] border border-[var(--line)] rounded-md px-3 py-2 text-14 text-[var(--eggshell)] font-mono outline-none"
-              />
-            </div>
-          </div>
-        )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-graphite border border-line rounded-xl p-5">
+                  <h3 className="text-12 font-mono uppercase tracking-wider text-stone mb-3">Credenciais (sempre mascaradas)</h3>
+                  <div className="space-y-2">
+                    {config.credentials.map((c) => (
+                      <div key={c.label} className="flex items-center justify-between gap-2">
+                        <span className="text-12 text-stone">{c.label}</span>
+                        <span className="font-mono text-12 text-eggshell tabular-nums">{c.masked}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="bg-graphite border border-line rounded-xl p-5">
+                  <h3 className="text-12 font-mono uppercase tracking-wider text-stone mb-3">Escopos concedidos</h3>
+                  <div className="flex flex-wrap gap-1.5">
+                    {config.scopes.map((s) => (
+                      <span key={s} className="font-mono text-11 px-2 py-0.5 rounded border border-line bg-zinc/60 text-eggshell">{s}</span>
+                    ))}
+                  </div>
+                  <div className="mt-4 text-11 text-stone">Endpoint: <span className="font-mono text-eggshell">{config.endpoint}</span></div>
+                  <div className="mt-1 text-11 text-stone">Versão do adapter: <span className="font-mono text-eggshell">v{config.adapterVersion}</span></div>
+                </div>
+              </div>
 
-        {/* Tab: Eventos */}
-        {activeTab === 'eventos' && (
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl overflow-hidden">
-            {recentEvents.length === 0 ? (
-              <div className="p-12 text-center text-14 text-[var(--stone)]">Nenhum evento encontrado para esta integração.</div>
-            ) : (
+              {config.special === 'tap' && (
+                <SpecialTAP openEvidence={openEvidence} postbackUrl={postbackUrl} copied={copied} copy={copy} />
+              )}
+              {config.special === 'meta' && (
+                <SpecialMeta openEvidence={openEvidence} />
+              )}
+              {config.special === 'telegram' && (
+                <SpecialTelegram openEvidence={openEvidence} copied={copied} copy={copy} />
+              )}
+            </div>
+          )}
+
+          {tab === 'setup' && (
+            <div className="space-y-3">
+              {config.setupSteps.map((s, i) => (
+                <div key={i} className={`bg-graphite border rounded-xl p-4 flex items-start gap-4 ${s.done ? 'border-verified/30' : 'border-line'}`}>
+                  <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-mono text-13 font-semibold ${s.done ? 'bg-verified/10 text-verified border border-verified/30' : 'bg-zinc text-stone border border-line'}`}>{i + 1}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className="text-14 font-semibold text-eggshell">{s.label}</span>
+                      {s.done ? <StatusChip status="Confirmed" /> : <StatusChip status="Captured" />}
+                    </div>
+                    <p className="text-12 text-stone mt-1">{s.description}</p>
+                    <div className="mt-2 flex flex-wrap items-center gap-3">
+                      <button className="text-11 font-mono border border-line rounded-md px-2 py-1 text-stone hover:text-eggshell hover:border-stone transition-colors">Testar: {s.test}</button>
+                      {s.evidence && (
+                        <span className="text-11 text-stone">Evidência: <span className="font-mono text-eggshell">{s.evidence}</span></span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {tab === 'eventos' && (
+            <DataTable data={events} columns={eventColumns} />
+          )}
+
+          {tab === 'saude' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-graphite border border-line rounded-xl p-5">
+                <h3 className="text-12 font-mono uppercase tracking-wider text-stone mb-2">Latência (últimos {events.length} eventos)</h3>
+                <MetricValue value={`${p95}ms`} size="lg" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Latência P95', value: `${p95}ms`, formula: 'percentile(latency_ms, 0.95)', source: config.name }))} />
+                <div className="text-11 text-stone mt-2">Threshold: 800ms · Alerta: p95 &gt; 1200ms</div>
+              </div>
+              <div className="bg-graphite border border-line rounded-xl p-5">
+                <h3 className="text-12 font-mono uppercase tracking-wider text-stone mb-2">Erros</h3>
+                <MetricValue value={String(errors)} size="lg" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Erros', value: String(errors), formula: 'count(status="Failed")', source: config.name, state: errors > 0 ? 'Provisório' : 'Reconciliado' }))} />
+                <div className="text-11 text-stone mt-2">Últimos 24h · retry automático em 3 tentativas</div>
+              </div>
+              <div className="bg-graphite border border-line rounded-xl p-5">
+                <h3 className="text-12 font-mono uppercase tracking-wider text-stone mb-2">Rate limit</h3>
+                <div className="font-mono text-eggshell text-18 tabular-nums">1000 <span className="text-11 text-stone">req/min</span></div>
+                <div className="text-11 text-stone mt-2">Uso atual: <span className="font-mono text-eggshell tabular-nums">274/min</span></div>
+              </div>
+            </div>
+          )}
+
+          {tab === 'logs' && (
+            <div className="bg-graphite border border-line rounded-xl overflow-hidden">
+              <div className="max-h-[420px] overflow-y-auto divide-y divide-line">
+                {events.slice(0, 20).map((e) => (
+                  <div key={e.id} className="px-4 py-2 flex items-center gap-4 hover:bg-iron">
+                    <span className="font-mono text-11 text-stone tabular-nums w-40">{e.timestamp.slice(0, 19).replace('T', ' ')}</span>
+                    <StatusChip status={e.status} />
+                    <span className="font-mono text-11 text-eggshell flex-1 truncate">{e.type} · {e.id} · latency={e.latency_ms}ms</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {tab === 'historico' && (
+            <div className="bg-graphite border border-line rounded-xl overflow-hidden">
               <table className="w-full text-13">
                 <thead>
-                  <tr className="border-b border-[var(--line)]">
-                    {['Tipo', 'Status', 'Pessoa', 'Latência', 'Quando'].map(h => (
-                      <th key={h} className="text-left text-11 font-semibold text-[var(--stone)] uppercase px-4 py-3">{h}</th>
+                  <tr className="border-b border-line">
+                    {['Data', 'Ação', 'Detalhe', 'Autor'].map((h) => (
+                      <th key={h} className="text-left text-11 font-mono uppercase text-stone px-4 py-3">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {recentEvents.map(e => (
-                    <tr key={e.id} className="border-b border-[var(--line)] hover:bg-[var(--iron)] transition-colors">
-                      <td className="px-4 py-3">
-                        <span className="px-2 py-0.5 rounded bg-[var(--proof-blue)]/10 text-[var(--proof-blue)] text-11 font-mono">
-                          {typeChipLabel(e.type)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <StatusChip status={e.status as any} />
-                      </td>
-                      <td className="px-4 py-3 font-mono text-12 text-[var(--eggshell)]">
-                        <a href={`/identity/${e.person_id}`} className="hover:underline text-[var(--proof-blue)]">
-                          {e.person_id}
-                        </a>
-                      </td>
-                      <td className="px-4 py-3 font-mono text-12 text-[var(--stone)]">{e.latency_ms}ms</td>
-                      <td className="px-4 py-3 text-12 text-[var(--stone)]">{relativeTime(e.timestamp)}</td>
+                  {[
+                    { at: '2026-07-22 10:11', acao: 'Adapter promovido', detalhe: `${config.name} → ${config.state}`, autor: 'João Oliveira' },
+                    { at: '2026-07-18 09:03', acao: 'Escopo adicionado', detalhe: config.scopes[0], autor: 'Ana Costa' },
+                    { at: '2026-07-15 15:44', acao: 'Credenciais rotacionadas', detalhe: '••••7f11 → ••••ce93', autor: 'sistema' },
+                    { at: '2026-07-10 08:00', acao: 'Adapter conectado', detalhe: `v${config.adapterVersion}`, autor: 'João Oliveira' },
+                  ].map((r, i) => (
+                    <tr key={i} className="border-b border-line last:border-0">
+                      <td className="px-4 py-3 font-mono text-11 text-stone tabular-nums">{r.at}</td>
+                      <td className="px-4 py-3 text-eggshell">{r.acao}</td>
+                      <td className="px-4 py-3 text-stone">{r.detalhe}</td>
+                      <td className="px-4 py-3 text-stone">{r.autor}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            )}
-          </div>
-        )}
-
-        {/* Tab: Saúde */}
-        {activeTab === 'saude' && (
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-6">
-            <h2 className="text-16 font-medium text-[var(--eggshell)] mb-4">Saúde — últimos 7 dias</h2>
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={healthData}>
-                <XAxis dataKey="dia" tick={{ fill: 'var(--stone)', fontSize: 11 }} tickLine={false} axisLine={false} />
-                <YAxis domain={[90, 100]} tick={{ fill: 'var(--stone)', fontSize: 11 }} tickLine={false} axisLine={false} unit="%" />
-                <Tooltip {...tooltipStyle} formatter={(v: number) => [`${v}%`, 'Saúde']} />
-                <Line type="monotone" dataKey="saude" stroke="var(--verified)" strokeWidth={2} dot={{ fill: 'var(--verified)', r: 3 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-
-        {/* Tab: Histórico */}
-        {activeTab === 'historico' && (
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl overflow-hidden">
-            <table className="w-full text-13">
-              <thead>
-                <tr className="border-b border-[var(--line)]">
-                  {['Data', 'Ação', 'Detalhe', 'Tipo'].map(h => (
-                    <th key={h} className="text-left text-11 font-semibold text-[var(--stone)] uppercase px-4 py-3">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {histLog.map((entry, i) => (
-                  <tr key={i} className="border-b border-[var(--line)] hover:bg-[var(--iron)] transition-colors">
-                    <td className="px-4 py-3 font-mono text-12 text-[var(--stone)] whitespace-nowrap">{fmtDT(entry.at)}</td>
-                    <td className="px-4 py-3 text-[var(--eggshell)] font-medium">{entry.acao}</td>
-                    <td className="px-4 py-3 text-[var(--stone)]">{entry.detalhe}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded text-11 font-medium ${
-                        entry.tipo === 'sucesso' ? 'bg-[var(--verified)]/10 text-[var(--verified)]' :
-                        entry.tipo === 'aviso' ? 'bg-[var(--warning)]/10 text-[var(--warning)]' :
-                        'bg-[var(--proof-blue)]/10 text-[var(--proof-blue)]'
-                      }`}>
-                        {entry.tipo === 'sucesso' ? 'Sucesso' : entry.tipo === 'aviso' ? 'Aviso' : 'Info'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+            </div>
+          )}
+        </ScenarioStateGate>
       </div>
-
-      <ConfirmDialog
-        open={disconnectOpen}
-        onClose={() => setDisconnectOpen(false)}
-        onConfirm={handleDisconnect}
-        title={`Desconectar ${config.name}?`}
-        description="Esta ação interromperá a sincronização imediatamente. Eventos futuros não serão capturados até reconexão."
-        confirmLabel="Desconectar"
-        danger
-        requireReason
-      />
     </AppShell>
+  );
+}
+
+function KPI({ label, value, tone = 'default', onOpenEvidence }: { label: string; value: string; tone?: 'default' | 'verified' | 'warning' | 'critical'; onOpenEvidence?: () => void }) {
+  const cls = tone === 'verified' ? 'text-verified' : tone === 'warning' ? 'text-warning' : tone === 'critical' ? 'text-critical' : 'text-eggshell';
+  return (
+    <button type="button" onClick={onOpenEvidence} className="text-left rounded-xl border border-line bg-graphite hover:border-stone transition-colors p-4">
+      <div className="text-11 font-mono uppercase tracking-wider text-stone mb-2">{label}</div>
+      <div className={`font-mono tabular-nums text-24 leading-none font-semibold ${cls}`}>{value}</div>
+    </button>
+  );
+}
+
+/* ── Special panels ─────────────────────────────────────────────────────── */
+
+function SpecialTAP({ openEvidence, postbackUrl, copied, copy }: { openEvidence: (d: any) => void; postbackUrl: string; copied: string | null; copy: (v: string, k: string) => void; }) {
+  const [semaforo, setSemaforo] = useState<'idle' | 'testing' | 'ok'>('idle');
+  const runTest = () => { setSemaforo('testing'); setTimeout(() => setSemaforo('ok'), 900); };
+  return (
+    <div className="bg-graphite border border-line rounded-xl p-5 space-y-4">
+      <div className="flex items-center gap-3">
+        <h3 className="text-14 font-semibold text-eggshell">Setup TAP · postback + reconciliação</h3>
+        <StatusChip status="Reconciled" />
+      </div>
+      <div>
+        <div className="text-11 font-mono uppercase tracking-wider text-stone mb-1">URL de postback (única)</div>
+        <div className="flex items-center gap-2">
+          <code className="flex-1 bg-zinc border border-line rounded-md px-3 py-2 font-mono text-12 text-eggshell truncate">{postbackUrl}</code>
+          <button onClick={() => copy(postbackUrl, 'pb')} className="border border-line rounded-md px-3 py-2 text-stone hover:text-eggshell hover:border-stone">
+            {copied === 'pb' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+          </button>
+        </div>
+      </div>
+      <div className="flex items-center gap-4 flex-wrap">
+        <button onClick={runTest} className="text-13 border border-line rounded-md px-4 py-2 bg-zinc text-eggshell hover:border-stone">Enviar postback de teste</button>
+        <span className={`inline-flex items-center gap-2 text-12 font-mono ${semaforo === 'ok' ? 'text-verified' : semaforo === 'testing' ? 'text-warning' : 'text-stone'}`}>
+          <span className={`w-2 h-2 rounded-full ${semaforo === 'ok' ? 'bg-verified' : semaforo === 'testing' ? 'bg-warning animate-pulse' : 'bg-stone'}`} />
+          {semaforo === 'ok' ? 'Postback recebido · assinatura OK · 87ms' : semaforo === 'testing' ? 'Enviando…' : 'Aguardando teste'}
+        </span>
+      </div>
+      <div className="pt-3 border-t border-line grid grid-cols-3 gap-4">
+        <div>
+          <div className="text-11 font-mono uppercase text-stone mb-1">Postbacks (30d)</div>
+          <MetricValue value="2.148" size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Postbacks TAP 30d', value: '2.148', formula: 'count(events where type in [ftd, deposit])', source: 'TAP webhook' }))} />
+        </div>
+        <div>
+          <div className="text-11 font-mono uppercase text-stone mb-1">Reporting API (30d)</div>
+          <MetricValue value="2.148" size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Reporting API 30d', value: '2.148', formula: 'sum(reporting_api.deposits_count)', source: 'TAP Reporting API' }))} />
+        </div>
+        <div>
+          <div className="text-11 font-mono uppercase text-stone mb-1">Divergência</div>
+          <MetricValue value="0" size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Divergência postback × Reporting', value: '0', formula: 'abs(postbacks - reporting)', source: 'Reconciliation engine', state: 'Reconciliado' }))} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SpecialMeta({ openEvidence }: { openEvidence: (d: any) => void }) {
+  const [flags, setFlags] = useState({ fbc: true, fbp: true, em: true, ph: false });
+  const rows: Array<{ key: keyof typeof flags; label: string; coverage: number }> = [
+    { key: 'fbc', label: 'fbc (click id)', coverage: 100 },
+    { key: 'fbp', label: 'fbp (browser id)', coverage: 98 },
+    { key: 'em', label: 'em (email SHA-256)', coverage: 92 },
+    { key: 'ph', label: 'ph (phone SHA-256)', coverage: 61 },
+  ];
+  return (
+    <div className="bg-graphite border border-line rounded-xl p-5 space-y-4">
+      <div className="flex items-center gap-3">
+        <h3 className="text-14 font-semibold text-eggshell">Meta · cobertura de parâmetros</h3>
+        <StatusChip status="Confirmed" />
+      </div>
+      <div className="grid grid-cols-3 gap-4">
+        <div className="border border-line rounded-md p-3">
+          <div className="text-11 font-mono uppercase text-stone">BM</div>
+          <div className="font-mono text-13 text-eggshell mt-1">bm_7712</div>
+        </div>
+        <div className="border border-line rounded-md p-3">
+          <div className="text-11 font-mono uppercase text-stone">Pixel</div>
+          <div className="font-mono text-13 text-eggshell mt-1">px_3401</div>
+        </div>
+        <div className="border border-line rounded-md p-3">
+          <div className="text-11 font-mono uppercase text-stone">Dedup CAPI × Pixel</div>
+          <button onClick={() => openEvidence(buildEvidence({ label: 'Dedup rate', value: '97.3%', formula: 'shared_event_ids / total', source: 'Meta Test Events' }))} className="font-mono text-13 text-verified mt-1 hover:underline">97.3%</button>
+        </div>
+      </div>
+      <table className="w-full text-13">
+        <thead>
+          <tr className="border-b border-line">
+            <th className="text-left text-11 font-mono uppercase text-stone px-3 py-2">Parâmetro</th>
+            <th className="text-right text-11 font-mono uppercase text-stone px-3 py-2">Cobertura</th>
+            <th className="text-right text-11 font-mono uppercase text-stone px-3 py-2">Enviar</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.key} className="border-b border-line last:border-0">
+              <td className="px-3 py-2 text-eggshell">{r.label}</td>
+              <td className="px-3 py-2 text-right">
+                <MetricValue value={`${r.coverage}%`} size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: `Cobertura ${r.label}`, value: `${r.coverage}%`, formula: 'events_with_field / total_events', source: 'CAPI pipeline' }))} />
+              </td>
+              <td className="px-3 py-2 text-right">
+                <button onClick={() => setFlags((f) => ({ ...f, [r.key]: !f[r.key] }))} className={`px-2 py-0.5 rounded-md border text-11 font-mono ${flags[r.key] ? 'bg-verified/10 text-verified border-verified/30' : 'bg-zinc text-stone border-line'}`}>{flags[r.key] ? 'ON' : 'OFF'}</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function SpecialTelegram({ openEvidence, copied, copy }: { openEvidence: (d: any) => void; copied: string | null; copy: (v: string, k: string) => void }) {
+  const bots = [
+    { handle: '@operacaobr_bot', purpose: 'Aquisição principal', deep: 'https://t.me/operacaobr_bot?start=cid_A19f2c' },
+    { handle: '@operacaovip_bot', purpose: 'Fluxo VIP', deep: 'https://t.me/operacaovip_bot?start=cid_VIP1' },
+  ];
+  return (
+    <div className="bg-graphite border border-line rounded-xl p-5 space-y-4">
+      <div className="flex items-center gap-3">
+        <h3 className="text-14 font-semibold text-eggshell">Telegram · bots + deep links</h3>
+        <StatusChip status="Confirmed" />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="border border-line rounded-md p-3">
+          <div className="text-11 font-mono uppercase text-stone">Webhook</div>
+          <div className="text-12 text-eggshell mt-1">Ativo · <span className="text-verified">pending_update_count = 0</span></div>
+        </div>
+        <div className="border border-line rounded-md p-3">
+          <div className="text-11 font-mono uppercase text-stone">Bots ativos</div>
+          <MetricValue value={String(bots.length)} size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Bots ativos', value: String(bots.length), formula: 'count(bots where status="production")', source: 'Telegram registry' }))} />
+        </div>
+      </div>
+      <div className="space-y-2">
+        {bots.map((b) => (
+          <div key={b.handle} className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 border border-line rounded-md p-3 bg-zinc/60">
+            <div className="flex-1 min-w-0">
+              <div className="font-mono text-13 text-eggshell">{b.handle}</div>
+              <div className="text-11 text-stone">{b.purpose}</div>
+            </div>
+            <code className="flex-1 min-w-0 font-mono text-11 text-stone truncate">{b.deep}</code>
+            <button onClick={() => copy(b.deep, b.handle)} className="border border-line rounded-md px-3 py-1.5 text-stone hover:text-eggshell hover:border-stone text-11">
+              {copied === b.handle ? 'Copiado' : 'Copiar link'}
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
