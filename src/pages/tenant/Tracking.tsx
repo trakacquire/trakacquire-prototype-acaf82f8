@@ -116,6 +116,17 @@ export default function TrackingPage() {
             <KPI label="CPFTD" value={`R$ ${m30.cpftd.toLocaleString('pt-BR')}`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Custo por FTD', value: `R$ ${m30.cpftd.toLocaleString('pt-BR')}`, formula: 'total_spend / ftds', source: 'Command dataset canônico' }))} />
           </div>
 
+          {/* Diagnóstico dos links — clique filtra a tabela */}
+          <section className="space-y-2">
+            <div className="flex items-baseline justify-between">
+              <h3 className="text-14 font-semibold text-eggshell">Diagnóstico</h3>
+              <span className="text-11 font-mono text-stone tabular-nums">
+                {diagnostic ? 'filtro ativo · clique novamente para limpar' : `${rows.length} links inspecionados`}
+              </span>
+            </div>
+            <DiagnosticPanel items={diagnostics} active={diagnostic} onSelect={setDiagnostic} />
+          </section>
+
           <div className="flex flex-wrap items-center gap-2 bg-graphite border border-line rounded-xl p-3">
             {(['all', 'presell → bot', 'bot → canal'] as const).map((o) => (
               <button key={o} onClick={() => setLoop(o)} className={`text-12 px-3 py-1 rounded-md border ${loop === o ? 'bg-zinc text-eggshell border-line' : 'text-stone border-transparent hover:text-eggshell'}`}>{o === 'all' ? 'Todos os elos' : o}</button>
