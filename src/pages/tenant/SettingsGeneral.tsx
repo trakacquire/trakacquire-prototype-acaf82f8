@@ -32,7 +32,7 @@ export default function GeneralSettingsPage() {
     <AppShell breadcrumb={[{ label: 'Configurações' }, { label: 'Geral' }]}>
       <div className="max-w-4xl mx-auto space-y-6">
         <div>
-          <div className="kicker mb-1">Operação · Preferências</div>
+          <div className="kicker mb-1">Settings · Geral</div>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-24 font-bold text-eggshell">Configurações Gerais</h1>
             <PreviewBadge />

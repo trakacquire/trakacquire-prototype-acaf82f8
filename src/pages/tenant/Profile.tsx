@@ -8,7 +8,7 @@ export default function ProfilePage() {
     <AppShell breadcrumb={[{ label: 'Configurações' }, { label: 'Perfil' }]}>
       <div className="max-w-3xl mx-auto space-y-6">
         <div>
-          <div className="kicker mb-1">Identidade · Sessão</div>
+          <div className="kicker mb-1">Settings · Perfil</div>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-24 font-bold text-eggshell">Meu Perfil</h1>
             <PreviewBadge />

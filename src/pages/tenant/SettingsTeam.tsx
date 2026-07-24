@@ -126,7 +126,7 @@ export default function SettingsTeamPage() {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-end">
           <div>
-            <div className="kicker mb-1">Governança · Assentos</div>
+            <div className="kicker mb-1">Settings · Equipe</div>
             <div className="flex items-center gap-3">
               <h1 className="text-24 font-bold text-eggshell">Equipe & Acessos</h1>
               <PreviewBadge />

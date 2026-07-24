@@ -142,7 +142,7 @@ export default function CommandPage() {
         {/* ── Onda H1 · header enxuto: 1 eyebrow + 1 h1 + 1 subtitle + chip único ── */}
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pt-2">
           <div className="min-w-0">
-            <div className="eyebrow mb-2">Proofline · Command</div>
+            <div className="eyebrow mb-2">Overview · Command</div>
             <h1 className="page-title">Todos os sinais estão sob controle.</h1>
             <p className="page-subtitle mt-1.5 max-w-xl">
               Uma visão objetiva da aquisição, identidade, receita e integridade das integrações.

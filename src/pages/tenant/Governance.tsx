@@ -131,7 +131,7 @@ export default function GovernancePage() {
 
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
           <div>
-            <div className="kicker mb-1">Prove / Governança</div>
+            <div className="kicker mb-1">Prove · Governança</div>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-24 font-bold text-eggshell">Hub de governança</h1>
               <PreviewBadge />

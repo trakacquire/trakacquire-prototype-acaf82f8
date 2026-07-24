@@ -135,7 +135,7 @@ export default function SegmentsPage() {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <div className="kicker mb-1">Operate · Broadcasts · Segmentos</div>
+            <div className="kicker mb-1">Operate · Segmentos</div>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-24 font-bold text-eggshell">Segmentos</h1>
               <PreviewBadge />

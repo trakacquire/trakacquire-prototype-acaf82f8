@@ -12,7 +12,7 @@ export default function PricingPage() {
             <span className="w-6 h-6 rounded bg-proof-blue shrink-0"></span>
             TrakAcquire
           </Link>
-          <div className="kicker mb-3">Investimento · Densidade da operação</div>
+          <div className="kicker mb-3">Público · Pricing</div>
           <h1 className="text-32 md:text-4xl font-bold mb-4">Planos que escalam com sua prova.</h1>
           <p className="text-16 text-stone max-w-2xl mx-auto">Sem taxas escondidas. Pague pela densidade da sua operação.</p>
           <div className="mt-4 flex justify-center"><PreviewBadge /></div>
