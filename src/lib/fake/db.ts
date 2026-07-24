@@ -1107,9 +1107,9 @@ export const persons = PERSONS;
 export const events = EVENTS;
 export const metrics = metricsForPeriod(30);
 export const workspaces = [
-  { id: 'ws_1', name: 'Operação Brasil', status: 'ativo' as const, plan: 'Growth' as const },
-  { id: 'ws_2', name: 'Teste MX', status: 'trial' as const, plan: 'Starter' as const },
-  { id: 'ws_3', name: 'Agency Demo', status: 'ativo' as const, plan: 'Scale' as const }
+  { id: 'ws_1', name: 'Operação Brasil', status: 'ativo' as const, plan: 'Growth' as const,  location: 'São Paulo', currency: 'BRL', live: true  },
+  { id: 'ws_2', name: 'Teste México',    status: 'trial' as const, plan: 'Starter' as const, location: 'CDMX',      currency: 'MXN', live: false },
+  { id: 'ws_3', name: 'Agency Demo',     status: 'ativo' as const, plan: 'Scale' as const,   location: 'Lisboa',    currency: 'EUR', live: true  },
 ];
 export const tenants = TENANTS;
 export const reports = REPORTS;
