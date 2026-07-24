@@ -40,11 +40,19 @@
   --color-sidebar-border: hsl(var(--sidebar-border));
 
   --color-ink: hsl(var(--ink));
+  --color-canvas: hsl(var(--canvas));
   --color-iron: hsl(var(--iron));
   --color-graphite: hsl(var(--graphite));
   --color-panel: hsl(var(--panel));
+  --color-surface: hsl(var(--surface));
+  --color-surface-raised: hsl(var(--surface-raised));
+  --color-surface-inset: hsl(var(--surface-inset));
   --color-zinc: hsl(var(--zinc));
-  --color-line: hsl(var(--line));
+  /* Hairline — Fase D · maior alavancagem visual. Substitui a antiga
+     borda alta (#38383D) por uma linha em eggshell 6% alpha. */
+  --color-line: hsl(var(--eggshell) / 0.06);
+  --color-line-strong: hsl(var(--eggshell) / 0.10);
+  --color-line-solid: hsl(var(--line));
   --color-eggshell: hsl(var(--eggshell));
   --color-stone: hsl(var(--stone));
 
@@ -67,42 +75,50 @@
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 4px);
-  --radius-xl: calc(var(--radius) + 8px);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-:root {
-  /* TrakAcquire Proofline Design System — CANONICAL D1 TOKENS.
-     Source of truth: DECISIONS.md (D1 · Proofline) > UI-SYSTEM.md §2.
-     Where the reference PDF diverges from D1, D1 WINS. No hex outside this list.
-     No component may use hex literals — always reference these tokens. */
-  --ink:       240 8% 3%;    /* #0A0A0B fundo raiz */
-  --iron:      240 5% 8%;    /* #121214 sidebar / superfície profunda */
-  --graphite: 240 5% 11%;    /* #1A1A1D cards, drawers */
-  --panel:    240 5% 11%;    /* #1A1A1D alias para cards */
-  --zinc:     240 6% 17%;    /* #28282D superfície elevada / hover */
-  --line:     240 3% 23%;    /* #38383D bordas e separadores */
-  --eggshell: 40 33% 94%;    /* #F6F1E7 texto primário e CTA primário */
-  --stone:    45 4% 64%;     /* #A8A6A0 texto secundário */
 
-  --proof-blue: 230 100% 74%; /* #7C91FF seleção, identidade, em trânsito */
-  --verified:   147 65% 68%;  /* #72E6A6 reconciliado, sucesso, FTD confirmado */
-  --warning:    38 82% 71%;   /* #F1C778 pendente, provisório, divergente */
-  --critical:   352 76% 71%;  /* #EF7D8B falha, bloqueio, órfão */
+:root {
+  /* TrakAcquire Proofline Design System — CANONICAL D1 TOKENS (Fase D recalibrada).
+     Source of truth: DECISIONS.md (D1 · Proofline) > UI-SYSTEM.md §2.
+     Superfícies com degrau curto — card é sugerido, não desenhado. */
+  --ink:            240 8% 3%;   /* #08080A · canvas raiz */
+  --canvas:         240 8% 3%;   /* alias semântico do canvas */
+  --iron:           240 7% 5%;   /* #0C0C0E · sidebar */
+  --graphite:       240 7% 6%;   /* #0E0E10 · card padrão (achatado) */
+  --panel:          240 7% 6%;   /* #0E0E10 · alias para cards */
+  --surface:        240 7% 6%;   /* #0E0E10 · superfície nominal */
+  --surface-raised: 240 6% 9%;   /* #131316 · hover / drawer */
+  --surface-inset:  240 8% 4%;   /* #0B0B0D · campo/input rebaixado */
+  --zinc:           240 6% 12%;  /* #1D1D22 · hover ativo */
+  --line:           240 3% 23%;  /* legado — reservado para --color-line-solid */
+  --eggshell:       40 33% 94%;  /* #F6F1E7 · texto primário e CTA */
+  --stone:          45 4% 64%;   /* #A8A6A0 · texto secundário */
+
+  --proof-blue: 230 100% 74%;    /* #7C91FF · seleção, identidade, em trânsito */
+  --verified:   147 65% 68%;     /* #72E6A6 · reconciliado, sucesso, FTD */
+  --warning:    38 82% 71%;      /* #F1C778 · pendente, divergente */
+  --critical:   352 76% 71%;     /* #EF7D8B · falha, bloqueio, órfão */
+
 
 
   --background: var(--ink);
   --foreground: var(--eggshell);
-  --border: var(--line);
-  --input: var(--line);
+  /* border/input consumidos por hsl(var(--border)) nos componentes shadcn.
+     Apontar direto para o hairline (eggshell 6% alpha) unifica toda borda. */
+  --border: var(--eggshell) / 0.06;
+  --input: var(--eggshell) / 0.06;
   --ring: var(--proof-blue);
 
   --card: var(--graphite);
   --card-foreground: var(--eggshell);
-  --card-border: var(--line);
+  --card-border: var(--eggshell) / 0.06;
 
   --popover: var(--graphite);
   --popover-foreground: var(--eggshell);
-  --popover-border: var(--line);
+  --popover-border: var(--eggshell) / 0.06;
+
 
   --primary: var(--eggshell);
   --primary-foreground: var(--ink);
@@ -121,7 +137,7 @@
 
   --sidebar: var(--iron);
   --sidebar-foreground: var(--eggshell);
-  --sidebar-border: var(--line);
+  --sidebar-border: var(--eggshell) / 0.06;
 
   --chart-1: var(--proof-blue);
   --chart-2: var(--verified);
@@ -200,44 +216,104 @@
 @utility text-32 { font-size: 32px; line-height: 40px; font-weight: 600; }
 @utility tabular-nums-x { font-variant-numeric: tabular-nums; }
 
-/* ==== Proofline surfaces — physical confidence ==== */
+/* ==== Fase D · Tríade tipográfica de header ==== */
+@utility kicker {
+  font-size: 10px;
+  line-height: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: hsl(var(--stone));
+  font-family: var(--font-serif-family);
+  font-style: italic;
+  font-weight: 400;
+}
+@utility page-title {
+  font-size: 34px;
+  line-height: 40px;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: hsl(var(--eggshell));
+}
+@utility page-subtitle {
+  font-size: 15px;
+  line-height: 1.5;
+  color: hsl(var(--stone));
+}
+@utility card-title  { font-size: 15px; line-height: 22px; font-weight: 600; color: hsl(var(--eggshell)); }
+@utility card-body   { font-size: 13px; line-height: 20px; color: hsl(var(--stone)); }
+@utility micro-label {
+  font-size: 10px;
+  line-height: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: hsl(var(--stone) / 0.7);
+  font-family: var(--font-mono-family);
+}
+@utility mono-value  { font-size: 13px; line-height: 20px; font-family: var(--font-mono-family); font-variant-numeric: tabular-nums; color: hsl(var(--eggshell)); }
+
+/* ==== Fase D · Superfícies recalibradas — degrau curto, borda sugerida ==== */
 @utility surface-flat {
-  background: hsl(var(--graphite));
-  border: 1px solid hsl(var(--line) / 0.6);
-  box-shadow: var(--shadow-flat);
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--eggshell) / 0.06);
 }
 @utility surface-raised {
-  background-image: var(--gradient-surface);
-  border: 1px solid hsl(var(--line) / 0.7);
-  box-shadow: var(--shadow-elevated);
+  background: hsl(var(--surface-raised));
+  border: 1px solid hsl(var(--eggshell) / 0.06);
+}
+@utility surface-inset {
+  background: hsl(var(--surface-inset));
+  border: 1px solid hsl(var(--eggshell) / 0.06);
 }
 @utility surface-floating {
-  background-image: var(--gradient-surface-raised);
-  border: 1px solid hsl(var(--line) / 0.8);
+  background: hsl(var(--surface-raised));
+  border: 1px solid hsl(var(--eggshell) / 0.10);
   box-shadow: var(--shadow-floating);
 }
 @utility surface-glass {
   background: hsl(var(--iron) / 0.55);
   backdrop-filter: blur(18px) saturate(140%);
   border: 1px solid hsl(var(--eggshell) / 0.06);
-  box-shadow: var(--shadow-elevated);
 }
 @utility surface-proof {
-  background-image: var(--gradient-proof), var(--gradient-surface);
+  background: hsl(var(--surface));
   border: 1px solid hsl(var(--proof-blue) / 0.25);
-  box-shadow: var(--shadow-proof-glow);
-}
-@utility hairline-top {
-  position: relative;
+  box-shadow: inset 0 0 0 1px hsl(var(--proof-blue) / 0.12);
 }
 @utility ring-hairline {
-  box-shadow:
-    inset 0 1px 0 0 hsl(var(--eggshell) / 0.05),
-    inset 0 0 0 1px hsl(var(--line) / 0.6);
+  box-shadow: inset 0 0 0 1px hsl(var(--eggshell) / 0.06);
 }
+@utility ring-hairline-strong {
+  box-shadow: inset 0 0 0 1px hsl(var(--eggshell) / 0.10);
+}
+@utility ring-proof {
+  box-shadow: inset 0 0 0 1px hsl(var(--proof-blue) / 0.35), 0 0 0 1px hsl(var(--proof-blue) / 0.12);
+}
+@utility hairline-divider {
+  border-top: 1px solid hsl(var(--eggshell) / 0.06);
+}
+@utility hairline-top { position: relative; }
 @utility shadow-elevated { box-shadow: var(--shadow-elevated); }
 @utility shadow-floating { box-shadow: var(--shadow-floating); }
 @utility shadow-proof-glow { box-shadow: var(--shadow-proof-glow); }
+
+/* Icon tile — glifo monocromático em quadrado 28px, hairline, raio 8 */
+@utility icon-tile {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid hsl(var(--eggshell) / 0.06);
+  background: hsl(var(--surface-raised));
+  color: hsl(var(--stone));
+  display: inline-grid;
+  place-items: center;
+  transition: color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
+}
+@utility icon-tile-active {
+  border-color: hsl(var(--proof-blue) / 0.35);
+  background: hsl(var(--surface-inset));
+  color: hsl(var(--proof-blue));
+}
+
 
 
 /* ==== Proofline motion & interaction ==== */

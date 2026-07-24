@@ -3,35 +3,46 @@ import { useLocation } from 'wouter';
 import { AppShell, useEvidence } from '@/components/layout/AppShell';
 import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { FreshnessTag } from '@/components/data/FreshnessTag';
-import { MetricValue } from '@/components/data/MetricValue';
-import { IntegrationStateBadge } from '@/components/data/IntegrationStateBadge';
-import { DataTable, ColumnDef } from '@/components/data/DataTable';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
 import { buildEvidence } from '@/lib/evidence';
 import { db } from '@/lib/fake/db';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { StatusPill, CardFooter, MicroStatRow, type IntegrationPillState } from '@/components/ui/proofline';
+import { Search } from 'lucide-react';
 import type { IntegrationState } from '@/lib/types';
 
 /**
- * Integration Hub — catálogo por categoria (Provedor / Aquisição / Mensageria / Infra / IA).
- * Cada linha traz IntegrationStateBadge (enum fechado + adapter version), último evento,
- * saúde e latência derivados do dataset canônico. Todo número abre Evidence Drawer.
+ * Integration Hub — Fase D. Grade por categoria (Revenue providers · Acquisition ·
+ * Messaging · Infra · IA), com StatusPill enum-fechado no topo direito do card
+ * e CardFooter com adapter version / accounts / ação "Configurar →".
  */
 interface IntegrationRow {
   id: string;
   name: string;
-  category: 'Provedor de Receita' | 'Aquisição' | 'Mensageria' | 'Infra' | 'IA';
+  initials: string;
+  category: 'Revenue providers' | 'Acquisition' | 'Messaging' | 'Infra' | 'IA';
   state: IntegrationState;
+  pill?: IntegrationPillState;
   adapterVersion: string;
   eventType?: string;
   lastEventAt?: string;
   health: number;
   errors24h: number;
   p95: number;
+  accounts: number;
+  policyAware?: boolean;
+  description: string;
 }
 
+const CATEGORY_META: Record<IntegrationRow['category'], { title: string; description: string }> = {
+  'Revenue providers': { title: 'Revenue providers', description: 'A fonte da verdade financeira. Postback + Reporting API reconciliam a cada 15 min.' },
+  'Acquisition':       { title: 'Acquisition',       description: 'Aquisição paga. Cada adapter carrega click_id opaco de volta para o Ledger.' },
+  'Messaging':         { title: 'Messaging',         description: 'Canais de conversa. Consentimento validado antes do envio pelo Policy Engine.' },
+  'Infra':             { title: 'Infra',             description: 'Peças de infraestrutura — proxies, edge, transporte.' },
+  'IA':                { title: 'IA',                description: 'Copiloto e assistentes. Sempre rotulados como sugestão, nunca decisão.' },
+};
+
 const CATEGORY_ORDER: IntegrationRow['category'][] = [
-  'Provedor de Receita', 'Aquisição', 'Mensageria', 'Infra', 'IA',
+  'Revenue providers', 'Acquisition', 'Messaging', 'Infra', 'IA',
 ];
 
 function lastEventFor(type: string): string | undefined {
@@ -42,111 +53,176 @@ function ageAgo(iso?: string): number {
   return Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
 }
 
+function pillFor(state: IntegrationState): IntegrationPillState {
+  if (state === 'production' || state === 'pilot') return 'active';
+  if (state === 'sandbox' || state === 'disabled') return 'available';
+  if (state === 'policy-blocked') return 'restricted';
+  return 'error';
+}
+
 export default function IntegrationsPage() {
   const [, navigate] = useLocation();
   const { openEvidence } = useEvidence();
-  const isMobile = useIsMobile();
+  const [query, setQuery] = useState('');
   const [category, setCategory] = useState<'all' | IntegrationRow['category']>('all');
+  const [pillFilter, setPillFilter] = useState<'all' | IntegrationPillState>('all');
 
   const integrations: IntegrationRow[] = useMemo(() => [
-    { id: 'tap', name: 'TAP', category: 'Provedor de Receita', state: 'production', adapterVersion: '2.1.0', eventType: 'ftd', lastEventAt: lastEventFor('ftd'), health: 98.7, errors24h: 2, p95: 412 },
-    { id: 'betano', name: 'Betano', category: 'Provedor de Receita', state: 'sandbox', adapterVersion: '1.0.0-rc.3', eventType: 'ftd', lastEventAt: undefined, health: 100, errors24h: 0, p95: 0 },
-    { id: 'meta', name: 'Meta CAPI', category: 'Aquisição', state: 'production', adapterVersion: '17.0.4', eventType: 'capi', lastEventAt: lastEventFor('capi'), health: 99.2, errors24h: 0, p95: 187 },
-    { id: 'tiktok', name: 'TikTok Events', category: 'Aquisição', state: 'pilot', adapterVersion: '1.3.2', eventType: 'click', lastEventAt: lastEventFor('click'), health: 97.1, errors24h: 5, p95: 341 },
-    { id: 'google', name: 'Google Ads Enhanced', category: 'Aquisição', state: 'disabled', adapterVersion: '0.9.0', health: 0, errors24h: 0, p95: 0 },
-    { id: 'telegram', name: 'Telegram Bot', category: 'Mensageria', state: 'production', adapterVersion: '6.0.1', eventType: 'bot_message', lastEventAt: lastEventFor('bot_message'), health: 99.9, errors24h: 0, p95: 96 },
-    { id: 'whatsapp', name: 'WhatsApp Cloud', category: 'Mensageria', state: 'policy-blocked', adapterVersion: '18.0.0', health: 0, errors24h: 0, p95: 0 },
-    { id: 'cloudflare', name: 'Cloudflare Proxy', category: 'Infra', state: 'production', adapterVersion: '2024.11', health: 99.98, errors24h: 0, p95: 22 },
-    { id: 'openai', name: 'OpenAI (Copiloto)', category: 'IA', state: 'pilot', adapterVersion: '2025.06', health: 98.2, errors24h: 1, p95: 812 },
+    { id: 'tap',        name: 'TAP',                 initials: 'TA', category: 'Revenue providers', state: 'production',     adapterVersion: '2.1.0',      eventType: 'ftd',         lastEventAt: lastEventFor('ftd'),         health: 98.7,  errors24h: 2, p95: 412, accounts: 1, policyAware: true,  description: 'Provedor canônico de FTD e depósitos. Postback S2S + Reporting API.' },
+    { id: 'betano',     name: 'Betano',              initials: 'BE', category: 'Revenue providers', state: 'sandbox',        adapterVersion: '1.0.0-rc.3', eventType: 'ftd',         lastEventAt: undefined,                  health: 100,   errors24h: 0, p95: 0,   accounts: 0, description: 'Segunda provedora em avaliação sandbox — 24/38 endpoints certificados.' },
+    { id: 'meta',       name: 'Meta CAPI',           initials: 'MC', category: 'Acquisition',       state: 'production',     adapterVersion: '17.0.4',     eventType: 'capi',        lastEventAt: lastEventFor('capi'),        health: 99.2,  errors24h: 0, p95: 187, accounts: 1, policyAware: true,  description: 'Purchase / Lead / Subscribe deduplicados por event_id compartilhado.' },
+    { id: 'tiktok',     name: 'TikTok Events',       initials: 'TT', category: 'Acquisition',       state: 'pilot',          adapterVersion: '1.3.2',      eventType: 'click',       lastEventAt: lastEventFor('click'),       health: 97.1,  errors24h: 5, p95: 341, accounts: 1, description: 'Aguardando 7 dias sem erros para promoção a Production.' },
+    { id: 'google',     name: 'Google Ads Enhanced', initials: 'GA', category: 'Acquisition',       state: 'disabled',       adapterVersion: '0.9.0',                                lastEventAt: undefined,                  health: 0,     errors24h: 0, p95: 0,   accounts: 0, description: 'Enhanced Conversions parado — falta hash de e-mail habilitado.' },
+    { id: 'telegram',   name: 'Telegram Bot',        initials: 'TG', category: 'Messaging',         state: 'production',     adapterVersion: '6.0.1',      eventType: 'bot_message', lastEventAt: lastEventFor('bot_message'), health: 99.9,  errors24h: 0, p95: 96,  accounts: 4, policyAware: true,  description: 'Deep links ?start= carregam click_id. Webhook validado com secret_token.' },
+    { id: 'whatsapp',   name: 'WhatsApp Cloud',      initials: 'WA', category: 'Messaging',         state: 'policy-blocked', adapterVersion: '18.0.0',                               lastEventAt: undefined,                  health: 0,     errors24h: 0, p95: 0,   accounts: 0, policyAware: true,  description: 'Bloqueado pelo Policy Engine — política de opt-in ainda em revisão.' },
+    { id: 'cloudflare', name: 'Cloudflare Proxy',    initials: 'CF', category: 'Infra',             state: 'production',     adapterVersion: '2024.11',                              lastEventAt: undefined,                  health: 99.98, errors24h: 0, p95: 22,  accounts: 1, description: 'Edge proxy para postbacks e redirects sem vazar UTM.' },
+    { id: 'openai',     name: 'OpenAI (Copiloto)',   initials: 'AI', category: 'IA',                state: 'pilot',          adapterVersion: '2025.06',                              lastEventAt: undefined,                  health: 98.2,  errors24h: 1, p95: 812, accounts: 1, description: 'Copiloto operacional. Toda sugestão vai anotada e nunca decide sozinha.' },
   ], []);
 
-  const filtered = category === 'all' ? integrations : integrations.filter((i) => i.category === category);
-  const grouped = CATEGORY_ORDER.map((cat) => ({ cat, items: filtered.filter((i) => i.category === cat) })).filter((g) => g.items.length);
+  const filtered = integrations.filter((i) => {
+    if (category !== 'all' && i.category !== category) return false;
+    if (pillFilter !== 'all' && pillFor(i.state) !== pillFilter) return false;
+    if (query.trim() && !`${i.name} ${i.category}`.toLowerCase().includes(query.toLowerCase())) return false;
+    return true;
+  });
 
-  // KPIs
+  const grouped = CATEGORY_ORDER
+    .map((cat) => ({ cat, items: filtered.filter((i) => i.category === cat) }))
+    .filter((g) => g.items.length);
+
   const totalProd = integrations.filter((i) => i.state === 'production').length;
   const totalErrors = integrations.reduce((s, i) => s + i.errors24h, 0);
-  const avgHealth = integrations.filter((i) => i.state === 'production' || i.state === 'pilot').reduce((s, i, _, a) => s + i.health / a.length, 0);
-  const worstP95 = Math.max(...integrations.map((i) => i.p95));
 
   return (
     <AppShell breadcrumb={[{ label: 'Connect', href: '/integrations' }, { label: 'Integrações' }]}>
-      <div className="max-w-7xl mx-auto space-y-6">
-        <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <span className="text-14 font-serif italic text-stone leading-none">Connect · Hub de integrações</span>
+      <div className="max-w-7xl mx-auto space-y-10 py-10 px-10">
+        {/* Header: kicker / título / subtítulo */}
+        <header className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-6">
+          <div className="min-w-0">
+            <div className="kicker mb-3">Connect · Integration hub</div>
+            <h1 className="page-title">Cada fonte, com estado e adapter version.</h1>
+            <p className="page-subtitle mt-2 max-w-2xl">
+              O vocabulário é fechado — Ativa · Disponível · Restrita · Erro. Cada card carrega a versão do adapter, o número de contas ligadas e um botão único de ação. Nada de "conectado".
+            </p>
+            <div className="flex items-center gap-3 mt-4 flex-wrap">
               <PreviewBadge />
               <FreshnessTag ageSeconds={ageAgo(lastEventFor('ftd'))} source="TAP · Meta · Telegram" />
               <StateShowcase />
             </div>
-            <h1 className="text-eggshell font-sans font-semibold tracking-tight text-24">Cada fonte, com estado e versão de adapter.</h1>
-            <p className="text-stone text-13 mt-2 max-w-xl">Nada de "conectado". Aqui o vocabulário é fechado: Disabled · Sandbox · Pilot · Production · Policy blocked — cada linha traz a versão do adapter.</p>
+          </div>
+          <div className="hidden md:flex flex-col items-end gap-2 shrink-0">
+            <span className="micro-label">Em produção · Erros 24h</span>
+            <div className="flex items-baseline gap-3">
+              <span className="mono-value text-24 text-eggshell tabular-nums leading-none">{totalProd}</span>
+              <span className="text-stone">/</span>
+              <span className={`mono-value text-24 tabular-nums leading-none ${totalErrors > 0 ? 'text-warning' : 'text-verified'}`}>{totalErrors}</span>
+            </div>
           </div>
         </header>
 
         <ScenarioStateGate emptyTitle="Nenhuma integração configurada" emptyDescription="Comece pela provedora de receita." emptyPrerequisite="Um adapter em Production é pré-requisito para o Signal Ledger.">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <MetricCard label="Em produção" value={String(totalProd)} sub={`${integrations.length} totais`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Integrações em Production', value: String(totalProd), formula: 'count(i) where state == "production"', source: 'Integration Registry' }))} />
-            <MetricCard label="Erros (24h)" value={String(totalErrors)} tone={totalErrors > 0 ? 'warning' : 'verified'} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Erros 24h', value: String(totalErrors), formula: 'sum(i.errors_last_24h)', source: 'Adapter telemetry', state: totalErrors > 0 ? 'Provisório' : 'Reconciliado' }))} />
-            <MetricCard label="Saúde média" value={`${avgHealth.toFixed(1)}%`} tone={avgHealth >= 99 ? 'verified' : avgHealth >= 95 ? 'warning' : 'critical'} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Saúde média (prod+pilot)', value: `${avgHealth.toFixed(1)}%`, formula: 'avg(i.health) where state in (prod, pilot)', source: 'Adapter telemetry' }))} />
-            <MetricCard label="Pior P95" value={`${worstP95}ms`} tone={worstP95 > 800 ? 'critical' : 'default'} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Pior latência P95', value: `${worstP95}ms`, formula: 'max(i.p95_ms)', source: 'Adapter telemetry' }))} />
+          {/* Filtros */}
+          <div className="surface-flat rounded-[12px] p-4 grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto_auto] gap-3 items-center">
+            <label className="relative">
+              <Search className="w-4 h-4 text-stone absolute left-3 top-1/2 -translate-y-1/2" aria-hidden />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Buscar integração ou categoria…"
+                className="w-full pl-9 pr-3 py-2 rounded-[8px] surface-inset text-13 text-eggshell placeholder:text-stone/70 focus:outline-none focus:ring-proof"
+              />
+            </label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value as any)}
+              className="rounded-[8px] surface-inset px-3 py-2 text-13 text-eggshell focus:outline-none focus:ring-proof"
+            >
+              <option value="all">Todos os tipos</option>
+              {CATEGORY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <select
+              value={pillFilter}
+              onChange={(e) => setPillFilter(e.target.value as any)}
+              className="rounded-[8px] surface-inset px-3 py-2 text-13 text-eggshell focus:outline-none focus:ring-proof"
+            >
+              <option value="all">Todos os status</option>
+              <option value="active">Ativa</option>
+              <option value="available">Disponível</option>
+              <option value="restricted">Restrita</option>
+              <option value="error">Erro</option>
+            </select>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 bg-graphite border border-line rounded-xl p-3">
-            <button onClick={() => setCategory('all')} className={`text-12 px-3 py-1 rounded-md border ${category === 'all' ? 'bg-zinc text-eggshell border-line' : 'text-stone border-transparent hover:text-eggshell'}`}>Todas</button>
-            {CATEGORY_ORDER.map((c) => (
-              <button key={c} onClick={() => setCategory(c)} className={`text-12 px-3 py-1 rounded-md border ${category === c ? 'bg-zinc text-eggshell border-line' : 'text-stone border-transparent hover:text-eggshell'}`}>{c}</button>
-            ))}
-            <span className="ml-auto text-11 font-mono text-stone tabular-nums">{filtered.length} integrações</span>
-          </div>
-
-          <div className="space-y-8">
+          {/* Grade agrupada por categoria */}
+          <div className="space-y-10">
             {grouped.map(({ cat, items }) => {
-              const columns: ColumnDef<IntegrationRow>[] = [
-                { header: 'Integração', accessorKey: 'name', cell: (i) => (
-                  <div className="flex flex-col">
-                    <span className="text-13 font-semibold text-eggshell">{i.name}</span>
-                    <span className="text-11 font-mono text-stone">v{i.adapterVersion}</span>
-                  </div>
-                ) },
-                { header: 'Estado', accessorKey: 'state', cell: (i) => <IntegrationStateBadge state={i.state} adapterVersion={i.adapterVersion} /> },
-                { header: 'Último evento', accessorKey: 'lastEventAt', cell: (i) => (
-                  <span className="font-mono text-11 text-stone tabular-nums">{i.lastEventAt ? i.lastEventAt.slice(0, 19).replace('T', ' ') : '—'}</span>
-                ), className: isMobile ? 'hidden' : '' },
-                { header: 'Saúde', accessorKey: 'health', cell: (i) => (
-                  <MetricValue value={`${i.health.toFixed(1)}%`} size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: `Saúde · ${i.name}`, value: `${i.health.toFixed(1)}%`, formula: '1 - (errors_5m / total_5m)', source: `Adapter ${i.name} v${i.adapterVersion}`, state: i.health >= 99 ? 'Reconciliado' : 'Provisório', freshness: `latência P95 ${i.p95}ms · erros 24h ${i.errors24h}` }))} />
-                ), className: 'text-right' },
-                { header: 'P95', accessorKey: 'p95', cell: (i) => (
-                  <span className="font-mono text-11 tabular-nums text-stone">{i.p95 ? `${i.p95}ms` : '—'}</span>
-                ), className: 'text-right' },
-              ];
+              const meta = CATEGORY_META[cat];
               return (
-                <div key={cat}>
-                  <h2 className="text-14 font-semibold text-eggshell mb-3 flex items-center gap-2">
-                    <span>{cat}</span>
-                    <span className="text-11 font-mono text-stone">{items.length}</span>
-                  </h2>
-                  <DataTable data={items} columns={columns} onRowClick={(i) => navigate(`/integrations/${i.id}`)} />
-                </div>
+                <section key={cat}>
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-4 mb-5">
+                    <div className="min-w-0">
+                      <h2 className="card-title text-eggshell">{meta.title}</h2>
+                      <p className="card-body mt-1 max-w-2xl">{meta.description}</p>
+                    </div>
+                    <span className="mono-value text-stone tabular-nums text-13 shrink-0">{items.length} {items.length === 1 ? 'disponível' : 'disponíveis'}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {items.map((i) => {
+                      const isActive = i.state === 'production' || i.state === 'pilot';
+                      return (
+                        <button
+                          key={i.id}
+                          type="button"
+                          onClick={() => navigate(`/integrations/${i.id}`)}
+                          className={`text-left rounded-[12px] p-6 surface-flat transition-colors hover:ring-hairline-strong focus:outline-none focus:ring-proof ${isActive ? 'ring-hairline-strong' : ''}`}
+                        >
+                          <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3 items-start">
+                            <div className="grid place-items-center w-10 h-10 rounded-[10px] surface-inset text-eggshell font-serif italic text-14 shrink-0">
+                              {i.initials}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="card-title truncate">{i.name}</div>
+                              <div className="text-11 text-stone mt-0.5 truncate">{i.category}</div>
+                            </div>
+                            <StatusPill state={i.pill ?? pillFor(i.state)} />
+                          </div>
+                          <p className="card-body mt-4 line-clamp-2">{i.description}</p>
+                          <MicroStatRow
+                            items={[
+                              { label: 'Adapter', value: `v${i.adapterVersion}` },
+                              { label: 'Contas', value: i.accounts, tone: i.accounts > 0 ? 'default' : 'default' },
+                              i.policyAware ? { label: 'Policy', value: 'aware', tone: 'proof' as const } : null,
+                            ].filter(Boolean) as any}
+                          />
+                          <CardFooter
+                            meta={i.state === 'production'
+                              ? <>Saúde <span className="text-verified">{i.health.toFixed(1)}%</span> · P95 {i.p95}ms</>
+                              : i.state === 'sandbox' ? 'Sandbox · aguardando promoção'
+                              : i.state === 'policy-blocked' ? 'Bloqueado pelo Policy Engine'
+                              : i.state === 'disabled' ? 'Desativado' : 'Piloto'}
+                            actionLabel={isActive ? 'Configurar' : 'Ativar'}
+                            onAction={() => {
+                              openEvidence(buildEvidence({
+                                label: `${i.name} · ${i.category}`,
+                                value: `estado ${i.state} · v${i.adapterVersion}`,
+                                formula: 'catalog(integrations) filter id',
+                                source: 'Integration Registry',
+                                state: isActive ? 'Reconciliado' : 'Provisório',
+                              }));
+                              navigate(`/integrations/${i.id}`);
+                            }}
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
               );
             })}
           </div>
         </ScenarioStateGate>
       </div>
     </AppShell>
-  );
-}
-
-function MetricCard({ label, value, sub, tone = 'default', onOpenEvidence }: {
-  label: string; value: string; sub?: string; tone?: 'default' | 'verified' | 'warning' | 'critical'; onOpenEvidence?: () => void;
-}) {
-  const cls = tone === 'verified' ? 'text-verified' : tone === 'warning' ? 'text-warning' : tone === 'critical' ? 'text-critical' : 'text-eggshell';
-  return (
-    <button type="button" onClick={onOpenEvidence} className="text-left rounded-xl border border-line bg-graphite hover:border-stone transition-colors p-4">
-      <div className="text-11 font-mono uppercase tracking-wider text-stone mb-2">{label}</div>
-      <div className={`font-mono tabular-nums text-24 leading-none font-semibold ${cls}`}>{value}</div>
-      {sub && <div className="text-11 font-mono text-stone mt-1">{sub}</div>}
-    </button>
   );
 }
