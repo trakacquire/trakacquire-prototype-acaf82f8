@@ -1,496 +1,177 @@
-import React, { useState } from 'react';
-import { AppShell } from '@/components/layout/AppShell';
-import { useParams } from 'wouter';
-import { Link } from 'wouter';
-import { MetricCard } from '@/components/data/MetricCard';
-import { DataTable } from '@/components/data/DataTable';
+import React, { useMemo, useState } from 'react';
+import { useParams, Link } from 'wouter';
+import { AppShell, useEvidence } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { FreshnessTag } from '@/components/data/FreshnessTag';
+import { MetricValue } from '@/components/data/MetricValue';
 import { StatusChip } from '@/components/domain/StatusChip';
-import ConfirmDialog from '@/components/domain/ConfirmDialog';
-import { db } from '@/lib/fake/db';
-import { useAppState } from '@/lib/context/AppStateContext';
-import { toast } from 'sonner';
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
-import { Pause, Play } from 'lucide-react';
+import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
+import { buildEvidence } from '@/lib/evidence';
+import { CAMPAIGNS, PERSONS, spendForPeriod } from '@/lib/fake/db';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 
-const fmtMoney = (v: number) =>
-  'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-const TOOLTIP_STYLE = {
-  contentStyle: {
-    background: 'var(--graphite)',
-    border: '1px solid var(--line)',
-    color: 'var(--eggshell)',
-    borderRadius: '8px',
-    fontFamily: 'inherit',
-  },
-};
-
-const SOURCE_LABELS: Record<string, string> = {
-  meta: 'Meta Ads',
-  tiktok: 'TikTok Ads',
-};
-
-const FORMAT_LABELS: Record<string, string> = {
-  video: 'Vídeo',
-  image: 'Imagem',
-  carousel: 'Carrossel',
-};
+interface ActionPlan {
+  id: string;
+  title: string;
+  hypothesis: string;
+  expected: string;
+  risk: 'baixo' | 'médio' | 'alto';
+  status: 'pending' | 'approved' | 'rejected';
+}
 
 export default function Campaign360Page() {
   const params = useParams<{ id: string }>();
-  const { dispatch } = useAppState();
+  const { openEvidence } = useEvidence();
+  const campaign = CAMPAIGNS.find((c) => c.id === params.id) ?? CAMPAIGNS[0];
+  const [expanded, setExpanded] = useState<Set<string>>(new Set(campaign.adsets.map((a) => a.id)));
+  const [plans, setPlans] = useState<ActionPlan[]>([
+    { id: 'plan-1', title: 'Pausar adset "Retargeting 30d"', hypothesis: 'CPFTD 2.1× acima da média há 5d.', expected: '−R$ 40/dia · +2 FTDs realocados', risk: 'baixo', status: 'pending' },
+    { id: 'plan-2', title: 'Aumentar orçamento "Lookalike 1% BR"', hypothesis: 'ROAS 3.4x consistente há 12d.', expected: '+R$ 60/dia · +8 FTDs projetados', risk: 'médio', status: 'pending' },
+  ]);
 
-  const campaign = db.getCampaign(params.id ?? '') ?? db.campaigns[0];
+  const totalSpend = spendForPeriod(30);
+  const share = campaign.budget_daily / CAMPAIGNS.filter((c) => c.source === campaign.source).reduce((s, c) => s + c.budget_daily, 0);
+  const spend30 = Math.round((campaign.source === 'meta' ? totalSpend.meta : totalSpend.tiktok) * share);
+  const ps = PERSONS.filter((p) => p.campaign_id === campaign.id && p.ftd_at);
+  const ftds = ps.length;
+  const net = Math.round(ps.reduce((s, p) => s + p.net_deposit, 0));
+  const cpftd = ftds > 0 ? Math.round(spend30 / ftds) : 0;
+  const roi = spend30 > 0 ? Math.round(((net - spend30) / spend30) * 100) : 0;
 
-  // Persons attributed to this campaign
-  const campaignPersons = db.persons.filter(p => p.campaign_id === campaign.id);
-  const ftds = campaignPersons.filter(p => p.ftd_at);
+  // Platform mock metrics
+  const cpm = campaign.source === 'meta' ? 12.4 : 8.7;
+  const ctr = campaign.source === 'meta' ? 1.8 : 2.4;
 
-  // Links for this campaign
-  const campaignLinks = db.links.filter(l => l.campaign_id === campaign.id);
-  const totalClicks = campaignLinks.reduce((s, l) => s + l.clicks, 0) || campaignPersons.length * 3;
-  const totalRegistrations = campaignPersons.filter(p => p.registered_at).length;
-  const totalFTDs = ftds.length;
-  const grossRevenue = ftds.reduce((s, p) => s + p.total_deposited, 0);
-
-  // 30-day spend estimate
-  const spend = campaign.budget_daily * 30;
-  const cpftd = totalFTDs > 0 ? spend / totalFTDs : 0;
-  const cpc = totalClicks > 0 ? spend / totalClicks : 0;
-  const cpr = totalRegistrations > 0 ? spend / totalRegistrations : 0;
-  const crPct = totalClicks > 0 ? (totalRegistrations / totalClicks) * 100 : 0;
-  const rftdPct = totalRegistrations > 0 ? (totalFTDs / totalRegistrations) * 100 : 0;
-
-  // Daily series: group campaign-person events by date (last 14 days)
-  const personIds = new Set(campaignPersons.map(p => p.id));
-  const campEvents = db.events.filter(e => personIds.has(e.person_id));
-
-  const dailyMap: Record<string, { date: string; cliques: number; ftds: number }> = {};
-  for (let i = 13; i >= 0; i--) {
-    const d = new Date('2026-07-23T12:00:00.000Z');
-    d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
-    dailyMap[key] = { date: key, cliques: 0, ftds: 0 };
-  }
-  for (const e of campEvents) {
-    const key = e.timestamp.slice(0, 10);
-    if (dailyMap[key]) {
-      if (e.type === 'click') dailyMap[key].cliques++;
-      if (e.type === 'ftd') dailyMap[key].ftds++;
-    }
-  }
-  const dailyData = Object.values(dailyMap).map(d => ({
-    ...d,
-    date: new Date(d.date + 'T12:00:00Z').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-  }));
-
-  // Pause state
-  const [isPaused, setIsPaused] = useState(campaign.status === 'paused');
-  const [confirmOpen, setConfirmOpen] = useState(false);
-
-  const handlePauseConfirm = () => {
-    setIsPaused(true);
-    dispatch({
-      type: 'APPEND_AUDIT',
-      entry: {
-        timestamp: new Date().toISOString(),
-        user: 'operador@trakacquire.io',
-        action: 'PAUSE_CAMPAIGN',
-        object: campaign.id,
-        detail: `Campanha "${campaign.name}" pausada manualmente.`,
-      },
+  const toggle = (id: string) => {
+    setExpanded((prev) => {
+      const n = new Set(prev);
+      if (n.has(id)) n.delete(id); else n.add(id);
+      return n;
     });
-    toast('Campanha pausada. Alteração refletirá na plataforma em até 2 minutos.');
   };
 
-  // Tabs
-  const TABS = ['Adsets', 'Criativos', 'Links', 'Pessoas'] as const;
-  type Tab = typeof TABS[number];
-  const [activeTab, setActiveTab] = useState<Tab>('Adsets');
-
-  // Adsets table
-  const adsetCols = [
-    {
-      header: 'Nome',
-      accessorKey: 'name' as const,
-      cell: (a: typeof campaign.adsets[0]) => (
-        <span className="text-14 text-[var(--eggshell)] font-medium">{a.name}</span>
-      ),
-    },
-    {
-      header: 'Anúncios',
-      accessorKey: 'id' as const,
-      cell: (a: typeof campaign.adsets[0]) => (
-        <span className="font-mono text-13 text-[var(--stone)]">
-          {campaign.ads.filter(ad => ad.adset_id === a.id).length}
-        </span>
-      ),
-    },
-    {
-      header: 'Budget Diário',
-      accessorKey: 'budget_daily' as const,
-      cell: (a: typeof campaign.adsets[0]) => (
-        <span className="font-mono text-13">{fmtMoney(a.budget_daily)}</span>
-      ),
-    },
-    {
-      header: 'Status',
-      accessorKey: 'id' as const,
-      cell: (_: typeof campaign.adsets[0]) => (
-        <StatusChip status={(isPaused ? 'Pending' : 'Confirmed') as any} />
-      ),
-    },
-  ];
-
-  // Creatives table
-  type ArchiveState = Record<string, boolean>;
-  const [archivedCreatives, setArchivedCreatives] = useState<ArchiveState>({});
-  const [archiveTarget, setArchiveTarget] = useState<string | null>(null);
-
-  const creativeCols = [
-    {
-      header: 'Nome',
-      accessorKey: 'id' as const,
-      cell: (c: typeof campaign.creatives[0]) => (
-        <div>
-          <div className="text-14 text-[var(--eggshell)] font-medium">
-            {campaign.name} — {c.id}
-          </div>
-          <div className="text-11 text-[var(--stone)] font-mono">{c.name}</div>
-        </div>
-      ),
-    },
-    {
-      header: 'Formato',
-      accessorKey: 'type' as const,
-      cell: (c: typeof campaign.creatives[0]) => (
-        <span className="px-2 py-0.5 rounded border border-[var(--line)] text-11 text-[var(--stone)] bg-[var(--zinc)]">
-          {FORMAT_LABELS[c.type] ?? c.type}
-        </span>
-      ),
-    },
-    {
-      header: 'Pessoas',
-      accessorKey: 'id' as const,
-      cell: (c: typeof campaign.creatives[0]) => (
-        <span className="font-mono text-13">
-          {campaignPersons.filter(p => p.creative_id === c.id).length}
-        </span>
-      ),
-    },
-    {
-      header: 'FTDs',
-      accessorKey: 'id' as const,
-      cell: (c: typeof campaign.creatives[0]) => (
-        <span className="font-mono text-13 text-[var(--verified)]">
-          {ftds.filter(p => p.creative_id === c.id).length}
-        </span>
-      ),
-    },
-    {
-      header: 'Ações',
-      accessorKey: 'id' as const,
-      cell: (c: typeof campaign.creatives[0]) => (
-        <div className="flex gap-2">
-          <button
-            className="text-12 px-2 py-1 rounded bg-[var(--zinc)] border border-[var(--line)] text-[var(--stone)] hover:text-[var(--eggshell)] transition-colors"
-            onClick={(e) => {
-              e.stopPropagation();
-              toast('Criativo duplicado.');
-            }}
-          >
-            Duplicar
-          </button>
-          <button
-            className="text-12 px-2 py-1 rounded bg-[var(--zinc)] border border-[var(--line)] text-[var(--stone)] hover:text-[var(--critical)] transition-colors"
-            onClick={(e) => {
-              e.stopPropagation();
-              setArchiveTarget(c.id);
-            }}
-          >
-            Arquivar
-          </button>
-        </div>
-      ),
-    },
-  ];
-
-  // Links table
-  const linkCols = [
-    {
-      header: 'Nome',
-      accessorKey: 'name' as const,
-      cell: (l: typeof campaignLinks[0]) => (
-        <span className="text-14 text-[var(--eggshell)]">{l.name}</span>
-      ),
-    },
-    {
-      header: 'URL',
-      accessorKey: 'url' as const,
-      cell: (l: typeof campaignLinks[0]) => (
-        <span className="font-mono text-12 text-[var(--proof-blue)] truncate max-w-[160px] block">{l.url}</span>
-      ),
-    },
-    {
-      header: 'Cliques',
-      accessorKey: 'clicks' as const,
-      cell: (l: typeof campaignLinks[0]) => (
-        <span className="font-mono text-13">{l.clicks.toLocaleString('pt-BR')}</span>
-      ),
-    },
-    {
-      header: 'Registros',
-      accessorKey: 'registrations' as const,
-      cell: (l: typeof campaignLinks[0]) => (
-        <span className="font-mono text-13">{l.registrations.toLocaleString('pt-BR')}</span>
-      ),
-    },
-    {
-      header: 'FTDs',
-      accessorKey: 'ftds' as const,
-      cell: (l: typeof campaignLinks[0]) => (
-        <span className="font-mono text-13 text-[var(--verified)]">{l.ftds}</span>
-      ),
-    },
-    {
-      header: 'Status',
-      accessorKey: 'status' as const,
-      cell: (l: typeof campaignLinks[0]) => {
-        const s =
-          l.status === 'active' ? 'Confirmed'
-          : l.status === 'paused' ? 'Divergent'
-          : 'Orphan';
-        return <StatusChip status={s as any} />;
-      },
-    },
-  ];
-
-  // Persons table
-  const personCols = [
-    {
-      header: 'ID',
-      accessorKey: 'id' as const,
-      cell: (p: typeof campaignPersons[0]) => (
-        <Link href={`/players/${p.id}`}>
-          <span className="font-mono text-12 text-[var(--proof-blue)] hover:underline cursor-pointer">{p.id}</span>
-        </Link>
-      ),
-    },
-    {
-      header: 'Nome',
-      accessorKey: 'name' as const,
-      cell: (p: typeof campaignPersons[0]) => (
-        <span className="text-14 text-[var(--eggshell)]">{p.name}</span>
-      ),
-    },
-    {
-      header: 'Status',
-      accessorKey: 'status' as const,
-      cell: (p: typeof campaignPersons[0]) => <StatusChip status={p.status} />,
-    },
-    {
-      header: 'FTD',
-      accessorKey: 'ftd_at' as const,
-      cell: (p: typeof campaignPersons[0]) => (
-        <span className={p.ftd_at ? 'text-[var(--verified)]' : 'text-[var(--stone)]'}>
-          {p.ftd_at ? '✓' : '–'}
-        </span>
-      ),
-    },
-    {
-      header: 'Total Depositado',
-      accessorKey: 'total_deposited' as const,
-      cell: (p: typeof campaignPersons[0]) => (
-        <span className="font-mono text-13">{fmtMoney(p.total_deposited)}</span>
-      ),
-    },
-  ];
+  const decide = (id: string, decision: 'approved' | 'rejected') => {
+    setPlans((prev) => prev.map((p) => p.id === id ? { ...p, status: decision } : p));
+  };
 
   return (
-    <AppShell
-      breadcrumb={[
-        { label: 'Mídia', href: '/media' },
-        { label: campaign.name },
-      ]}
-    >
+    <AppShell breadcrumb={[{ label: 'Operate', href: '/media' }, { label: 'Mídia', href: '/media' }, { label: campaign.name }]}>
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
           <div>
             <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <h1 className="text-24 font-bold text-[var(--eggshell)]">{campaign.name}</h1>
-              <span className="px-2 py-0.5 rounded border border-[var(--line)] text-11 font-medium text-[var(--stone)] bg-[var(--zinc)]">
-                {SOURCE_LABELS[campaign.source] ?? campaign.source}
-              </span>
-              <StatusChip status={(isPaused ? 'Divergent' : 'Confirmed') as any} />
+              <span className="text-14 font-serif italic text-stone leading-none">Operate · Campanha 360</span>
+              <PreviewBadge />
+              <StatusChip status={campaign.status === 'active' ? 'Confirmed' : 'Captured'} />
+              <FreshnessTag ageSeconds={60 * 45} source={`${campaign.source === 'meta' ? 'Meta' : 'TikTok'} Ads · snapshot 45min`} />
+              <StateShowcase />
             </div>
-            <p className="text-13 text-[var(--stone)]">
-              Budget diário: <span className="font-mono text-[var(--eggshell)]">{fmtMoney(campaign.budget_daily)}</span>
-            </p>
+            <h1 className="text-eggshell font-sans font-semibold tracking-tight text-24">{campaign.name}</h1>
+            <p className="text-stone text-13 mt-2 max-w-xl">Métricas da plataforma × TrakAcquire, lado a lado. Cada ação sugerida abre um <span className="font-mono text-eggshell">ApprovalCard</span> imutável.</p>
+          </div>
+        </header>
+
+        <ScenarioStateGate emptyTitle="Sem atividade nesta campanha">
+          {/* Cross-side KPIs */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-graphite border border-line rounded-xl p-5">
+              <div className="text-11 font-mono uppercase tracking-wider text-stone mb-3">{campaign.source === 'meta' ? 'Meta Ads' : 'TikTok Ads'}</div>
+              <div className="grid grid-cols-3 gap-3">
+                <KPI label="Spend" value={`R$ ${spend30.toLocaleString('pt-BR')}`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Spend', value: `R$ ${spend30.toLocaleString('pt-BR')}`, formula: 'source_spend × budget_share', source: `${campaign.source} Ads` }))} />
+                <KPI label="CPM" value={`R$ ${cpm.toFixed(2)}`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'CPM', value: `R$ ${cpm.toFixed(2)}`, formula: 'spend / impressions × 1000', source: `${campaign.source} Ads` }))} />
+                <KPI label="CTR" value={`${ctr.toFixed(2)}%`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'CTR', value: `${ctr.toFixed(2)}%`, formula: 'clicks / impressions', source: `${campaign.source} Ads` }))} />
+              </div>
+            </div>
+            <div className="bg-graphite border border-line rounded-xl p-5">
+              <div className="text-11 font-mono uppercase tracking-wider text-stone mb-3">TrakAcquire (reconciliado)</div>
+              <div className="grid grid-cols-4 gap-3">
+                <KPI label="FTDs" value={ftds.toLocaleString('pt-BR')} tone="verified" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'FTDs', value: ftds.toLocaleString('pt-BR'), formula: 'count(persons.ftd_at) where campaign_id=?', source: 'TAP postback', state: 'Reconciliado' }))} />
+                <KPI label="CPFTD" value={cpftd > 0 ? `R$ ${cpftd.toLocaleString('pt-BR')}` : '—'} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'CPFTD', value: `R$ ${cpftd.toLocaleString('pt-BR')}`, formula: 'spend / ftds', source: 'Cross' }))} />
+                <KPI label="Net" value={`R$ ${net.toLocaleString('pt-BR')}`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Net deposit', value: `R$ ${net.toLocaleString('pt-BR')}`, formula: 'sum(persons.net_deposit)', source: 'TAP + saques' }))} />
+                <KPI label="ROI" value={`${roi}%`} tone={roi >= 0 ? 'verified' : 'critical'} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'ROI', value: `${roi}%`, formula: '(net - spend) / spend', source: 'P&L' }))} />
+              </div>
+            </div>
           </div>
 
-          <button
-            onClick={() => {
-              if (isPaused) {
-                setIsPaused(false);
-                toast('Campanha reativada.');
-              } else {
-                setConfirmOpen(true);
-              }
-            }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-14 font-medium transition-colors ${
-              isPaused
-                ? 'bg-[var(--verified)]/20 text-[var(--verified)] hover:bg-[var(--verified)]/30'
-                : 'bg-[var(--warning)]/20 text-[var(--warning)] hover:bg-[var(--warning)]/30'
-            }`}
-          >
-            {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-            {isPaused ? 'Reativar campanha' : 'Pausar campanha'}
-          </button>
-        </div>
-
-        {/* 4 MetricCards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard
-            label="Cliques"
-            value={totalClicks.toLocaleString('pt-BR')}
-          />
-          <MetricCard
-            label="Registros"
-            value={totalRegistrations.toLocaleString('pt-BR')}
-          />
-          <MetricCard
-            label="FTDs"
-            value={totalFTDs.toLocaleString('pt-BR')}
-          />
-          <MetricCard
-            label="CPFTD"
-            value={cpftd > 0 ? fmtMoney(cpftd) : '—'}
-          />
-        </div>
-
-        {/* Daily chart */}
-        <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-6">
-          <h2 className="text-16 font-medium text-[var(--eggshell)] mb-4">Performance Diária (últimos 14 dias)</h2>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={dailyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" />
-              <XAxis dataKey="date" stroke="var(--stone)" style={{ fontSize: 11 }} />
-              <YAxis stroke="var(--stone)" style={{ fontSize: 11 }} />
-              <Tooltip {...TOOLTIP_STYLE} />
-              <Line type="monotone" dataKey="cliques" stroke="var(--proof-blue)" strokeWidth={2} dot={false} name="Cliques" />
-              <Line type="monotone" dataKey="ftds" stroke="var(--verified)" strokeWidth={2} dot={false} name="FTDs" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Efficiency row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { label: 'CPC', value: fmtMoney(cpc) },
-            { label: 'CPR', value: fmtMoney(cpr) },
-            { label: 'C→R%', value: crPct.toFixed(1) + '%' },
-            { label: 'R→FTD%', value: rftdPct.toFixed(1) + '%' },
-          ].map(m => (
-            <div key={m.label} className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-4">
-              <div className="text-11 font-mono text-[var(--stone)] uppercase tracking-wider mb-1">{m.label}</div>
-              <div className="text-22 font-mono font-semibold text-[var(--eggshell)]">{m.value}</div>
+          {/* Árvore campanha → adset → ad */}
+          <div className="bg-graphite border border-line rounded-xl overflow-hidden">
+            <div className="px-5 py-3 border-b border-line flex items-center justify-between">
+              <h3 className="text-14 font-semibold text-eggshell">Estrutura</h3>
+              <span className="text-11 font-mono text-stone">{campaign.adsets.length} adsets · {campaign.ads.length} anúncios</span>
             </div>
-          ))}
-        </div>
+            <div className="divide-y divide-line">
+              {campaign.adsets.map((ads) => {
+                const ads_ads = campaign.ads.filter((a) => a.adset_id === ads.id);
+                const open = expanded.has(ads.id);
+                return (
+                  <div key={ads.id}>
+                    <button onClick={() => toggle(ads.id)} className="w-full flex items-center justify-between px-5 py-3 hover:bg-iron">
+                      <div className="flex items-center gap-3">
+                        {open ? <ChevronDown className="w-4 h-4 text-stone" /> : <ChevronRight className="w-4 h-4 text-stone" />}
+                        <span className="text-13 font-semibold text-eggshell">{ads.name}</span>
+                        <span className="text-11 font-mono text-stone">R$ {ads.budget_daily}/dia</span>
+                      </div>
+                      <span className="text-11 font-mono text-stone">{ads_ads.length} anúncios</span>
+                    </button>
+                    {open && (
+                      <div className="bg-ink/40 divide-y divide-line/60">
+                        {ads_ads.map((ad) => {
+                          const cr = campaign.creatives.find((c) => c.id === ad.creative_id);
+                          return (
+                            <div key={ad.id} className="pl-14 pr-5 py-2 flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className={`w-6 h-6 rounded flex items-center justify-center text-10 font-mono uppercase ${cr?.type === 'video' ? 'bg-proof-blue/10 text-proof-blue' : cr?.type === 'image' ? 'bg-warning/10 text-warning' : 'bg-verified/10 text-verified'}`}>{cr?.type[0] ?? '?'}</div>
+                                <span className="text-12 text-eggshell">{ad.name}</span>
+                              </div>
+                              <Link href="/media/creatives" className="text-11 font-mono text-proof-blue hover:underline">Ver ranking →</Link>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
-        {/* Tabs */}
-        <div>
-          <div className="border-b border-[var(--line)] flex gap-6 overflow-x-auto">
-            {TABS.map(tab => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`pb-3 text-14 font-medium whitespace-nowrap transition-colors border-b-2 ${
-                  activeTab === tab
-                    ? 'text-[var(--eggshell)] border-[var(--proof-blue)]'
-                    : 'text-[var(--stone)] border-transparent hover:text-[var(--eggshell)]'
-                }`}
-              >
-                {tab}
-              </button>
+          {/* Action plans */}
+          <div className="space-y-3">
+            <h3 className="text-14 font-semibold text-eggshell">Action plans (aguardando dono)</h3>
+            {plans.map((p) => (
+              <div key={p.id} className={`bg-graphite border rounded-xl p-4 ${p.status === 'approved' ? 'border-verified/30' : p.status === 'rejected' ? 'border-critical/30' : 'border-line'}`}>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className="text-13 font-semibold text-eggshell">{p.title}</span>
+                      <StatusChip status={p.status === 'approved' ? 'Confirmed' : p.status === 'rejected' ? 'Failed' : 'Captured'} />
+                      <span className={`text-11 font-mono px-2 py-0.5 rounded border ${p.risk === 'baixo' ? 'text-verified border-verified/30' : p.risk === 'médio' ? 'text-warning border-warning/30' : 'text-critical border-critical/30'}`}>risco {p.risk}</span>
+                    </div>
+                    <p className="text-12 text-stone mt-1">{p.hypothesis}</p>
+                    <p className="text-12 text-eggshell mt-1 font-mono">Impacto: {p.expected}</p>
+                  </div>
+                  {p.status === 'pending' && (
+                    <div className="flex flex-col gap-2 shrink-0">
+                      <button onClick={() => decide(p.id, 'approved')} className="text-11 border border-verified/30 text-verified rounded-md px-3 py-1 hover:bg-verified/10">Aprovar</button>
+                      <button onClick={() => decide(p.id, 'rejected')} className="text-11 border border-critical/30 text-critical rounded-md px-3 py-1 hover:bg-critical/10">Rejeitar</button>
+                    </div>
+                  )}
+                </div>
+              </div>
             ))}
           </div>
-
-          <div className="mt-4">
-            {activeTab === 'Adsets' && (
-              campaign.adsets.length > 0 ? (
-                <DataTable data={campaign.adsets} columns={adsetCols} searchPlaceholder="Buscar adsets..." />
-              ) : (
-                <div className="py-12 text-center text-[var(--stone)] text-14">Nenhum adset encontrado para esta campanha.</div>
-              )
-            )}
-
-            {activeTab === 'Criativos' && (
-              campaign.creatives.length > 0 ? (
-                <DataTable
-                  data={campaign.creatives.filter(c => !archivedCreatives[c.id])}
-                  columns={creativeCols}
-                  searchPlaceholder="Buscar criativos..."
-                />
-              ) : (
-                <div className="py-12 text-center text-[var(--stone)] text-14">Nenhum criativo encontrado para esta campanha.</div>
-              )
-            )}
-
-            {activeTab === 'Links' && (
-              campaignLinks.length > 0 ? (
-                <DataTable data={campaignLinks} columns={linkCols} searchPlaceholder="Buscar links..." />
-              ) : (
-                <div className="py-12 text-center text-[var(--stone)] text-14">Nenhum link rastreado para esta campanha.</div>
-              )
-            )}
-
-            {activeTab === 'Pessoas' && (
-              campaignPersons.length > 0 ? (
-                <DataTable
-                  data={campaignPersons.slice(0, 50)}
-                  columns={personCols}
-                  searchPlaceholder="Buscar pessoas..."
-                />
-              ) : (
-                <div className="py-12 text-center text-[var(--stone)] text-14">Nenhuma pessoa atribuída a esta campanha.</div>
-              )
-            )}
-          </div>
-        </div>
+        </ScenarioStateGate>
       </div>
-
-      {/* Pause confirm dialog */}
-      <ConfirmDialog
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        onConfirm={handlePauseConfirm}
-        title="Pausar campanha?"
-        description="A campanha será pausada na plataforma de origem. Confirme para prosseguir."
-        confirmLabel="Pausar"
-        danger
-      />
-
-      {/* Archive creative confirm dialog */}
-      <ConfirmDialog
-        open={archiveTarget !== null}
-        onClose={() => setArchiveTarget(null)}
-        onConfirm={() => {
-          if (archiveTarget) {
-            setArchivedCreatives(prev => ({ ...prev, [archiveTarget]: true }));
-          }
-          toast('Criativo arquivado.');
-          setArchiveTarget(null);
-        }}
-        title="Arquivar criativo?"
-        description="O criativo será removido da lista ativa. Esta ação pode ser desfeita pelo suporte."
-        confirmLabel="Arquivar"
-        danger
-      />
     </AppShell>
+  );
+}
+
+function KPI({ label, value, tone = 'default', onOpenEvidence }: { label: string; value: string; tone?: 'default' | 'verified' | 'warning' | 'critical'; onOpenEvidence?: () => void }) {
+  const cls = tone === 'verified' ? 'text-verified' : tone === 'warning' ? 'text-warning' : tone === 'critical' ? 'text-critical' : 'text-eggshell';
+  return (
+    <button type="button" onClick={onOpenEvidence} className="text-left rounded-md border border-line/60 bg-zinc/40 hover:border-stone transition-colors p-3">
+      <div className="text-10 font-mono uppercase tracking-wider text-stone mb-1">{label}</div>
+      <div className={`font-mono tabular-nums text-16 leading-none font-semibold ${cls}`}>{value}</div>
+    </button>
   );
 }
