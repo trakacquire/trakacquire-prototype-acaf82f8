@@ -528,7 +528,7 @@ function SpecialTAP({ openEvidence, postbackUrl, copied, copy }: { openEvidence:
       <div className="bg-graphite border border-line rounded-xl p-5 space-y-4">
         <div className="flex items-center gap-3">
           <h3 className="text-14 font-semibold text-eggshell">Teste ao vivo</h3>
-          <StatusChip status={semaforo === 'ok' ? 'Confirmed' : semaforo === 'testing' ? 'Provisional' : 'Captured'} />
+          <StatusChip status={semaforo === 'ok' ? 'Confirmed' : semaforo === 'testing' ? 'Captured' : 'Captured'} />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <label className="flex flex-col gap-1 md:col-span-1">
@@ -646,7 +646,7 @@ function SpecialTAP({ openEvidence, postbackUrl, copied, copy }: { openEvidence:
                 <td className="px-4 py-2 font-mono text-12 text-eggshell tabular-nums text-right">{r.imported}</td>
                 <td className="px-4 py-2 font-mono text-12 tabular-nums text-right"><span className={r.errors > 0 ? 'text-warning' : 'text-verified'}>{r.errors}</span></td>
                 <td className="px-4 py-2">
-                  <StatusChip status={r.status === 'Sucesso' ? 'Confirmed' : r.status === 'Parcial' ? 'Provisional' : 'Divergent'} />
+                  <StatusChip status={r.status === 'Sucesso' ? 'Confirmed' : r.status === 'Parcial' ? 'Captured' : 'Divergent'} />
                 </td>
               </tr>
             ))}
