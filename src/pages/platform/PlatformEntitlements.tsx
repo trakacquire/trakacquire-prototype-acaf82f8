@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { DataTable } from '@/components/data/DataTable';
 
 export default function PlatformEntitlementsPage() {
@@ -22,10 +23,11 @@ export default function PlatformEntitlementsPage() {
   return (
     <PlatformShell breadcrumb={[{ label: 'Entitlements' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-24 font-bold text-eggshell mb-2">Feature Entitlements</h1>
-          <p className="text-14 text-stone">Controle de acesso a features por plano e overrides por tenant.</p>
-        </div>
+        <PlatformPageHeader
+          kicker="Platform · Entitlements"
+          title="Feature Entitlements"
+          description="Controle de acesso a features por plano e overrides por tenant."
+        />
 
         <DataTable data={flags} columns={columns} />
       </div>

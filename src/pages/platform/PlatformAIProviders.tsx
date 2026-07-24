@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { db } from '@/lib/fake/db';
 import { StatusChip } from '@/components/domain/StatusChip';
 import type { EventStatus } from '@/lib/types';
@@ -21,60 +22,60 @@ export default function PlatformAIProvidersPage() {
   return (
     <PlatformShell breadcrumb={[{ label: 'Provedores de IA' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
-        <h1 className="text-24 font-bold text-[var(--eggshell)]">Provedores de IA</h1>
+        <PlatformPageHeader kicker="Platform · AI Providers" title="Provedores de IA" />
 
         {/* Stat cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-5">
-            <div className="text-11 font-mono text-[var(--stone)] uppercase mb-1">Chamadas este mês</div>
-            <div className="text-22 font-mono text-[var(--eggshell)]">{fmtNum(aiEvents)}</div>
+          <div className="bg-graphite border border-line rounded-xl p-5">
+            <div className="text-11 font-mono text-stone uppercase mb-1">Chamadas este mês</div>
+            <div className="text-22 font-mono text-eggshell">{fmtNum(aiEvents)}</div>
           </div>
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-5">
-            <div className="text-11 font-mono text-[var(--stone)] uppercase mb-1">Custo estimado</div>
-            <div className="text-22 font-mono text-[var(--eggshell)]">R$ {estimatedCost}</div>
+          <div className="bg-graphite border border-line rounded-xl p-5">
+            <div className="text-11 font-mono text-stone uppercase mb-1">Custo estimado</div>
+            <div className="text-22 font-mono text-eggshell">R$ {estimatedCost}</div>
           </div>
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-5">
-            <div className="text-11 font-mono text-[var(--stone)] uppercase mb-1">Latência P99</div>
-            <div className="text-22 font-mono text-[var(--eggshell)]">847ms</div>
+          <div className="bg-graphite border border-line rounded-xl p-5">
+            <div className="text-11 font-mono text-stone uppercase mb-1">Latência P99</div>
+            <div className="text-22 font-mono text-eggshell">847ms</div>
           </div>
         </div>
 
         {/* Table */}
-        <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl overflow-hidden">
+        <div className="bg-graphite border border-line rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-13">
               <thead>
-                <tr className="border-b border-[var(--line)]">
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Provedor</th>
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Modelos</th>
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Ambiente</th>
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Status</th>
-                  <th className="text-right text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Custo/1k tokens</th>
-                  <th className="text-right text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Latência P99</th>
+                <tr className="border-b border-line">
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Provedor</th>
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Modelos</th>
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Ambiente</th>
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Status</th>
+                  <th className="text-right text-11 text-stone font-medium px-4 py-3 uppercase">Custo/1k tokens</th>
+                  <th className="text-right text-11 text-stone font-medium px-4 py-3 uppercase">Latência P99</th>
                 </tr>
               </thead>
               <tbody>
                 {providers.map(p => (
-                  <tr key={p.id} className="border-b border-[var(--line)]/50 last:border-0 hover:bg-[var(--iron)] transition-colors">
+                  <tr key={p.id} className="border-b border-line/50 last:border-0 hover:bg-iron transition-colors">
                     <td className="px-4 py-3">
-                      <span className="text-14 font-bold text-[var(--eggshell)]">{p.name}</span>
+                      <span className="text-14 font-bold text-eggshell">{p.name}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-12 font-mono text-[var(--stone)]">{p.models.join(', ')}</span>
+                      <span className="text-12 font-mono text-stone">{p.models.join(', ')}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-13 text-[var(--stone)]">{p.env}</span>
+                      <span className="text-13 text-stone">{p.env}</span>
                     </td>
                     <td className="px-4 py-3">
                       <StatusChip status={(p.status === 'Ativo' ? 'Confirmed' : 'Synthetic') as EventStatus} />
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <span className="font-mono text-12 text-[var(--eggshell)]">
+                      <span className="font-mono text-12 text-eggshell">
                         {p.cost_per_1k === 0 ? '—' : `$${p.cost_per_1k.toFixed(4)}`}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <span className="font-mono text-12 text-[var(--eggshell)]">{p.latency_p99}ms</span>
+                      <span className="font-mono text-12 text-eggshell">{p.latency_p99}ms</span>
                     </td>
                   </tr>
                 ))}

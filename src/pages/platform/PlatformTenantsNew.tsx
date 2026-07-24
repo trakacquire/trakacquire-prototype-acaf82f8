@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlatformShell } from '@/components/layout/PlatformShell';
+import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 import { Check } from 'lucide-react';
 import { useLocation } from 'wouter';
 
@@ -8,11 +9,9 @@ export default function PlatformTenantsNewPage() {
 
   return (
     <PlatformShell breadcrumb={[{ label: 'Tenants', href: '/platform/tenants' }, { label: 'Provisionar' }]}>
-      <div className="max-w-3xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-24 font-bold text-eggshell mb-2">Provisionar Tenant</h1>
-          <p className="text-14 text-stone">Crie um novo ambiente isolado de workspace.</p>
-        </div>
+      <div className="max-w-7xl mx-auto space-y-6">
+        <PlatformPageHeader kicker="Platform · Provisioning" title="Provisionar Tenant" description="Crie um novo ambiente isolado de workspace." />
+
 
         <div className="flex items-center gap-4 mb-8 text-14 font-medium">
           <div className="flex items-center gap-2 text-eggshell">
