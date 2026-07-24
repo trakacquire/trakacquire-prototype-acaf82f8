@@ -29,7 +29,9 @@ export default function PlatformAIGuardrailsPage() {
   }
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Guardr<PlatformPageHeader kicker="Platform · AI Guardrails" title="Guardrails de IA e Mascaramento de PII" />"text-24 font-bold text-eggshell">Guardrails de IA e Mascaramento de PII</h1>
+    <PlatformShell breadcrumb={[{ label: 'Guardrails de IA' }]}>
+      <div className="max-w-7xl mx-auto space-y-6">
+        <PlatformPageHeader kicker="Platform · AI Guardrails" title="Guardrails de IA e Mascaramento de PII" />
 
         {/* Stat cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

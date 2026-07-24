@@ -41,14 +41,20 @@ export default function PlatformAIRoutingPage() {
 
   return (
     <PlatformShell breadcrumb={[{ label: 'Roteamento de IA' }]}>
-      <div className="max-w-7xl mx-auto space<PlatformPageHeader kicker="Platform · AI Routing" title="Roteamento de Modelos de IA" /> className="text-24 font-bold text-eggshell">Roteamento de Modelos de IA</h1>
-          <button
-            onClick={handleSaveAll}
-            className="px-4 py-2 rounded-md text-14 font-medium bg-eggshell text-ink hover:bg-white transition-colors"
-          >
-            Salvar configuração
-          </button>
-        </div>
+      <div className="max-w-7xl mx-auto space-y-6">
+        <PlatformPageHeader
+          kicker="Platform · AI Routing"
+          title="Roteamento de Modelos de IA"
+          actions={
+            <button
+              onClick={handleSaveAll}
+              className="px-4 py-2 rounded-md text-14 font-medium bg-eggshell text-ink hover:bg-white transition-colors"
+            >
+              Salvar configuração
+            </button>
+          }
+        />
+
 
         <div className="bg-graphite border border-line rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
