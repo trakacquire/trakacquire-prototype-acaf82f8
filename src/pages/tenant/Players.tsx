@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'wouter';
 import { AppShell } from '@/components/layout/AppShell';
 import { PreviewBadge } from '@/components/data/PreviewBadge';
-import { PhasePreviewBanner } from '@/components/state/PhasePreviewBanner';
 import { StatusChip } from '@/components/domain/StatusChip';
+import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
 import { db } from '@/lib/fake/db';
 
 export default function PlayersPage() {
