@@ -18,6 +18,10 @@ export default function LedgerPage() {
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [evidence, setEvidence] = useState<EvidencePayload | null>(null);
+  // E1 — modo "Ao vivo" (tail em tempo real). /live redireciona para /ledger?live=1.
+  const [live, setLive] = useState<boolean>(() =>
+    typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('live') === '1',
+  );
   const isMobile = useIsMobile();
 
   const statusCounts = useMemo(() => {
@@ -160,7 +164,7 @@ export default function LedgerPage() {
       ];
 
   return (
-    <AppShell breadcrumb={[{ label: 'Observe', href: '/live' }, { label: 'Signal Ledger' }]}>
+    <AppShell breadcrumb={[{ label: 'Signal Ledger' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
         <header>
           <div className="text-11 font-mono uppercase tracking-[0.18em] text-stone mb-2">Observe · Ledger</div>
@@ -168,6 +172,19 @@ export default function LedgerPage() {
             <h1 className="text-24 font-bold text-eggshell">Signal Ledger</h1>
             <PreviewBadge />
             <StateShowcase />
+            <button
+              type="button"
+              onClick={() => setLive((v) => !v)}
+              className={`ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-11 font-mono uppercase tracking-wider transition-colors ${
+                live
+                  ? 'border-verified/40 bg-verified/10 text-verified'
+                  : 'border-line bg-graphite text-stone hover:text-eggshell'
+              }`}
+              title="Modo ao vivo — tail em tempo real"
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${live ? 'bg-verified animate-pulse' : 'bg-stone/50'}`} />
+              {live ? 'Ao vivo' : 'Pausado'}
+            </button>
           </div>
           <p className="text-14 text-stone mt-2">
             Registro cronológico e auditável de cadastros, FTDs, depósitos e saques — clique em qualquer valor para abrir a evidência.

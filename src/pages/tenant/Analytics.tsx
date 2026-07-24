@@ -212,12 +212,8 @@ export default function AnalyticsPage() {
           emptyDescription="Nenhum clique, registro ou FTD chegou dentro do recorte."
           emptyPrerequisite="Verifique se ao menos uma origem (Meta, TAP) está em produção."
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <MetricCard label="Cliques" value={m.clicks.toLocaleString('pt-BR')} evidenceData={evClicks} />
-            <MetricCard label="Registros" value={m.registrations.toLocaleString('pt-BR')} evidenceData={evRegs} />
-            <MetricCard label="FTDs" value={m.ftds.toLocaleString('pt-BR')} evidenceData={evFtds} />
-            <MetricCard label="CPFTD" value={'R$ ' + m.cpftd.toLocaleString('pt-BR')} evidenceData={evCpftd} />
-          </div>
+          {/* E7 — Faixa de KPIs removida: Analytics começa no gráfico
+              (a leitura Nível 1 mora no Command; aqui é exploração). */}
 
           <div className="bg-graphite border border-line rounded-xl p-4 mt-6">
             <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">

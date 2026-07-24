@@ -8,6 +8,8 @@ import { MetricValue } from '@/components/data/MetricValue';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
 import { TargetKpi } from '@/components/data/TargetKpi';
 import { BottleneckPanel } from '@/components/data/BottleneckPanel';
+import { RadarPanel } from '@/components/data/RadarPanel';
+import { ActivationChecklist } from '@/components/data/ActivationChecklist';
 import { KPI_TARGETS } from '@/lib/fake/funnelSteps';
 import { buildEvidence } from '@/lib/evidence';
 import {
@@ -175,7 +177,14 @@ export default function CommandPage() {
           emptyDescription="Nenhum evento chegou dentro do recorte atual — o Command não tem o que provar."
           degradedIntegration="Signal Ingest"
         >
-        {/* ── KPI row (Proof integrity + 4 métricas Proofline) ─────────── */}
+        {/* E5 · Checklist de ativação — só aparece até o primeiro FTD reconciliar. */}
+        <ActivationChecklist />
+
+        {/* E7 · Nível 1 — o quê */}
+        <div className="flex items-baseline gap-3 pt-2">
+          <span className="text-11 font-mono uppercase tracking-[0.18em] text-stone">Nível 1 · Sinais</span>
+          <span className="h-px flex-1 bg-line/70" />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
           {/* Proof integrity — hero */}
           <button
@@ -259,6 +268,12 @@ export default function CommandPage() {
               state: 'Reconciliado',
             }))}
           />
+        </div>
+
+        {/* E7 · Nível 2 — o porquê */}
+        <div className="flex items-baseline gap-3 pt-4">
+          <span className="text-11 font-mono uppercase tracking-[0.18em] text-stone">Nível 2 · Diagnóstico</span>
+          <span className="h-px flex-1 bg-line/70" />
         </div>
 
         {/* ── Journey proof + Live proof feed ──────────────────────────── */}
@@ -378,6 +393,9 @@ export default function CommandPage() {
             }))
           }
         />
+
+        {/* E6 · Radar — anomalias derivadas do dataset canônico. */}
+        <RadarPanel period={period} />
         </ScenarioStateGate>
 
       </div>

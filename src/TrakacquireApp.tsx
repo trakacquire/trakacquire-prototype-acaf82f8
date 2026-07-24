@@ -159,7 +159,8 @@ function Router() {
       <Route path="/identity" component={Identity} />
       <Route path="/players/:id" component={Player360} />
       <Route path="/players" component={Players} />
-      <Route path="/signals" component={Signals} />
+      {/* E1 — Signals absorvido pelo Integration360 do Meta (aba CAPI). */}
+      <Route path="/signals"><Redirect to="/integrations/meta" /></Route>
       <Route path="/monitoring" component={Monitoring} />
       <Route path="/automations/:id" component={FlowBuilder} />
       <Route path="/automations" component={Automations} />
@@ -181,7 +182,8 @@ function Router() {
       <Route path="/settings/audit" component={SettingsAudit} />
       <Route path="/settings/general" component={SettingsGeneral} />
       <Route path="/profile" component={Profile} />
-      <Route path="/live" component={LiveEvents} />
+      {/* E1 — Eventos ao vivo fundidos no Ledger (?live=1). */}
+      <Route path="/live"><Redirect to="/ledger?live=1" /></Route>
       <Route path="/approvals" component={Approvals} />
       <Route path="/roadmap" component={Roadmap} />
 
