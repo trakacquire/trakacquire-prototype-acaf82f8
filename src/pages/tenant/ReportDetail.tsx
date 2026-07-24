@@ -127,7 +127,7 @@ export default function ReportDetailPage() {
         <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-6">
           <div className="flex flex-col md:flex-row justify-between items-start gap-4">
             <div>
-              <div className="text-12 font-serif italic text-stone/80 mb-1">Prove / Relatório</div>
+              <div className="kicker mb-1">Prove / Relatório</div>
               <div className="flex flex-wrap items-center gap-3 mb-1">
                 <h1 className="text-24 font-bold text-[var(--eggshell)]">{report.name}</h1>
                 <span className={`px-2 py-0.5 rounded text-11 uppercase font-bold ${typeBadgeStyle(report.type)}`}>

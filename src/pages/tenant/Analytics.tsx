@@ -169,7 +169,7 @@ export default function AnalyticsPage() {
 
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
           <div>
-            <div className="text-12 font-serif italic text-stone/80 mb-1">Exploração / Analytics</div>
+            <div className="kicker mb-1">Exploração / Analytics</div>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-24 font-bold text-eggshell">Análise operacional</h1>
               <PreviewBadge />

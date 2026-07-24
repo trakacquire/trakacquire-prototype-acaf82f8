@@ -23,7 +23,7 @@ export default function SettingsAPIPage() {
     <AppShell breadcrumb={[{ label: 'Configurações' }, { label: 'Chaves de API' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
         <div>
-          <div className="text-11 font-serif italic text-stone mb-1">Integração · Credenciais</div>
+          <div className="kicker mb-1">Integração · Credenciais</div>
           <div className="flex items-center gap-3">
             <h1 className="text-24 font-bold text-eggshell">Chaves de API & Webhooks</h1>
             <PreviewBadge />

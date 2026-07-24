@@ -19,7 +19,7 @@ export default function StatusPage() {
       <div className="max-w-4xl mx-auto space-y-12">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-11 font-serif italic text-stone mb-1">Prova · Uptime público</div>
+            <div className="kicker mb-1">Prova · Uptime público</div>
             <Link href="/" className="flex items-center gap-2 text-24 font-bold">
               <span className="w-6 h-6 rounded bg-proof-blue shrink-0"></span>
               TrakAcquire System Status

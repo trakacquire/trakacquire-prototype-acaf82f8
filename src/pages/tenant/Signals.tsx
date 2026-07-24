@@ -105,7 +105,7 @@ export default function SignalsPage() {
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
           <div>
             <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <span className="text-14 font-serif italic text-stone leading-none">Observe · Saúde do sinal</span>
+              <span className="kicker">Observe · Saúde do sinal</span>
               <PreviewBadge />
               <FreshnessTag ageSeconds={lastAgo} source="stream ao vivo" />
               <StateShowcase />

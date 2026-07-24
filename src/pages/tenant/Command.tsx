@@ -144,7 +144,7 @@ export default function CommandPage() {
           <div>
             {/* Kicker editorial em serifa (única presença de serif no chrome) */}
             <div className="flex items-center gap-3 mb-3 flex-wrap">
-              <span className="text-16 font-serif italic text-stone leading-none">
+              <span className="text-16 kicker leading-none">
                 Proofline · Command
               </span>
               <PreviewBadge />

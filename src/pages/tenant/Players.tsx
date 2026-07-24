@@ -43,7 +43,7 @@ export default function PlayersPage() {
       <div className="max-w-7xl mx-auto space-y-4">
         <header className="space-y-2">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-13 font-serif italic text-stone leading-none">Observe · Players</span>
+            <span className="kicker">Observe · Players</span>
             <PreviewBadge />
             <StateShowcase />
           </div>

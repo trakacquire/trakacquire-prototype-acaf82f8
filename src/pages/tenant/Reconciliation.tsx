@@ -100,7 +100,7 @@ export default function ReconciliationPage() {
       <div className="max-w-7xl mx-auto space-y-6">
         <header className="space-y-2">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-13 font-serif italic text-stone leading-none">Prove · Reconciliação</span>
+            <span className="kicker">Prove · Reconciliação</span>
             <PreviewBadge />
             <StateShowcase />
           </div>

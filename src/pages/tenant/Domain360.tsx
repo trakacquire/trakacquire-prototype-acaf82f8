@@ -48,7 +48,7 @@ export default function Domain360Page() {
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
           <div>
             <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <span className="text-14 font-serif italic text-stone leading-none">Connect · Domínio</span>
+              <span className="kicker">Connect · Domínio</span>
               <PreviewBadge />
               <StatusChip status={domain.status === 'active' ? 'Confirmed' : 'Captured'} />
               <FreshnessTag ageSeconds={120} source="Edge probes · a cada 2min" />

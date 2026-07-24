@@ -115,7 +115,7 @@ export default function MediaPage() {
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
           <div>
             <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <span className="text-14 font-serif italic text-stone leading-none">Operate · Mídia paga</span>
+              <span className="kicker">Operate · Mídia paga</span>
               <PreviewBadge />
               <FreshnessTag ageSeconds={60 * 60 * 32} source="Snapshot D+2 · Meta/TikTok" />
               <StateShowcase />

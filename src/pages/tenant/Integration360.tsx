@@ -172,7 +172,7 @@ export default function Integration360Page() {
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
           <div>
             <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <span className="text-14 font-serif italic text-stone leading-none">Connect · {config.category}</span>
+              <span className="kicker">Connect · {config.category}</span>
               <PreviewBadge />
               <IntegrationStateBadge state={config.state} adapterVersion={config.adapterVersion} />
               <FreshnessTag ageSeconds={events[0] ? Math.max(1, Math.round((Date.now() - new Date(events[0].timestamp).getTime()) / 1000)) : 999999} source={`Adapter ${config.name}`} />

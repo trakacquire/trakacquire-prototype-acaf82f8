@@ -86,7 +86,7 @@ export default function MediaCreativesPage() {
       <div className="max-w-7xl mx-auto space-y-6">
         <header>
           <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <span className="text-14 font-serif italic text-stone leading-none">Operate · Ranking de criativos</span>
+            <span className="kicker">Operate · Ranking de criativos</span>
             <PreviewBadge />
             <FreshnessTag ageSeconds={60 * 30} source="Meta/TikTok · frequência 30min" />
             <StateShowcase />

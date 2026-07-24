@@ -6,7 +6,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-ink flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-graphite border border-line rounded-2xl shadow-2xl p-8">
         <div className="flex flex-col items-center mb-8">
-          <div className="text-11 font-serif italic text-stone mb-2">Access · Workspace</div>
+          <div className="kicker mb-2">Access · Workspace</div>
           <div className="text-24 font-bold text-eggshell flex items-center gap-2">
             <span className="w-6 h-6 rounded bg-proof-blue shrink-0"></span>
             TrakAcquire

@@ -42,7 +42,7 @@ export default function EventDetailPage({ params }: { params: { eventId: string 
         <ScenarioStateGate emptyTitle="Evento não encontrado" emptyDescription="Nenhum sinal com esse ID no dataset atual.">
           <header className="space-y-2">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="text-13 font-serif italic text-stone leading-none">Observe · Evento</span>
+              <span className="kicker">Observe · Evento</span>
               <PreviewBadge />
               {evt && <FreshnessTag ageSeconds={ageSec} source="Signal Ingest" />}
             </div>

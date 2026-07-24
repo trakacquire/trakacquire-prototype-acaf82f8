@@ -23,7 +23,7 @@ export default function SettingsBillingPage() {
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex justify-between items-end">
           <div>
-            <div className="text-11 font-serif italic text-stone mb-1">Investimento · Plano vigente</div>
+            <div className="kicker mb-1">Investimento · Plano vigente</div>
             <div className="flex items-center gap-3">
               <h1 className="text-24 font-bold text-eggshell">Billing & Usage</h1>
               <PreviewBadge />
