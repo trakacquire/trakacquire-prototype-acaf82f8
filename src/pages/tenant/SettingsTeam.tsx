@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { DataTable } from '@/components/data/DataTable';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useAppState } from '@/lib/context/AppStateContext';
 import { toast } from 'sonner';
+
 
 const ROLE_OPTIONS = ['Admin', 'Analista', 'Visualizador'];
 
