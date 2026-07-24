@@ -1,6 +1,17 @@
 # CONFORMANCE — TrakAcquire Proofline
 
+> **Precedência oficial (Onda A · Build Pack v1.0):**
+> `(1) Identidade visual aprovada (paleta D1 + shell 5 grupos)` > `(2) DECISIONS.md / UI-SYSTEM.md` > `(3) Build Pack v1.0` — Build Pack orienta apenas ARQUITETURA e SPEC funcional; nunca sobrescreve tokens visuais nem o agrupamento da sidebar.
+>
+> **Onda A · atualizações desta matriz:**
+> - `EventStatus`: 9 → **11 estados** (adiciona `Stale` e `Sandbox`); StatusChip cobre os 11.
+> - `EvidenceDrawer` agora exige `attribution` + `confidence`, `reversals`, `auditRef` — todas as linhas P1-P8 permanecem ✅ (defaults canônicos aplicados via `buildEvidence`).
+> - Topbar ganha `Environment Indicator` + menu global `+ Criar` — herdado por 100% das rotas de tenant.
+> - Novo primitivo canônico `ApprovalCard` (`src/components/data/ApprovalCard.tsx`) unifica filas de aprovação (Governance, Approvals, Automations).
+> - `FreshnessTag` default agora usa terminologia oficial "Dados atualizados há N min".
+>
 > **Prototipação completa — P0 a P8 · 78 páginas conformes · 2026-07-24.** Sidebar tenant enxuta (14 itens visíveis + Roadmap); Super Admin com identidade Proofline preservando lógica e rotas; dataset canônico (78 cliques · 36 FTDs · R$ 12.013 investido · CPFTD R$ 334 · net R$ 19.618) sustentando toda tela com número.
+
 
 
 Matriz página × requisito. Atualizada a cada fase (P2 → P8). Célula = ✅ conforme · ❌ pendente · ➖ não se aplica · ⏳ prévia rasa (banner "Esta tela será detalhada na fase PN").
