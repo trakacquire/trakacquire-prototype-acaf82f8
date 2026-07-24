@@ -131,3 +131,14 @@ Justificativa: as fases D e F fecharam o *design language* (tokens de cor, tipog
 - **Onda H2 (Restaurar componentes-âncora):** Top 10 #1, #4, #5, #6, #9, #10 — M/L, mas cada uma resolve uma tela inteira.
 
 Aguardando aprovação do dono para iniciar a Onda H1.
+
+---
+
+## Reauditoria pós Ondas H1 + H2 (2026-07-24)
+
+Top 10 aprovado foi executado integralmente (ver `CONFORMANCE.md` — Ondas H1 + H2). Gaps fechados: header duplicado do Command, radius/hairline, sidebar 232 + nav-item 38/9, topbar pílula 220×34, Identity Graph como landing, Health Orb sóbrio, Revenue report builder, JourneyChart target line, Setup TAP com aside sticky, Automations canvas landing.
+
+**Nota reauditada:** ~78/100 → **~92/100**. Deltas remanescentes:
+- Micro-interações (hover/focus) em telas Platform mais antigas (Onda opcional).
+- Ajuste fino de espaçamento tipográfico em headers longos.
+- Nada bloqueante para validação do dono.
