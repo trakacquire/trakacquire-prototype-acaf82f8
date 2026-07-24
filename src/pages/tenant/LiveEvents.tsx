@@ -132,7 +132,7 @@ export default function LiveEvents() {
               Signal Stream
             </div>
             <h1
-              className="text-eggshell font-serif tracking-tight leading-[1.02]"
+              className="text-eggshell tracking-tight leading-[1.02]"
               style={{ fontSize: 'clamp(30px, 3.4vw, 44px)' }}
             >
               O pulso da aquisição, em tempo real.
