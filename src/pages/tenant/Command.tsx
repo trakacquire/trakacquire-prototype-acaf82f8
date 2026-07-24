@@ -48,6 +48,35 @@ const TONE_DOT: Record<string, string> = {
   stone: 'bg-stone/60',
 };
 
+// Segmento inline do chip único — sinaliza o estado do cenário sem ocupar chip próprio.
+function ScenarioChipSegment() {
+  const scenario = useDemoScenario();
+  const label: Record<string, string> = {
+    normal: 'Success',
+    degraded: 'Integration degraded',
+    dlq_full: 'Partial (DLQ)',
+    divergencias: 'Partial (divergências)',
+    sem_dados: 'Empty',
+    erro_sistema: 'Error',
+  };
+  const tone: Record<string, string> = {
+    normal: 'text-verified',
+    degraded: 'text-warning',
+    dlq_full: 'text-warning',
+    divergencias: 'text-warning',
+    sem_dados: 'text-stone',
+    erro_sistema: 'text-critical',
+  };
+  return (
+    <span
+      className={tone[scenario] ?? tone.normal}
+      title="Estado atual do cenário — troque no chip 🎬 Demo."
+    >
+      {label[scenario] ?? label.normal}
+    </span>
+  );
+}
+
 export default function CommandPage() {
   const { period } = usePeriod();
   const { openEvidence } = useEvidence();
