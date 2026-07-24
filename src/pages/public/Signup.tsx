@@ -44,9 +44,10 @@ export default function SignupPage() {
           <div className="flex items-start gap-2 pt-2">
             <input type="checkbox" id="terms" className="mt-1 bg-zinc border-line text-proof-blue rounded" />
             <label htmlFor="terms" className="text-12 text-stone">
-              Eu aceito os <a href="#" className="text-proof-blue hover:underline">Termos de Serviço</a> e a <a href="#" className="text-proof-blue hover:underline">Política de Privacidade</a>.
+              Eu aceito os <Link href="/legal/termos" className="text-proof-blue hover:underline">Termos de Serviço</Link>, a <Link href="/legal/privacidade" className="text-proof-blue hover:underline">Política de Privacidade</Link> e o <Link href="/legal/dpa" className="text-proof-blue hover:underline">DPA</Link>.
             </label>
           </div>
+
 
           <button type="button" onClick={() => window.location.href='/command'} className="w-full bg-eggshell text-ink font-medium py-2.5 rounded-md text-14 hover:bg-white transition-colors mt-4">
             Criar conta
