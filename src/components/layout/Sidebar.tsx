@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import {
   LayoutDashboard, BarChart3,
   Puzzle, Globe, Link2,
-  Radio, Activity, UserSquare,
+  Radio, Activity, UserSquare, ShieldAlert,
   Zap, Megaphone,
   DollarSign, ShieldCheck,
   Settings, UserCircle2, Construction,
@@ -106,6 +106,7 @@ export function Sidebar() {
         <SidebarGroup title="Observe">
           <SidebarItem href="/live" icon={<Radio className="w-4 h-4" />} label="Eventos ao vivo" badge={<LiveDot />} />
           <SidebarItem href="/ledger" icon={<Activity className="w-4 h-4" />} label="Signal Ledger" />
+          <SidebarItem href="/monitoring" icon={<ShieldAlert className="w-4 h-4" />} label="Monitoramento" />
           <SidebarItem href="/players" icon={<UserSquare className="w-4 h-4" />} label="Players" />
         </SidebarGroup>
 

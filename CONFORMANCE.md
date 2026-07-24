@@ -4,6 +4,12 @@ Matriz página × requisito. Atualizada a cada fase (P2 → P8). Célula = ✅ c
 
 **Fonte da verdade da matriz:** DECISIONS.md (D1) > UI-SYSTEM.md > PRODUCT-MAP.md.
 
+## Changelog
+
+- **2026-07-24 · Fase P2 concluída (LiveEvents, Ledger, Monitoring)** — as três páginas ganharam os 8 estados de UX via `ScenarioStateGate` (encaixa no ScenarioSelector já existente), Evidence Drawer em todo número (via `MetricValue` + payload `buildEvidence`), breadcrumb "Observe / …", tokens D1 sanitizados, mono tabular em ID/valor/timestamp/latência e (Ledger) mobile reordenado por prioridade — filtros antes da tabela, colunas secundárias colapsadas em subtexto da primária. Monitoring foi promovida à sidebar em OBSERVE (Command · Analytics · Integrações · Tracking · Domínios · **Live · Ledger · Monitoring · Players** · Automações · Mídia · Receita · Governança + rodapé). `Signals`, `EventDetail` e `Reconciliation` permanecem em `/roadmap` até fecharem suas linhas.
+- **2026-07-24 · P2 em pausa entre iterações** — próximas rodadas retomam por **P3 (Identity Graph + Players + Player360 + IdentityDetail)** e seguem P4→P8. Guilhotina de 150%: qualquer estouro corta escopo da fase e segue.
+
+
 ## Legenda das colunas
 
 | Sigla | Requisito |
@@ -71,10 +77,10 @@ Fase esperada de detalhamento entre parênteses.
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | Signals | ❌ | ❌ | ✅ | ✅ | ⏳ | ✅ | ✅ | ✅ | ❌ | ❌ | P2 |
-| LiveEvents | ⏳ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⏳ | ✅ | **P2 🟦** |
-| EventDetail | ❌ | ❌ | ✅ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P2 |
-| Ledger | ⏳ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | **P2 🟦** |
-| Monitoring | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P2 |
+| LiveEvents | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P2 ✔** |
+| EventDetail | ❌ | ❌ | ✅ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P2 (backlog) |
+| Ledger | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P2 ✔** |
+| Monitoring | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P2 ✔** |
 | Reconciliation | ❌ | ❌ | ✅ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P2 |
 | Identity | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P3 |
 | IdentityDetail | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P3 |
@@ -157,7 +163,7 @@ Fase esperada de detalhamento entre parênteses.
 |---|---|---|
 | P0 · Foundations | Tokens D1, primitivos (FreshnessTag, IntegrationStateBadge, AuditRef, MetricValue, PreviewBadge), 8 estados como componentes | ✔ concluída (tokens revertidos nesta rodada) |
 | P1 · Command | Command definitivo, funil monotônico, live feed cronológico, MetricValue, PreviewBadge, dataset canônico | ✔ concluída |
-| P2 · Signal Ledger + Observe | LiveEvents e Ledger promovidos à sidebar; Monitoring/Reconciliation/Signals/EventDetail seguem em /roadmap até fecharem a matriz | 🟦 em andamento — LiveEvents+Ledger com PreviewBadge, breadcrumb, tokens D1 sanitizados |
+| P2 · Signal Ledger + Observe | LiveEvents · Ledger · Monitoring com 8 estados + Evidence Drawer + DataTable + mobile reordenado. Signals/EventDetail/Reconciliation seguem em `/roadmap` até fecharem a matriz (backlog P2). | ✔ concluída em 2026-07-24 — Monitoring entrou na sidebar em Observe |
 | P3 · Identity + Players | Identity Graph, IdentityDetail, Players, Player360 | ⏸ |
 | P4 · Analytics + Revenue + Reports | Analytics, Revenue, Cohorts, Reports, ReportDetail, Governance | ⏸ |
 | P5 · Connect | Tracking, Domains, Integrations, Campaign360, Media | ⏸ |
