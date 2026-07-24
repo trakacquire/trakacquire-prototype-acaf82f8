@@ -6,7 +6,7 @@ import { usePeriod } from '@/lib/context/PeriodContext';
 
 import { MetricValue } from '@/components/data/MetricValue';
 import { ScenarioStateGate } from '@/components/state/ScenarioStateGate';
-import { useDemoScenario } from '@/lib/context/ScenarioContext';
+import { useDemoScenario } from '@/components/domain/ScenarioSelector';
 import { TargetKpi } from '@/components/data/TargetKpi';
 import { BottleneckPanel } from '@/components/data/BottleneckPanel';
 import { RadarPanel } from '@/components/data/RadarPanel';
