@@ -147,7 +147,7 @@ export default function PlayersPage() {
             </div>
           </div>
         </div>
-
+        </ScenarioStateGate>
       </div>
     </AppShell>
   );
