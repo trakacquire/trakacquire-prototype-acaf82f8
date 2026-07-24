@@ -276,16 +276,17 @@ export type IntegrationPillState = 'active' | 'available' | 'restricted' | 'erro
 
 export function StatusPill({ state, label }: { state: IntegrationPillState; label?: string }) {
   const map: Record<IntegrationPillState, { cls: string; label: string; dot: string }> = {
-    active:     { cls: 'text-verified border-verified/30 bg-verified/5',     label: 'Ativa',        dot: 'bg-verified' },
-    available:  { cls: 'text-stone border-eggshell/10 bg-transparent',        label: 'Disponível',   dot: 'bg-stone' },
-    restricted: { cls: 'text-warning border-warning/30 bg-warning/5',         label: 'Restrita',     dot: 'bg-warning' },
-    error:      { cls: 'text-critical border-critical/30 bg-critical/5',      label: 'Erro',         dot: 'bg-critical' },
+    active:     { cls: 'text-verified border-verified/30 bg-verified/5',    label: 'Ativa',      dot: 'bg-verified' },
+    available:  { cls: 'text-stone border-eggshell/12 bg-transparent',      label: 'Disponível', dot: 'bg-stone' },
+    restricted: { cls: 'text-warning border-warning/30 bg-warning/5',       label: 'Restrita',   dot: 'bg-warning' },
+    error:      { cls: 'text-critical border-critical/30 bg-critical/5',    label: 'Erro',       dot: 'bg-critical' },
   };
   const m = map[state];
   return (
-    <span className={cn('inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-11 font-mono uppercase tracking-wider', m.cls)}>
-      <span className={cn('w-1.5 h-1.5 rounded-full', m.dot)} />
+    <span className={cn('inline-flex items-center gap-1.5 h-[20px] px-1.5 rounded-[5px] border text-[11px] font-medium leading-none', m.cls)}>
+      <span className={cn('w-1 h-1 rounded-full', m.dot)} />
       {label ?? m.label}
     </span>
   );
 }
+

@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils';
 export type FreshnessLevel = 'fresh' | 'stale' | 'degraded';
 
 interface FreshnessTagProps {
-  /** Time reference in seconds since last update, or a preformatted label. */
   ageSeconds?: number;
   label?: string;
   source?: string;
@@ -21,37 +20,28 @@ function formatAge(seconds: number): string {
 }
 
 /**
- * FreshnessTag — obrigatório em card/tabela cuja fonte pode atrasar.
- * Nunca esconder o frescor: se está velho, o operador precisa ver.
+ * FreshnessTag — chip compacto (chip-honest). Tinta semântica segue o frescor.
  */
 export function FreshnessTag({ ageSeconds, label, source, level, className }: FreshnessTagProps) {
   const resolvedLevel: FreshnessLevel =
     level ?? (ageSeconds === undefined ? 'fresh' : ageSeconds > 900 ? 'degraded' : ageSeconds > 300 ? 'stale' : 'fresh');
 
-  const tone =
-    resolvedLevel === 'degraded'
-      ? 'text-critical border-critical/25 bg-critical/5'
-      : resolvedLevel === 'stale'
-        ? 'text-warning border-warning/25 bg-warning/5'
-        : 'text-stone border-line bg-iron/60';
+  const tint =
+    resolvedLevel === 'degraded' ? 'hsl(var(--critical))'
+    : resolvedLevel === 'stale' ? 'hsl(var(--warning))'
+    : 'hsl(var(--stone))';
 
   const text =
     label ??
     (ageSeconds !== undefined
-      ? `atualizado há ${formatAge(ageSeconds)}${source ? ` · ${source}` : ''}`
+      ? `há ${formatAge(ageSeconds)}${source ? ` · ${source}` : ''}`
       : source
-        ? `fonte ${source}`
+        ? source
         : 'ao vivo');
 
   return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1.5 rounded-[6px] border px-2 py-0.5 text-11 font-mono tabular-nums',
-        tone,
-        className,
-      )}
-    >
-      <Clock className="h-3 w-3" />
+    <span className={cn('chip-honest', className)} style={{ color: tint }}>
+      <Clock className="h-2.5 w-2.5" />
       {text}
     </span>
   );
