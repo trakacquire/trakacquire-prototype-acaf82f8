@@ -148,7 +148,7 @@ export default function InboxPage() {
                 <button
                   onClick={() => openEvidence(buildEvidence({
                     label: 'Total depositado · João Silva',
-                    value: <MetricValue value={1840} format="currency" />,
+                    value: {`R$ ${(1840).toLocaleString("pt-BR",{maximumFractionDigits:0})}`},
                     formula: 'sum(deposits.confirmed) where person_id=jsilva',
                     source: 'TAP Postback',
                     state: 'Reconciliado',
@@ -162,7 +162,7 @@ export default function InboxPage() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-13 text-eggshell">Total depósitos</span>
-                    <span className="font-mono text-13 font-bold text-verified tabular-nums"><MetricValue value={1840} format="currency" /></span>
+                    <span className="font-mono text-13 font-bold text-verified tabular-nums">{`R$ ${(1840).toLocaleString("pt-BR",{maximumFractionDigits:0})}`}</span>
                   </div>
                 </button>
 

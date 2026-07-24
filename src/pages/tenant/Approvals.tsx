@@ -92,21 +92,21 @@ export default function ApprovalsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button onClick={() => openEvidence(buildEvidence({
-            label: 'Planos pendentes', value: <MetricValue value={pendingCount} format="int" />,
+            label: 'Planos pendentes', value: {(pendingCount).toLocaleString("pt-BR")},
             formula: 'count(action_plans.status="pending")', source: 'Approval Center',
           }))} className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors">
             <div className="text-11 uppercase tracking-wider text-stone font-mono">Pendentes</div>
             <div className="text-24 font-bold text-warning font-mono tabular-nums mt-2">{pendingCount}</div>
           </button>
           <button onClick={() => openEvidence(buildEvidence({
-            label: 'Aprovações 30d', value: <MetricValue value={1} format="int" />,
+            label: 'Aprovações 30d', value: {(1).toLocaleString("pt-BR")},
             formula: 'count(audit_log.action="APPROVE_PLAN") window=30d', source: 'Audit Log',
           }))} className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors">
             <div className="text-11 uppercase tracking-wider text-stone font-mono">Aprovadas 30d</div>
             <div className="text-24 font-bold text-verified font-mono tabular-nums mt-2">1</div>
           </button>
           <button onClick={() => openEvidence(buildEvidence({
-            label: 'Rejeitadas 30d', value: <MetricValue value={1} format="int" />,
+            label: 'Rejeitadas 30d', value: {(1).toLocaleString("pt-BR")},
             formula: 'count(audit_log.action="REJECT_PLAN") window=30d', source: 'Audit Log',
           }))} className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors">
             <div className="text-11 uppercase tracking-wider text-stone font-mono">Rejeitadas 30d</div>
@@ -151,7 +151,7 @@ export default function ApprovalsPage() {
                     </div>
                     <button
                       onClick={() => openEvidence(buildEvidence({
-                        label: 'Impacto estimado', value: <MetricValue value={1200} format="currency" />,
+                        label: 'Impacto estimado', value: {`R$ ${(1200).toLocaleString("pt-BR",{maximumFractionDigits:0})}`},
                         formula: '(spend_uplift × ROAS_p50) − spend_uplift',
                         source: 'Attribution engine · janela 72h', state: 'Provisório',
                         freshness: 'amostra congelada às 2026-07-24 09:00',

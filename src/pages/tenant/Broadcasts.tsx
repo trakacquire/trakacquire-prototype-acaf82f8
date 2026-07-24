@@ -51,7 +51,7 @@ export default function BroadcastsPage() {
       <button
         onClick={(e) => { e.stopPropagation(); openEvidence(buildEvidence({
           label: `FTDs · ${b.name}`,
-          value: <MetricValue value={b.ftds_generated} format="int" />,
+          value: {(b.ftds_generated).toLocaleString("pt-BR")},
           formula: 'count(ftd) attributed to broadcast = ' + b.id,
           source: 'Signal Ledger · confirmados',
           state: 'Reconciliado',
@@ -156,21 +156,21 @@ export default function BroadcastsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button onClick={() => openEvidence(buildEvidence({
-              label: 'Mensagens enviadas 30d', value: <MetricValue value={totalSent} format="int" />,
+              label: 'Mensagens enviadas 30d', value: {(totalSent).toLocaleString("pt-BR")},
               formula: 'sum(broadcasts.sent) window=30d', source: 'Mensageria · Telegram/WhatsApp',
             }))} className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors">
               <div className="text-11 uppercase tracking-wider text-stone font-mono">Enviadas 30d</div>
-              <div className="text-24 font-bold text-eggshell font-mono tabular-nums mt-2"><MetricValue value={totalSent} format="int" /></div>
+              <div className="text-24 font-bold text-eggshell font-mono tabular-nums mt-2">{(totalSent).toLocaleString("pt-BR")}</div>
             </button>
             <button onClick={() => openEvidence(buildEvidence({
-              label: 'FTDs atribuídos a broadcasts', value: <MetricValue value={totalFtds} format="int" />,
+              label: 'FTDs atribuídos a broadcasts', value: {(totalFtds).toLocaleString("pt-BR")},
               formula: 'sum(broadcasts.ftds_generated)', source: 'Signal Ledger', state: 'Reconciliado',
             }))} className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors">
               <div className="text-11 uppercase tracking-wider text-stone font-mono">FTDs gerados</div>
               <div className="text-24 font-bold text-verified font-mono tabular-nums mt-2">{totalFtds}</div>
             </button>
             <button onClick={() => openEvidence(buildEvidence({
-              label: 'Segmentos disponíveis', value: <MetricValue value={SEGMENTS.length} format="int" />,
+              label: 'Segmentos disponíveis', value: {(SEGMENTS.length).toLocaleString("pt-BR")},
               formula: 'count(segments)', source: 'Query Builder',
             }))} className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors">
               <div className="text-11 uppercase tracking-wider text-stone font-mono">Segmentos</div>

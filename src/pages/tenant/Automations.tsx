@@ -87,14 +87,14 @@ export default function AutomationsPage() {
         <button
           onClick={(e) => { e.stopPropagation(); openEvidence(buildEvidence({
             label: `Entradas · ${f.name}`,
-            value: <MetricValue value={f.persons_total} format="int" />,
+            value: {(f.persons_total).toLocaleString("pt-BR")},
             formula: 'count(person_enter_flow) where flow_id = ' + f.id,
             source: 'FLOWS · engine de automação',
             freshness: 'atualizado há 2m',
           })); }}
           className="font-mono text-13 text-eggshell tabular-nums hover:text-proof-blue"
         >
-          <MetricValue value={f.persons_total} format="int" />
+          {(f.persons_total).toLocaleString("pt-BR")}
         </button>
       ),
     },
@@ -106,14 +106,14 @@ export default function AutomationsPage() {
         <button
           onClick={(e) => { e.stopPropagation(); openEvidence(buildEvidence({
             label: `FTDs · ${f.name}`,
-            value: <MetricValue value={f.ftds_generated} format="int" />,
+            value: {(f.ftds_generated).toLocaleString("pt-BR")},
             formula: 'count(ftd) attributed to flow = ' + f.id,
             source: 'Signal Ledger · confirmados',
             state: 'Reconciliado',
           })); }}
           className="font-mono text-13 text-verified tabular-nums font-bold hover:underline"
         >
-          <MetricValue value={f.ftds_generated} format="int" />
+          {(f.ftds_generated).toLocaleString("pt-BR")}
         </button>
       ),
     },
@@ -125,13 +125,13 @@ export default function AutomationsPage() {
         <button
           onClick={(e) => { e.stopPropagation(); openEvidence(buildEvidence({
             label: `Receita · ${f.name}`,
-            value: <MetricValue value={f.revenue} format="currency" />,
+            value: {`R$ ${(f.revenue).toLocaleString("pt-BR",{maximumFractionDigits:0})}`},
             formula: 'sum(net_deposit) where flow_id = ' + f.id,
             source: 'Revenue provider · TAP',
           })); }}
           className="font-mono text-13 text-eggshell tabular-nums hover:text-proof-blue"
         >
-          <MetricValue value={f.revenue} format="currency" />
+          {`R$ ${(f.revenue).toLocaleString("pt-BR",{maximumFractionDigits:0})}`}
         </button>
       ),
     },

@@ -115,7 +115,7 @@ export default function SegmentsPage() {
     { header: 'Players', accessorKey: 'count', className: 'text-right', cell: (s) => (
       <button
         onClick={(e) => { e.stopPropagation(); openEvidence(buildEvidence({
-          label: `Contagem · ${s.name}`, value: <MetricValue value={s.count} format="int" />,
+          label: `Contagem · ${s.name}`, value: {(s.count).toLocaleString("pt-BR")},
           formula: `count(persons) where ${s.rule_summary}`,
           source: 'Query Builder · avaliação materializada',
           freshness: 'atualizado há 12m',
@@ -146,14 +146,14 @@ export default function SegmentsPage() {
         <ScenarioStateGate>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button onClick={() => openEvidence(buildEvidence({
-              label: 'Segmentos ativos', value: <MetricValue value={allSegments.length} format="int" />,
+              label: 'Segmentos ativos', value: {(allSegments.length).toLocaleString("pt-BR")},
               formula: 'count(segments)', source: 'Query Builder',
             }))} className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors">
               <div className="text-11 uppercase tracking-wider text-stone font-mono">Segmentos ativos</div>
               <div className="text-24 font-bold text-eggshell font-mono tabular-nums mt-2">{allSegments.length}</div>
             </button>
             <button onClick={() => openEvidence(buildEvidence({
-              label: 'Players cobertos', value: <MetricValue value={totalCovered} format="int" />,
+              label: 'Players cobertos', value: {(totalCovered).toLocaleString("pt-BR")},
               formula: 'sum(distinct segment.count)', source: 'Query Builder',
             }))} className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors">
               <div className="text-11 uppercase tracking-wider text-stone font-mono">Players cobertos</div>
