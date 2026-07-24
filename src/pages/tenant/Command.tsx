@@ -1,10 +1,12 @@
 import React from 'react';
-import { AppShell } from '@/components/layout/AppShell';
+import { AppShell, useEvidence } from '@/components/layout/AppShell';
 import { db } from '@/lib/fake/db';
 import { usePeriod } from '@/lib/context/PeriodContext';
 import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { FreshnessTag } from '@/components/data/FreshnessTag';
 import { MetricValue } from '@/components/data/MetricValue';
+import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
+import { buildEvidence } from '@/lib/evidence';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
@@ -42,6 +44,7 @@ const TONE_DOT: Record<string, string> = {
 
 export default function CommandPage() {
   const { period } = usePeriod();
+  const { openEvidence } = useEvidence();
   const m = db.metricsForPeriod(period);
   const spend = db.spendForPeriod(period);
 
@@ -139,6 +142,7 @@ export default function CommandPage() {
               </span>
               <PreviewBadge />
               <FreshnessTag ageSeconds={lastEventAgo ?? 0} source="stream ao vivo" />
+              <StateShowcase />
             </div>
             <h1
               className="text-eggshell font-sans font-semibold tracking-tight leading-[1.05]"
@@ -161,9 +165,26 @@ export default function CommandPage() {
         </header>
 
         {/* ── KPI row (Proof integrity + 4 métricas Proofline) ─────────── */}
+        <ScenarioStateGate
+          emptyTitle="Sem sinais no período"
+          emptyDescription="Nenhum evento chegou dentro do recorte atual — o Command não tem o que provar."
+          degradedIntegration="Signal Ingest"
+        >
+        {/* ── KPI row (Proof integrity + 4 métricas Proofline) ─────────── */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
           {/* Proof integrity — hero */}
-          <div className="md:col-span-1 relative overflow-hidden rounded-xl border border-line bg-gradient-to-br from-graphite via-graphite to-iron p-4">
+          <button
+            type="button"
+            onClick={() => openEvidence(buildEvidence({
+              label: 'Proof integrity',
+              value: `${proofIntegrity.toFixed(1)}%`,
+              formula: 'count(deposits.reconciled == true) / count(deposits.amount > 0)',
+              source: 'TAP Postback vs. Ledger interno',
+              state: pendingReconcile === 0 ? 'Reconciliado' : 'Provisório',
+              freshness: lastEventAgo !== null ? `último evento há ${lastEventAgo}s` : 'sem eventos',
+            }))}
+            className="text-left md:col-span-1 relative overflow-hidden rounded-xl border border-line bg-gradient-to-br from-graphite via-graphite to-iron p-4 hover:border-stone transition-colors"
+          >
             <div className="flex items-center gap-2 mb-3">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full rounded-full bg-verified opacity-60 animate-ping" />
@@ -176,12 +197,61 @@ export default function CommandPage() {
               {lastEventAgo !== null ? <>último evento há {lastEventAgo}s ·<br/></> : null}
               {pendingReconcile === 0 ? 'reconciliação D+1 completa' : `${pendingReconcile} depósitos pendentes`}
             </div>
-          </div>
+          </button>
 
-          <KpiCard label="Investimento" value={brl(spend.total)} delta={`↗ ${m.roi_pct}% ROI`} deltaTone="verified" />
-          <KpiCard label="FTDs oficiais" value={num(m.ftds)} delta={`${m.ftd_rate}% conversão`} deltaTone="proof" />
-          <KpiCard label="Custo / FTD" value={brl(m.cpftd)} delta="↓ 4,8%" deltaTone="verified" />
-          <KpiCard label="Net deposit" value={brl(m.net_deposits)} delta={`↑ ${brl(m.gross_margin)}`} deltaTone="verified" />
+          <KpiCard
+            label="Investimento"
+            value={brl(spend.total)}
+            delta={`↗ ${m.roi_pct}% ROI`}
+            deltaTone="verified"
+            onClick={() => openEvidence(buildEvidence({
+              label: 'Investimento',
+              value: brl(spend.total),
+              formula: 'sum(spend.daily) where source in {meta, tiktok}',
+              source: 'Meta Ads API + TikTok Ads API (D+1)',
+              state: 'Reconciliado',
+            }))}
+          />
+          <KpiCard
+            label="FTDs oficiais"
+            value={num(m.ftds)}
+            delta={`${m.ftd_rate}% conversão`}
+            deltaTone="proof"
+            onClick={() => openEvidence(buildEvidence({
+              label: 'FTDs oficiais',
+              value: num(m.ftds),
+              formula: 'count(deposits) where type == "ftd" and reconciled == true',
+              source: 'TAP Postback (operacional)',
+              state: 'Reconciliado',
+              attribution: 'Last Qualified Click · janela 30d · congelado no registro',
+            }))}
+          />
+          <KpiCard
+            label="Custo / FTD"
+            value={brl(m.cpftd)}
+            delta="↓ 4,8%"
+            deltaTone="verified"
+            onClick={() => openEvidence(buildEvidence({
+              label: 'Custo / FTD',
+              value: brl(m.cpftd),
+              formula: 'sum(spend.total) / count(ftds)',
+              source: 'Derivado — Investimento ÷ FTDs oficiais',
+              state: 'Reconciliado',
+            }))}
+          />
+          <KpiCard
+            label="Net deposit"
+            value={brl(m.net_deposits)}
+            delta={`↑ ${brl(m.gross_margin)}`}
+            deltaTone="verified"
+            onClick={() => openEvidence(buildEvidence({
+              label: 'Net deposit',
+              value: brl(m.net_deposits),
+              formula: 'sum(deposits.amount) − sum(withdrawals.amount)',
+              source: 'TAP Postback + Payments Ledger',
+              state: 'Reconciliado',
+            }))}
+          />
         </div>
 
         {/* ── Journey proof + Live proof feed ──────────────────────────── */}
@@ -198,7 +268,7 @@ export default function CommandPage() {
               </span>
             </div>
 
-            {/* Etapas do funil embutidas */}
+            {/* Etapas do funil embutidas (cada bloco abre Evidence) */}
             <div className="grid grid-cols-5 gap-2 mb-5">
               {journey.map((stg, i) => {
                 const pctFromPrev = i === 0
@@ -207,13 +277,25 @@ export default function CommandPage() {
                     ? (stg.value / journey[i - 1].value) * 100
                     : 0;
                 return (
-                  <div key={stg.key} className="rounded-lg border border-line bg-iron/60 px-3 py-2.5">
+                  <button
+                    key={stg.key}
+                    type="button"
+                    onClick={() => openEvidence(buildEvidence({
+                      label: `Journey · ${stg.label}`,
+                      value: num(stg.value),
+                      formula: `count(persons) where stage_reached >= "${stg.label}"`,
+                      source: 'Identity Graph + TAP Postback',
+                      state: stg.key === 'reconciled' && pendingReconcile > 0 ? 'Provisório' : 'Reconciliado',
+                      attribution: i === 0 ? '—' : `Retenção etapa anterior: ${pctFromPrev.toFixed(1)}%`,
+                    }))}
+                    className="text-left rounded-lg border border-line bg-iron/60 px-3 py-2.5 hover:border-stone transition-colors"
+                  >
                     <div className="text-[10px] font-mono uppercase tracking-wider text-stone">{stg.label}</div>
                     <div className="text-eggshell font-mono tabular-nums text-20 mt-1">{num(stg.value)}</div>
                     <div className="text-11 text-stone mt-0.5">
                       {i === 0 ? stg.sub : `${pctFromPrev.toFixed(1)}%`}
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -275,20 +357,22 @@ export default function CommandPage() {
             </ul>
           </div>
         </div>
+        </ScenarioStateGate>
 
       </div>
     </AppShell>
   );
 }
 
-// ── KPI card compacto ────────────────────────────────────────────────────────
+// ── KPI card compacto (clicável — abre Evidence Drawer) ─────────────────────
 function KpiCard({
-  label, value, delta, deltaTone,
+  label, value, delta, deltaTone, onClick,
 }: {
   label: string;
   value: string;
   delta?: string;
   deltaTone?: 'verified' | 'proof' | 'warning' | 'critical';
+  onClick?: () => void;
 }) {
   const toneClass =
     deltaTone === 'verified' ? 'text-verified'
@@ -297,10 +381,14 @@ function KpiCard({
     : deltaTone === 'critical' ? 'text-critical'
     : 'text-stone';
   return (
-    <div className="rounded-xl border border-line bg-graphite hover:bg-graphite/80 transition-colors p-4">
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-left rounded-xl border border-line bg-graphite hover:border-stone transition-colors p-4"
+    >
       <div className="text-11 font-mono uppercase tracking-wider text-stone mb-2">{label}</div>
       <div className="text-eggshell font-mono tabular-nums text-[26px] leading-none font-semibold">{value}</div>
       {delta && <div className={`text-11 mt-2 ${toneClass}`}>{delta}</div>}
-    </div>
+    </button>
   );
 }

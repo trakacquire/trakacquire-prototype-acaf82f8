@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useLocation } from 'wouter';
-import { AppShell } from '@/components/layout/AppShell';
+import { AppShell, useEvidence } from '@/components/layout/AppShell';
 import { db } from '@/lib/fake/db';
 import { useAppState } from '@/lib/context/AppStateContext';
 import { toast } from 'sonner';
 import ConfirmDialog from '@/components/domain/ConfirmDialog';
 import { StatusChip } from '@/components/domain/StatusChip';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
+import { buildEvidence } from '@/lib/evidence';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { AlertTriangle, XCircle, RefreshCw, BarChart3 } from 'lucide-react';
 
@@ -15,6 +18,7 @@ const fmtDate = (iso: string) => new Date(iso).toLocaleDateString('pt-BR');
 export default function ReconciliationPage() {
   const [, navigate] = useLocation();
   const { dispatch } = useAppState();
+  const { openEvidence } = useEvidence();
 
   const [activeTab, setActiveTab] = useState<'divergencias' | 'periodos' | 'relatorio'>('divergencias');
   const [periods, setPeriods] = useState({ jul: 'open', jun: 'closed', mai: 'closed' });
@@ -92,51 +96,101 @@ export default function ReconciliationPage() {
   ] as const;
 
   return (
-    <AppShell breadcrumb={[{ label: 'Reconciliação' }]}>
+    <AppShell breadcrumb={[{ label: 'Prove', href: '/revenue' }, { label: 'Reconciliação' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-24 font-bold text-[var(--eggshell)] mb-1">Reconciliação</h1>
-          <p className="text-13 text-[var(--stone)]">Controle de divergências, períodos e relatório financeiro</p>
-        </div>
+        <header className="space-y-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-13 font-serif italic text-stone leading-none">Prove · Reconciliação</span>
+            <PreviewBadge />
+            <StateShowcase />
+          </div>
+          <h1 className="text-24 font-semibold text-eggshell font-sans">Onde o operacional bate com o contábil.</h1>
+          <p className="text-13 text-stone">Divergências, períodos e relatório financeiro — cada número abre a fórmula.</p>
+        </header>
 
-        {/* Stat cards */}
+        <ScenarioStateGate
+          emptyTitle="Nada a reconciliar"
+          emptyDescription="Sem depósitos ou divergências no período."
+          degradedIntegration="Reconciliation engine"
+        >
+        {/* Stat cards clicáveis (abrem Evidence Drawer) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[var(--warning)]/10 flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5 text-[var(--warning)]" />
+          <button
+            type="button"
+            onClick={() => openEvidence(buildEvidence({
+              label: 'Divergentes',
+              value: String(divergent.length),
+              formula: 'count(persons) where deposit.amount != provider_reported',
+              source: 'Reconciliation engine',
+              state: 'Divergente',
+            }))}
+            className="text-left bg-graphite border border-line rounded-xl p-4 flex items-center gap-3 hover:border-stone transition-colors"
+          >
+            <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5 text-warning" />
             </div>
             <div>
-              <div className="text-12 text-[var(--stone)]">Divergentes</div>
-              <div className="text-20 font-mono font-bold text-[var(--warning)]">{divergent.length}</div>
+              <div className="text-12 text-stone">Divergentes</div>
+              <div className="text-20 font-mono font-bold text-warning tabular-nums">{divergent.length}</div>
             </div>
-          </div>
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[var(--stone)]/10 flex items-center justify-center">
-              <XCircle className="w-5 h-5 text-[var(--stone)]" />
-            </div>
-            <div>
-              <div className="text-12 text-[var(--stone)]">Órfãos</div>
-              <div className="text-20 font-mono font-bold text-[var(--stone)]">{orphans.length}</div>
-            </div>
-          </div>
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[var(--critical)]/10 flex items-center justify-center">
-              <RefreshCw className="w-5 h-5 text-[var(--critical)]" />
-            </div>
-            <div>
-              <div className="text-12 text-[var(--stone)]">Estornos</div>
-              <div className="text-20 font-mono font-bold text-[var(--critical)]">{chargebacks.length}</div>
-            </div>
-          </div>
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[var(--warning)]/10 flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 text-[var(--warning)]" />
+          </button>
+          <button
+            type="button"
+            onClick={() => openEvidence(buildEvidence({
+              label: 'Órfãos',
+              value: String(orphans.length),
+              formula: 'count(persons) where click_id is null and source == "orphan"',
+              source: 'Identity Graph',
+              state: 'Provisório',
+            }))}
+            className="text-left bg-graphite border border-line rounded-xl p-4 flex items-center gap-3 hover:border-stone transition-colors"
+          >
+            <div className="w-10 h-10 rounded-lg bg-stone/10 flex items-center justify-center">
+              <XCircle className="w-5 h-5 text-stone" />
             </div>
             <div>
-              <div className="text-12 text-[var(--stone)]">Duplicatas</div>
-              <div className="text-20 font-mono font-bold text-[var(--warning)]">{duplicates.length}</div>
+              <div className="text-12 text-stone">Órfãos</div>
+              <div className="text-20 font-mono font-bold text-stone tabular-nums">{orphans.length}</div>
             </div>
-          </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => openEvidence(buildEvidence({
+              label: 'Estornos',
+              value: String(chargebacks.length),
+              formula: 'count(persons) where has_chargeback == true',
+              source: 'TAP Postback',
+              state: 'Reconciliado',
+            }))}
+            className="text-left bg-graphite border border-line rounded-xl p-4 flex items-center gap-3 hover:border-stone transition-colors"
+          >
+            <div className="w-10 h-10 rounded-lg bg-critical/10 flex items-center justify-center">
+              <RefreshCw className="w-5 h-5 text-critical" />
+            </div>
+            <div>
+              <div className="text-12 text-stone">Estornos</div>
+              <div className="text-20 font-mono font-bold text-critical tabular-nums">{chargebacks.length}</div>
+            </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => openEvidence(buildEvidence({
+              label: 'Duplicatas',
+              value: String(duplicates.length),
+              formula: 'count(persons) where status == "Synthetic"',
+              source: 'Deduplication engine',
+              state: 'Provisório',
+            }))}
+            className="text-left bg-graphite border border-line rounded-xl p-4 flex items-center gap-3 hover:border-stone transition-colors"
+          >
+            <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center">
+              <BarChart3 className="w-5 h-5 text-warning" />
+            </div>
+            <div>
+              <div className="text-12 text-stone">Duplicatas</div>
+              <div className="text-20 font-mono font-bold text-warning tabular-nums">{duplicates.length}</div>
+            </div>
+          </button>
         </div>
 
         {/* Chart */}
@@ -305,6 +359,7 @@ export default function ReconciliationPage() {
             </div>
           </div>
         )}
+        </ScenarioStateGate>
       </div>
     </AppShell>
   );

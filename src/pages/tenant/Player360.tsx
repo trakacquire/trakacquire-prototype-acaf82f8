@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { db } from '@/lib/fake/db';
+import { StatusChip } from '@/components/domain/StatusChip';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
 import {
   Dialog,
   DialogContent,
@@ -17,27 +20,6 @@ function fmtTs(isoStr?: string) {
 
 function fmtMoney(v: number) {
   return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-const STATUS_COLORS: Record<string, string> = {
-  Captured: '#7C91FF',
-  Linked: '#7C91FF',
-  Confirmed: '#4CAF50',
-  Reconciled: '#4CAF50',
-  Divergent: '#F1C778',
-  Failed: '#EF7D8B',
-  'Policy blocked': '#EF7D8B',
-  Orphan: '#FF9800',
-  Synthetic: '#9C27B0',
-};
-
-function StatusChip({ status }: { status: string }) {
-  const color = STATUS_COLORS[status] ?? '#888';
-  return (
-    <span className="inline-flex items-center px-2 py-0.5 rounded text-11 font-medium border" style={{ color, borderColor: color + '44', background: color + '18' }}>
-      {status}
-    </span>
-  );
 }
 
 const EVT_TYPE_COLOR: Record<string, string> = {
@@ -154,6 +136,11 @@ export default function Player360Page({ params }: { params: { id: string } }) {
   return (
     <AppShell breadcrumb={[{ label: 'Players', href: '/players' }, { label: person.name }]}>
       <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex items-center gap-2"><PreviewBadge /><StateShowcase /></div>
+        <ScenarioStateGate
+          emptyTitle="Sem histórico deste jogador no período"
+          emptyDescription="Nenhum evento chegou dentro do recorte atual."
+        >
         {/* Header */}
         <div className="bg-graphite border border-line rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
@@ -317,7 +304,7 @@ export default function Player360Page({ params }: { params: { id: string } }) {
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-11 font-medium ${conv.channel === 'telegram' ? 'bg-proof-blue/10 text-proof-blue border border-proof-blue/30' : 'bg-verified/10 text-verified border border-verified/30'}`}>
                       {conv.channel === 'telegram' ? '🔵 Telegram' : '🟢 WhatsApp'}
                     </span>
-                    <StatusChip status={conv.status} />
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-11 font-medium border ${conv.status === 'resolved' ? 'bg-verified/10 text-verified border-verified/30' : conv.status === 'pending' ? 'bg-warning/10 text-warning border-warning/30' : 'bg-zinc text-stone border-line'}`}>{conv.status}</span>
                     <SentimentChip sentiment={conv.sentiment} />
                     <span className="text-12 text-stone ml-auto">{conv.agent}</span>
                   </div>
