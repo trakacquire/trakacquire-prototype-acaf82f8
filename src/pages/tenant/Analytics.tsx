@@ -1,5 +1,7 @@
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { PhasePreviewBanner } from '@/components/state/PhasePreviewBanner';
 import { MetricCard } from '@/components/data/MetricCard';
 import { StatusChip } from '@/components/domain/StatusChip';
 import { db } from '@/lib/fake/db';
