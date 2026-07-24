@@ -490,24 +490,25 @@
   background: linear-gradient(90deg, hsl(var(--proof-blue)) 0%, hsl(var(--eggshell)) 100%);
 }
 
-/* Health orb (Command Hero) — Fase F.3 */
+/* Onda H2 · Health orb sóbrio — anel outline 1px #4A4B56 + miolo 15px
+   proof-blue com glow suave. Sem pulse infinito. */
 @utility health-orb {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, hsl(var(--proof-blue) / 0.9), hsl(230 60% 25%) 55%, hsl(240 8% 6%) 100%);
-  box-shadow: 0 0 0 1px hsl(var(--proof-blue) / 0.35), 0 0 22px hsl(var(--proof-blue) / 0.28);
+  background: hsl(var(--surface-inset));
+  border: 1px solid #4A4B56;
+  display: inline-grid;
+  place-items: center;
   position: relative;
   flex-shrink: 0;
   &::after {
     content: '';
-    position: absolute;
-    inset: 12px;
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
     background: hsl(var(--proof-blue));
-    filter: blur(6px);
-    opacity: 0.55;
-    animation: proof-pulse 2.4s ease-in-out infinite;
+    box-shadow: 0 0 12px hsl(var(--proof-blue) / 0.55);
   }
 }
 
