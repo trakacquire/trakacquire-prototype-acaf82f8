@@ -12,10 +12,14 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts';
 
+import { AppShell, useEvidence } from '@/components/layout/AppShell';
+
 export default function RevenuePage() {
+  const { openEvidence } = useEvidence();
   const { period } = usePeriod();
   const m = db.metricsForPeriod(period);
   const [tab, setTab] = React.useState<'pnl' | 'origem' | 'reconciliation'>('pnl');
+
 
   const depositsSeries = db.dailySeries(period, 'deposits');
   const chartData = depositsSeries.map(pt => ({
