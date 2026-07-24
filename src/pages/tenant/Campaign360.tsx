@@ -88,7 +88,7 @@ export default function Campaign360Page() {
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
           <div>
             <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <span className="text-14 font-serif italic text-stone leading-none">Operate · Campanha 360</span>
+              <span className="kicker">Operate · Campanha 360</span>
               <PreviewBadge />
               <StatusChip status={campaign.status === 'active' ? 'Confirmed' : 'Captured'} />
               <FreshnessTag ageSeconds={60 * 45} source={`${campaign.source === 'meta' ? 'Meta' : 'TikTok'} Ads · snapshot 45min`} />

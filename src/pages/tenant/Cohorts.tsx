@@ -35,7 +35,7 @@ export default function CohortsPage() {
       <div className="max-w-7xl mx-auto space-y-6">
 
         <header>
-          <div className="text-12 font-serif italic text-stone/80 mb-1">Prove / Coortes</div>
+          <div className="kicker mb-1">Prove / Coortes</div>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-24 font-bold text-eggshell">Análise de coortes</h1>
             <PreviewBadge />

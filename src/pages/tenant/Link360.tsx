@@ -67,7 +67,7 @@ export default function Link360Page() {
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
           <div>
             <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <span className="text-14 font-serif italic text-stone leading-none">Connect · Link {link.id}</span>
+              <span className="kicker">Connect · Link {link.id}</span>
               <PreviewBadge />
               <StatusChip status={link.status === 'active' ? 'Confirmed' : link.status === 'paused' ? 'Captured' : 'Orphan'} />
               <FreshnessTag ageSeconds={120} source="Signal Ledger" />

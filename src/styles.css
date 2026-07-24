@@ -57,6 +57,7 @@
   --color-stone: hsl(var(--stone));
 
   --color-proof-blue: hsl(var(--proof-blue));
+  --color-proof-blue-soft: hsl(var(--proof-blue-soft));
   --color-verified: hsl(var(--verified));
   --color-warning: hsl(var(--warning));
   --color-amber: hsl(var(--warning));
@@ -96,10 +97,11 @@
   --eggshell:       40 33% 94%;  /* #F6F1E7 · texto primário e CTA */
   --stone:          45 4% 64%;   /* #A8A6A0 · texto secundário */
 
-  --proof-blue: 230 100% 74%;    /* #7C91FF · seleção, identidade, em trânsito */
-  --verified:   147 65% 68%;     /* #72E6A6 · reconciliado, sucesso, FTD */
-  --warning:    38 82% 71%;      /* #F1C778 · pendente, divergente */
-  --critical:   352 76% 71%;     /* #EF7D8B · falha, bloqueio, órfão */
+  --proof-blue:      230 100% 74%; /* #7C91FF · seleção, identidade, em trânsito */
+  --proof-blue-soft: 226 100% 87%; /* #B9C5FF · links de documentação, wires suaves */
+  --verified:        147 65% 68%;  /* #72E6A6 · reconciliado, sucesso, FTD */
+  --warning:         38 82% 71%;   /* #F1C778 · pendente, divergente */
+  --critical:        352 76% 71%;  /* #EF7D8B · falha, bloqueio, órfão */
 
 
 
@@ -151,7 +153,7 @@
 
   --radius: 8px;
 
-  /* Proofline depth system — physical confidence */
+  /* Proofline depth system — physical confidence (Fase F) */
   --shadow-flat: 0 1px 0 0 hsl(0 0% 100% / 0.02) inset, 0 1px 2px 0 hsl(0 0% 0% / 0.4);
   --shadow-elevated:
     0 1px 0 0 hsl(0 0% 100% / 0.04) inset,
@@ -163,12 +165,18 @@
     0 0 0 1px hsl(var(--line) / 0.8),
     0 24px 48px -16px hsl(0 0% 0% / 0.7),
     0 8px 16px -6px hsl(0 0% 0% / 0.45);
+  --shadow-node: 0 24px 70px -12px hsl(0 0% 0% / 0.42), inset 0 1px 0 0 hsl(0 0% 100% / 0.025);
   --shadow-proof-glow: 0 0 0 1px hsl(var(--proof-blue) / 0.25), 0 8px 32px -8px hsl(var(--proof-blue) / 0.35);
 
+  /* Fase F · gradientes de superfície com "peso físico" */
+  --gradient-card: linear-gradient(180deg, #151517 0%, #111113 100%);
+  --gradient-sidebar: linear-gradient(180deg, #111113 0%, #0C0C0D 100%);
   --gradient-surface: linear-gradient(180deg, hsl(var(--graphite)) 0%, hsl(var(--iron)) 100%);
   --gradient-surface-raised: linear-gradient(180deg, hsl(240 5% 13%) 0%, hsl(var(--graphite)) 100%);
   --gradient-proof: linear-gradient(135deg, hsl(var(--proof-blue) / 0.14), hsl(var(--proof-blue) / 0));
   --gradient-hairline: linear-gradient(90deg, transparent, hsl(var(--eggshell) / 0.08), transparent);
+  --gradient-eggshell-btn: linear-gradient(180deg, #F9F6EF 0%, #DED7CB 100%);
+  --gradient-proof-btn: linear-gradient(180deg, #8CA0FF 0%, #6D82E9 100%);
 }
 
 
@@ -203,6 +211,10 @@
   @media (prefers-reduced-motion: no-preference) {
     :root { --motion-fast: 140ms; --motion-base: 220ms; --motion-slow: 420ms; }
   }
+
+  /* Fase F · icon-tile 20px → glifo interno 12px, sem depender do caller */
+  .icon-tile svg { width: 12px; height: 12px; }
+  .icon-tile-lg svg { width: 16px; height: 16px; }
 }
 
 
@@ -216,21 +228,41 @@
 @utility text-32 { font-size: 32px; line-height: 40px; font-weight: 600; }
 @utility tabular-nums-x { font-variant-numeric: tabular-nums; }
 
-/* ==== Fase D · Tríade tipográfica de header ==== */
+/* ==== Fase F · Eyebrow sans + hero-serif restrito ==== */
+/* Kicker é agora um eyebrow sans (referência TrakPro). Serifa italic saiu
+   do chrome operacional — permanece apenas na marca e no hero-serif. */
 @utility kicker {
-  font-size: 10px;
-  line-height: 14px;
+  font-size: 9px;
+  line-height: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.167em; /* ≈ 1.5px em 9px */
   color: hsl(var(--stone));
-  font-family: var(--font-serif-family);
-  font-style: italic;
+  font-family: var(--font-sans-family);
+  font-style: normal;
+  font-weight: 600;
+}
+@utility eyebrow {
+  font-size: 9px;
+  line-height: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.167em;
+  color: hsl(var(--stone));
+  font-family: var(--font-sans-family);
+  font-weight: 600;
+}
+@utility hero-serif {
+  font-family: var(--font-serif-family), 'Georgia', serif;
+  font-size: 38px;
+  line-height: 42px;
+  letter-spacing: -0.04em; /* ≈ -1.5px em 38px */
   font-weight: 400;
+  color: hsl(var(--eggshell));
+  font-variant-numeric: tabular-nums;
 }
 @utility page-title {
-  font-size: 34px;
-  line-height: 40px;
-  letter-spacing: -0.02em;
+  font-size: 27px;
+  line-height: 32px;
+  letter-spacing: -0.033em; /* ≈ -0.9px em 27px */
   font-weight: 600;
   color: hsl(var(--eggshell));
 }
@@ -242,37 +274,62 @@
 @utility card-title  { font-size: 15px; line-height: 22px; font-weight: 600; color: hsl(var(--eggshell)); }
 @utility card-body   { font-size: 13px; line-height: 20px; color: hsl(var(--stone)); }
 @utility micro-label {
-  font-size: 10px;
-  line-height: 14px;
+  font-size: 9px;
+  line-height: 12px;
   text-transform: uppercase;
   letter-spacing: 0.10em;
-  color: hsl(var(--stone) / 0.7);
+  color: hsl(var(--stone) / 0.75);
   font-family: var(--font-mono-family);
 }
 @utility mono-value  { font-size: 13px; line-height: 20px; font-family: var(--font-mono-family); font-variant-numeric: tabular-nums; color: hsl(var(--eggshell)); }
+@utility table-head  {
+  font-size: 9px;
+  line-height: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: hsl(var(--stone) / 0.8);
+  font-weight: 600;
+}
+@utility table-cell {
+  font-size: 11px; /* piso de legibilidade */
+  line-height: 16px;
+  color: hsl(var(--eggshell));
+}
 
 /* ==== Fase D · Superfícies recalibradas — degrau curto, borda sugerida ==== */
+/* ==== Fase F · Superfícies com peso físico (gradient + inset) ==== */
 @utility surface-flat {
-  background: hsl(var(--surface));
+  background: var(--gradient-card);
   border: 1px solid hsl(var(--eggshell) / 0.06);
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.025);
 }
 @utility surface-raised {
-  background: hsl(var(--surface-raised));
+  background: var(--gradient-card);
   border: 1px solid hsl(var(--eggshell) / 0.06);
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.025);
 }
 @utility surface-inset {
   background: hsl(var(--surface-inset));
   border: 1px solid hsl(var(--eggshell) / 0.06);
 }
 @utility surface-floating {
-  background: hsl(var(--surface-raised));
+  background: var(--gradient-card);
   border: 1px solid hsl(var(--eggshell) / 0.10);
-  box-shadow: var(--shadow-floating);
+  box-shadow: var(--shadow-node);
 }
 @utility surface-glass {
   background: hsl(var(--iron) / 0.55);
   backdrop-filter: blur(18px) saturate(140%);
   border: 1px solid hsl(var(--eggshell) / 0.06);
+}
+@utility surface-topbar {
+  background: hsl(10 8% 4% / 0.86); /* rgba(10,10,11,.86) */
+  backdrop-filter: blur(22px) saturate(150%);
+  border-bottom: 1px solid hsl(var(--eggshell) / 0.065);
+}
+@utility surface-sidebar {
+  background: var(--gradient-sidebar);
+  border-right: 1px solid hsl(var(--eggshell) / 0.095);
 }
 @utility surface-proof {
   background: hsl(var(--surface));
@@ -294,10 +351,48 @@
 @utility hairline-top { position: relative; }
 @utility shadow-elevated { box-shadow: var(--shadow-elevated); }
 @utility shadow-floating { box-shadow: var(--shadow-floating); }
+@utility shadow-node { box-shadow: var(--shadow-node); }
 @utility shadow-proof-glow { box-shadow: var(--shadow-proof-glow); }
 
-/* Icon tile — glifo monocromático em quadrado 28px, hairline, raio 8 */
+/* ==== Fase F · Botões físicos ==== */
+@utility btn-eggshell {
+  background: var(--gradient-eggshell-btn);
+  color: hsl(var(--ink));
+  border: 1px solid hsl(45 20% 82%);
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.055), 0 1px 2px 0 hsl(0 0% 0% / 0.35);
+  border-radius: 9px;
+  font-weight: 600;
+  transition: filter 140ms ease-out, transform 120ms ease-out;
+}
+@utility btn-eggshell-hover {
+  &:hover { filter: brightness(1.04); }
+  &:active { transform: translateY(0.5px); }
+}
+@utility btn-proof {
+  background: var(--gradient-proof-btn);
+  color: hsl(var(--ink));
+  border: 1px solid hsl(230 60% 60%);
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.11), 0 1px 2px 0 hsl(0 0% 0% / 0.35);
+  border-radius: 9px;
+  font-weight: 600;
+  transition: filter 140ms ease-out, transform 120ms ease-out;
+  &:hover { filter: brightness(1.05); }
+  &:active { transform: translateY(0.5px); }
+}
+
+/* Icon tile — 20px (Fase F). Área de toque preservada pelo padding do link pai. */
 @utility icon-tile {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1px solid hsl(var(--eggshell) / 0.06);
+  background: hsl(var(--surface-raised));
+  color: hsl(var(--stone));
+  display: inline-grid;
+  place-items: center;
+  transition: color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
+}
+@utility icon-tile-lg {
   width: 28px;
   height: 28px;
   border-radius: 8px;
@@ -306,17 +401,107 @@
   color: hsl(var(--stone));
   display: inline-grid;
   place-items: center;
-  transition: color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
 }
 @utility icon-tile-active {
   border-color: hsl(var(--proof-blue) / 0.35);
-  background: hsl(var(--surface-inset));
+  background: linear-gradient(180deg, hsl(230 30% 18%), hsl(240 8% 10%));
   color: hsl(var(--proof-blue));
+  box-shadow: inset 0 0 0 1px hsl(var(--proof-blue) / 0.18);
+}
+
+/* Glow para dots de status (Fase F.3) */
+@utility dot-glow-verified { box-shadow: 0 0 12px hsl(var(--verified) / 0.3); }
+@utility dot-glow-warning  { box-shadow: 0 0 12px hsl(var(--warning) / 0.3); }
+@utility dot-glow-critical { box-shadow: 0 0 12px hsl(var(--critical) / 0.3); }
+@utility dot-glow-proof    { box-shadow: 0 0 12px hsl(var(--proof-blue) / 0.35); }
+
+/* Confidence bar inline — Ledger (Fase F.5) */
+@utility confidence-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: hsl(var(--surface-inset));
+  overflow: hidden;
+  position: relative;
+}
+
+/* Brand glyph — quadrado 35px, gradient #1E1E21→#0E0E10, borda #3B3B40, olho
+   eggshell + risco proof-blue 35° (Fase F.2). */
+@utility brand-glyph {
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #1E1E21 0%, #0E0E10 100%);
+  border: 1px solid #3B3B40;
+  position: relative;
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.05), 0 2px 6px -2px hsl(0 0% 0% / 0.55);
+  display: inline-block;
+  flex-shrink: 0;
+}
+@utility brand-glyph-sm {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #1E1E21 0%, #0E0E10 100%);
+  border: 1px solid #3B3B40;
+  position: relative;
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.05);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Grid pontilhado do canvas (FlowBuilder) — Fase F.5 */
+@utility canvas-dot-grid {
+  background-image: radial-gradient(#333238 1px, transparent 1px);
+  background-size: 23px 23px;
+  background-color: hsl(var(--ink));
+}
+
+/* Wires com fade nas pontas (IdentityGraph) — Fase F.5 */
+@utility wire-fade {
+  background: linear-gradient(90deg, transparent 0%, hsl(var(--proof-blue) / 0.85) 50%, transparent 100%);
+}
+
+/* Connector direcional (FlowBuilder) — degrade azul → eggshell */
+@utility connector-flow {
+  background: linear-gradient(90deg, hsl(var(--proof-blue)) 0%, hsl(var(--eggshell)) 100%);
+}
+
+/* Health orb (Command Hero) — Fase F.3 */
+@utility health-orb {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, hsl(var(--proof-blue) / 0.9), hsl(230 60% 25%) 55%, hsl(240 8% 6%) 100%);
+  box-shadow: 0 0 0 1px hsl(var(--proof-blue) / 0.35), 0 0 22px hsl(var(--proof-blue) / 0.28);
+  position: relative;
+  flex-shrink: 0;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border-radius: 50%;
+    background: hsl(var(--proof-blue));
+    filter: blur(6px);
+    opacity: 0.55;
+    animation: proof-pulse 2.4s ease-in-out infinite;
+  }
+}
+
+/* Conector tracejado entre etapas do JourneyStrip (Fase F.3) */
+@utility journey-connector {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    width: 8px;
+    height: 1px;
+    border-top: 1px dashed hsl(var(--eggshell) / 0.18);
+  }
 }
 
 
-
-/* ==== Proofline motion & interaction ==== */
 @utility hover-lift {
   transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms ease-out, border-color 180ms ease-out;
   &:hover {

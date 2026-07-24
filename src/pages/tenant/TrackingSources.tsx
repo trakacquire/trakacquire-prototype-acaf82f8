@@ -76,7 +76,7 @@ export default function TrackingSourcesPage() {
       <div className="max-w-7xl mx-auto space-y-6">
         <header>
           <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <span className="text-14 font-serif italic text-stone leading-none">Connect · Fontes &amp; custos</span>
+            <span className="kicker">Connect · Fontes &amp; custos</span>
             <PreviewBadge />
             <FreshnessTag ageSeconds={60 * 60 * 32} source="Snapshot D+2 · Meta/TikTok Ads" />
             <StateShowcase />

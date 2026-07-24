@@ -86,7 +86,7 @@ export default function ApprovalsPage() {
     <AppShell breadcrumb={[{ label: 'Operate' }, { label: 'Aprovações' }]}>
       <div className="max-w-5xl mx-auto space-y-6">
         <div>
-          <div className="text-11 font-serif italic text-stone mb-1">Operate · Central de Aprovações</div>
+          <div className="kicker mb-1">Operate · Central de Aprovações</div>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-24 font-bold text-eggshell">Central de Aprovações</h1>
             <PreviewBadge />

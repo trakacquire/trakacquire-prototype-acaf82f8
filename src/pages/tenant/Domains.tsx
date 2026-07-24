@@ -66,7 +66,7 @@ export default function DomainsPage() {
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
           <div>
             <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <span className="text-14 font-serif italic text-stone leading-none">Connect · Domínios &amp; redirect</span>
+              <span className="kicker">Connect · Domínios &amp; redirect</span>
               <PreviewBadge />
               <FreshnessTag ageSeconds={120} source="Cloudflare edge · health probes" />
               <StateShowcase />

@@ -22,7 +22,7 @@ export default function InboxPage() {
     <AppShell breadcrumb={[{ label: 'Operate' }, { label: 'Caixa de Entrada' }]}>
       <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="text-11 font-serif italic text-stone">Operate · Caixa de Entrada</div>
+          <div className="kicker">Operate · Caixa de Entrada</div>
           <PreviewBadge />
           <StateShowcase />
         </div>
