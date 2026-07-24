@@ -183,6 +183,7 @@ function Router() {
       <Route path="/profile" component={Profile} />
       <Route path="/live" component={LiveEvents} />
       <Route path="/approvals" component={Approvals} />
+      <Route path="/roadmap" component={Roadmap} />
 
       <Route component={NotFound} />
     </Switch>
