@@ -52,6 +52,12 @@ function ageAgo(iso?: string): number {
   if (!iso) return 999999;
   return Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
 }
+function fmtAge(s: number): string {
+  if (s < 60) return `${s}s`;
+  if (s < 3600) return `${Math.round(s / 60)}m`;
+  if (s < 86400) return `${Math.round(s / 3600)}h`;
+  return `${Math.round(s / 86400)}d`;
+}
 
 function pillFor(state: IntegrationState): IntegrationPillState {
   if (state === 'production' || state === 'pilot') return 'active';
@@ -109,7 +115,7 @@ export default function IntegrationsPage() {
                 <span className="w-1 h-1 rounded-full bg-warning" />
                 Prévia
                 <span className="chip-honest-sep" />
-                ao vivo · há {ageAgo(lastEventFor('ftd'))}s
+                ao vivo · há {fmtAge(ageAgo(lastEventFor('ftd')))}
                 <span className="chip-honest-sep" />
                 <span className={totalErrors > 0 ? 'text-warning' : 'text-verified'}>
                   {totalProd}/{integrations.length} em produção · {totalErrors} erros 24h
