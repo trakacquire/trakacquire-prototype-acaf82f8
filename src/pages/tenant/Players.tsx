@@ -37,12 +37,22 @@ export default function PlayersPage() {
   return (
     <AppShell breadcrumb={[{ label: 'Players' }]}>
       <div className="max-w-7xl mx-auto space-y-4">
+        <header className="space-y-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-13 font-serif italic text-stone leading-none">Observe · Players</span>
+            <PreviewBadge />
+            <StateShowcase />
+          </div>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+            <h1 className="text-24 font-semibold text-eggshell font-sans">Cada jogador, sua trilha completa.</h1>
+            <span className="text-13 text-stone font-mono tabular-nums">{filtered.length} resultados</span>
+          </div>
+        </header>
 
-          <PhasePreviewBanner phase="P3" scope="Grafo de identidade, Player 360, timeline" />
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-          <div className="flex flex-wrap items-center gap-3"><h1 className="text-24 font-bold text-eggshell">Players</h1><PreviewBadge /></div>
-          <span className="text-13 text-stone font-mono">{filtered.length} resultados</span>
-        </div>
+        <ScenarioStateGate
+          emptyTitle="Sem jogadores no período"
+          emptyDescription="Nenhum registro no recorte atual."
+        >
 
         {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-3 bg-graphite border border-line rounded-xl p-3">
