@@ -157,7 +157,16 @@ export default function FlowCanvas({ flowObj, onNodeSelect, onDeleteNode, onNode
   }, [setNodes, setEdges, onDeleteNode]);
 
   return (
-    <div ref={reactFlowWrapper} style={{ width: '100%', height: '100%' }}>
+    <div ref={reactFlowWrapper} className="canvas-dot-grid" style={{ width: '100%', height: '100%' }}>
+      {/* Gradient defs para os edges — proof-blue → eggshell */}
+      <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden>
+        <defs>
+          <linearGradient id="flow-connector-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"  stopColor="hsl(var(--proof-blue))" />
+            <stop offset="100%" stopColor="hsl(var(--eggshell))" />
+          </linearGradient>
+        </defs>
+      </svg>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -173,14 +182,14 @@ export default function FlowCanvas({ flowObj, onNodeSelect, onDeleteNode, onNode
         fitViewOptions={{ padding: 0.15 }}
         minZoom={0.3}
         maxZoom={2}
-        style={{ background: 'hsl(var(--ink))' }}
+        style={{ background: 'transparent' }}
         deleteKeyCode="Delete"
       >
         <Background
           variant={BackgroundVariant.Dots}
-          color="#38383D"
-          gap={20}
-          size={1.5}
+          color="hsl(var(--eggshell) / 0.14)"
+          gap={23}
+          size={1}
         />
         <MiniMap
           style={{ background: 'hsl(var(--graphite))' }}
