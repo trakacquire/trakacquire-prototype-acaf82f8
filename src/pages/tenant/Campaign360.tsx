@@ -11,6 +11,7 @@ import { CAMPAIGNS, PERSONS, spendForPeriod } from '@/lib/fake/db';
 import { funnelSteps } from '@/lib/fake/funnelSteps';
 import { TargetKpi } from '@/components/data/TargetKpi';
 import { expertForPerson } from '@/lib/fake/experts';
+import { RecommendationCard } from '@/components/data/RecommendationCard';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 
 interface ActionPlan {
