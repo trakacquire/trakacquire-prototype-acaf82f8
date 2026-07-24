@@ -224,21 +224,41 @@
 @utility text-32 { font-size: 32px; line-height: 40px; font-weight: 600; }
 @utility tabular-nums-x { font-variant-numeric: tabular-nums; }
 
-/* ==== Fase D · Tríade tipográfica de header ==== */
+/* ==== Fase F · Eyebrow sans + hero-serif restrito ==== */
+/* Kicker é agora um eyebrow sans (referência TrakPro). Serifa italic saiu
+   do chrome operacional — permanece apenas na marca e no hero-serif. */
 @utility kicker {
-  font-size: 10px;
-  line-height: 14px;
+  font-size: 9px;
+  line-height: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.167em; /* ≈ 1.5px em 9px */
   color: hsl(var(--stone));
-  font-family: var(--font-serif-family);
-  font-style: italic;
+  font-family: var(--font-sans-family);
+  font-style: normal;
+  font-weight: 600;
+}
+@utility eyebrow {
+  font-size: 9px;
+  line-height: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.167em;
+  color: hsl(var(--stone));
+  font-family: var(--font-sans-family);
+  font-weight: 600;
+}
+@utility hero-serif {
+  font-family: var(--font-serif-family), 'Georgia', serif;
+  font-size: 38px;
+  line-height: 42px;
+  letter-spacing: -0.04em; /* ≈ -1.5px em 38px */
   font-weight: 400;
+  color: hsl(var(--eggshell));
+  font-variant-numeric: tabular-nums;
 }
 @utility page-title {
-  font-size: 34px;
-  line-height: 40px;
-  letter-spacing: -0.02em;
+  font-size: 27px;
+  line-height: 32px;
+  letter-spacing: -0.033em; /* ≈ -0.9px em 27px */
   font-weight: 600;
   color: hsl(var(--eggshell));
 }
@@ -250,14 +270,27 @@
 @utility card-title  { font-size: 15px; line-height: 22px; font-weight: 600; color: hsl(var(--eggshell)); }
 @utility card-body   { font-size: 13px; line-height: 20px; color: hsl(var(--stone)); }
 @utility micro-label {
-  font-size: 10px;
-  line-height: 14px;
+  font-size: 9px;
+  line-height: 12px;
   text-transform: uppercase;
   letter-spacing: 0.10em;
-  color: hsl(var(--stone) / 0.7);
+  color: hsl(var(--stone) / 0.75);
   font-family: var(--font-mono-family);
 }
 @utility mono-value  { font-size: 13px; line-height: 20px; font-family: var(--font-mono-family); font-variant-numeric: tabular-nums; color: hsl(var(--eggshell)); }
+@utility table-head  {
+  font-size: 9px;
+  line-height: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: hsl(var(--stone) / 0.8);
+  font-weight: 600;
+}
+@utility table-cell {
+  font-size: 11px; /* piso de legibilidade */
+  line-height: 16px;
+  color: hsl(var(--eggshell));
+}
 
 /* ==== Fase D · Superfícies recalibradas — degrau curto, borda sugerida ==== */
 @utility surface-flat {
