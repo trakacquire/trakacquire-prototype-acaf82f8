@@ -301,18 +301,18 @@ export default function GovernancePage() {
         {pendingKillKey && (
           <ConfirmDialog
             open={!!pendingKillKey}
-            onOpenChange={v => { if (!v) setPendingKillKey(null); }}
+            onClose={() => setPendingKillKey(null)}
             title={`Confirmar toggle: ${KILL_SWITCH_CONFIG.find(c => c.key === pendingKillKey)?.label}`}
-            description="Digite o nome do switch para confirmar. Ação auditada."
-            confirmToken={pendingKillKey}
+            description="Justifique a mudança (mínimo 10 caracteres). Ação auditada."
             requireReason
             onConfirm={handleKillToggleConfirm}
-            destructive
+            danger
           />
         )}
-        <ConfirmDialog open={approveOpen} onOpenChange={setApproveOpen} title="Aprovar plano ap_001" description="Digite 'ap_001' para confirmar." confirmToken="ap_001" onConfirm={handleApprove} />
-        <ConfirmDialog open={rejectOpen} onOpenChange={setRejectOpen} title="Rejeitar plano ap_001" description="Digite 'ap_001' para confirmar." confirmToken="ap_001" onConfirm={handleReject} destructive />
-        <ConfirmDialog open={piiConfirmOpen} onOpenChange={setPiiConfirmOpen} title="Registrar abertura de PII" description="Digite 'PII' e informe o motivo. Ação auditada." confirmToken="PII" requireReason onConfirm={() => { toast('Abertura registrada no vault (mock).'); setPiiConfirmOpen(false); }} />
+        <ConfirmDialog open={approveOpen} onClose={() => setApproveOpen(false)} title="Aprovar plano ap_001" description="Confirma a aprovação deste plano imutável?" onConfirm={handleApprove} />
+        <ConfirmDialog open={rejectOpen} onClose={() => setRejectOpen(false)} title="Rejeitar plano ap_001" description="Confirma a rejeição deste plano?" onConfirm={handleReject} danger />
+        <ConfirmDialog open={piiConfirmOpen} onClose={() => setPiiConfirmOpen(false)} title="Registrar abertura de PII" description="Descreva o motivo (mínimo 10 caracteres). Ação auditada." requireReason onConfirm={() => { toast('Abertura registrada no vault (mock).'); setPiiConfirmOpen(false); }} />
+
       </div>
     </AppShell>
   );
