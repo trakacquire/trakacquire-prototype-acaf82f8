@@ -9,19 +9,23 @@
  * PERIOD: 90 days ending 2026-07-23 (TODAY).
  *
  * ── ANCHOR VALUES (numbers all screens must reconcile to) ─────────────────
+ *   Clicks canônicos (30d) ... 5.000 (inflado sobre PERSONS via CLICK_INFLATION;
+ *                              PERSONS mantém 78 identidades resolvidas → Linked)
+ *   Registrations (30d) ...... 75 (âncora imutável)
+ *   FTDs (30d) ............... 36 (âncora imutável)
+ *   Investimento ............. R$ 12.013 · CPFTD R$ 334 · Net R$ 19.618
  *   Persons total ............ 240 (240 personas geradas, seed fixa)
- *   Sources .................. 144 Meta · 48 TikTok · 36 Orgânico · 12 Órfãos
- *   FTDs canônicos ........... 89 no total (47 nos 30d · 26 nos 31–60d · 16 nos 61–90d)
  *
  * ── DUAS VISTAS DA MESMA VERDADE ──────────────────────────────────────────
  *   Journey proof (CADEIA DE PROVA da atribuição):
- *     Captured → Linked → Registered → Confirmed → Reconciled
+ *     Captured (5.000 cliques) → Linked (78 identidades resolvidas) →
+ *     Registered (75) → Confirmed (36) → Reconciled (36)
  *   Funil de aquisição (comportamento operacional — funnelSteps.ts):
- *     Clique → StartBot → Entrada Canal → Cadastro → FTD
- *   Ambas as vistas partilham as MESMAS âncoras: começam em `clicks` (78)
- *   e terminam em `ftds` (36). Etapas intermediárias podem diferir porque
- *   respondem a jobs diferentes (provar × operar), mas âncoras jamais
- *   divergem. O Evidence Drawer marca cada número com o campo `view`.
+ *     Clique (5.000) → StartBot (~780) → Entrada Canal (~320) → Cadastro (75) → FTD (36)
+ *   Ambas partilham as MESMAS âncoras nas pontas (5.000 no topo, 36 no fim).
+ *   Linked ≠ 100% dos Captured: só cliques amarrados a uma pessoa entram.
+ *   O Evidence Drawer marca cada número com o campo `view`.
+
  *
  *   Journey (90d) monotônico:  Captured ≥ Linked ≥ Registered ≥ Confirmed ≥ Reconciled
  *   Investimento ............. spendForPeriod(days) — Meta cresce R$180→R$300, TikTok R$120/d
