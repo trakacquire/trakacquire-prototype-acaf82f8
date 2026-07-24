@@ -404,11 +404,12 @@
 }
 
 /* Icon tile — 20px (Fase F). Área de toque preservada pelo padding do link pai. */
+/* Onda H1 · icon-tile 18px raio 5, borda rgba(egg,.10) — NUNCA cinza sólido. */
 @utility icon-tile {
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
-  border: 1px solid hsl(var(--eggshell) / 0.06);
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid hsl(var(--eggshell) / 0.10);
   background: hsl(var(--surface-raised));
   color: hsl(var(--stone));
   display: inline-grid;
@@ -416,20 +417,20 @@
   transition: color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
 }
 @utility icon-tile-lg {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  border: 1px solid hsl(var(--eggshell) / 0.06);
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  border: 1px solid hsl(var(--eggshell) / 0.10);
   background: hsl(var(--surface-raised));
   color: hsl(var(--stone));
   display: inline-grid;
   place-items: center;
 }
 @utility icon-tile-active {
-  border-color: hsl(var(--proof-blue) / 0.35);
+  border-color: hsl(var(--proof-blue) / 0.40);
   background: linear-gradient(180deg, hsl(230 30% 18%), hsl(240 8% 10%));
   color: hsl(var(--proof-blue));
-  box-shadow: inset 0 0 0 1px hsl(var(--proof-blue) / 0.18);
+  box-shadow: inset 0 0 0 1px hsl(var(--proof-blue) / 0.22);
 }
 
 /* Glow para dots de status (Fase F.3) */
