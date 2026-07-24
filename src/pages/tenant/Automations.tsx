@@ -39,6 +39,8 @@ const statusLabel: Record<string, string> = {
 export default function AutomationsPage() {
   const [, setLocation] = useLocation();
   const { openEvidence } = useEvidence();
+  const [tab, setTab] = useState<'canvas' | 'tabela'>('canvas');
+
 
   const activeFlows = rows.filter(r => r.status === 'active').length;
   const totalEntries = rows.reduce((s, r) => s + r.persons_total, 0);
@@ -192,9 +194,35 @@ export default function AutomationsPage() {
             ))}
           </div>
 
-          <DataTable data={rows} columns={columns} onRowClick={(f) => setLocation(`/automations/${f.id}`)} />
-        </ScenarioStateGate>
-      </div>
+          {/* H2 · Canvas é a landing, tabela é aba secundária. */}
+          <div className="bg-graphite border border-line rounded-xl overflow-hidden">
+            <div className="flex border-b border-line">
+              {([
+                { key: 'canvas', label: `Canvas · ${rows[0]?.name ?? 'fluxo ativo'}` },
+                { key: 'tabela', label: `Fluxos · ${rows.length}` },
+              ] as const).map((t) => (
+                <button
+                  key={t.key}
+                  onClick={() => setTab(t.key)}
+                  className={`px-5 py-3 text-13 font-medium whitespace-nowrap transition-colors ${
+                    tab === t.key
+                      ? 'text-eggshell border-b-2 border-proof-blue -mb-px'
+                      : 'text-stone hover:text-eggshell'
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            {tab === 'canvas' ? (
+              <div className="h-[540px] canvas-dot-grid">
+                <FlowCanvas flowObj={rows[0]} onNodeSelect={() => {}} />
+              </div>
+            ) : (
+              <DataTable data={rows} columns={columns} onRowClick={(f) => setLocation(`/automations/${f.id}`)} />
+            )}
+          </div>
+
     </AppShell>
   );
 }
