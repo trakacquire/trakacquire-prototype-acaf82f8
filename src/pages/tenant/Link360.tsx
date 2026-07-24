@@ -113,7 +113,83 @@ export default function Link360Page() {
             </div>
           )}
 
-          {tab === 'ab' && (
+          {tab === 'builder' && (
+            <div className="bg-graphite border border-line rounded-xl p-5 space-y-4">
+              <div>
+                <h3 className="text-14 font-semibold text-eggshell">Construtor UTM</h3>
+                <p className="text-12 text-stone mt-1">Amarrar source/medium/campaign/content/term + Expert + campanha. A URL é gerada com slug estável.</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {([
+                  { k: 'source',   label: 'utm_source',   options: ['meta', 'tiktok', 'organic', 'direct'] },
+                  { k: 'medium',   label: 'utm_medium',   options: ['cpc', 'cpm', 'social', 'affiliate', 'email'] },
+                  { k: 'campaign', label: 'utm_campaign' },
+                  { k: 'content',  label: 'utm_content' },
+                  { k: 'term',     label: 'utm_term' },
+                ] as const).map((f) => (
+                  <div key={f.k}>
+                    <label className="text-11 font-mono uppercase text-stone mb-1 block">{f.label}</label>
+                    {'options' in f && f.options ? (
+                      <select
+                        value={(utm as any)[f.k]}
+                        onChange={(e) => setUtm({ ...utm, [f.k]: e.target.value })}
+                        className="w-full bg-zinc border border-line rounded-md px-3 py-2 text-13 text-eggshell focus:outline-none focus:border-proof-blue"
+                      >
+                        {f.options.map((o) => <option key={o} value={o}>{o}</option>)}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        value={(utm as any)[f.k]}
+                        onChange={(e) => setUtm({ ...utm, [f.k]: e.target.value })}
+                        className="w-full bg-zinc border border-line rounded-md px-3 py-2 text-13 font-mono text-eggshell focus:outline-none focus:border-proof-blue"
+                      />
+                    )}
+                  </div>
+                ))}
+                <div>
+                  <label className="text-11 font-mono uppercase text-stone mb-1 block">Expert / Afiliado</label>
+                  <select
+                    value={utm.expert}
+                    onChange={(e) => setUtm({ ...utm, expert: e.target.value })}
+                    className="w-full bg-zinc border border-line rounded-md px-3 py-2 text-13 text-eggshell focus:outline-none focus:border-proof-blue"
+                  >
+                    {EXPERTS.map((ex) => <option key={ex.id} value={ex.handle}>{ex.name} · {ex.handle}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-11 font-mono uppercase text-stone mb-1 block">Campanha vinculada</label>
+                  <select
+                    value={link.campaign_id ?? ''}
+                    onChange={() => { /* prototype: read-only vínculo */ }}
+                    className="w-full bg-zinc border border-line rounded-md px-3 py-2 text-13 text-eggshell focus:outline-none focus:border-proof-blue"
+                  >
+                    <option value="">— sem vínculo —</option>
+                    {db.campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                  {linkedCampaign && (
+                    <div className="text-11 text-stone mt-1">Atual: <span className="font-mono text-eggshell">{linkedCampaign.name}</span></div>
+                  )}
+                </div>
+                <div className="md:col-span-2">
+                  <label className="text-11 font-mono uppercase text-stone mb-1 block">Slug</label>
+                  <input
+                    type="text"
+                    value={utm.slug}
+                    onChange={(e) => setUtm({ ...utm, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') })}
+                    className="w-full bg-zinc border border-line rounded-md px-3 py-2 text-13 font-mono text-eggshell focus:outline-none focus:border-proof-blue"
+                  />
+                </div>
+              </div>
+              <div className="rounded-md border border-line bg-ink p-3 flex items-center gap-2">
+                <code className="flex-1 font-mono text-12 text-eggshell break-all">{builtUrl}</code>
+                <button onClick={() => copy(builtUrl, 'built')} className="border border-line rounded-md px-3 py-2 text-stone hover:text-eggshell hover:border-stone flex-shrink-0">
+                  {copied === 'built' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+          )}
+
             <div className="bg-graphite border border-line rounded-xl p-5 space-y-3">
               <h3 className="text-14 font-semibold text-eggshell">Split A/B</h3>
               <div className="grid grid-cols-2 gap-3">
