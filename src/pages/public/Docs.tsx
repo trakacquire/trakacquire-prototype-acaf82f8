@@ -44,10 +44,12 @@ export default function DocsPage() {
         </aside>
         
         <main className="flex-1 p-6 md:p-12 overflow-y-auto">
+          <div className="text-11 font-serif italic text-stone mb-2">Guia · Início</div>
           <h1 className="text-32 font-bold text-eggshell mb-4">Início</h1>
           <p className="text-16 text-stone mb-8 max-w-3xl">
             Bem-vindo à documentação do TrakAcquire. Aprenda a instrumentar sua operação de iGaming para provar a origem exata de cada FTD, cruzando dados de anúncios, mensagens e provedores de receita.
           </p>
+
           
           <h2 className="text-24 font-bold text-eggshell mb-4 mt-12">Exemplo de Postback TAP</h2>
           <p className="text-14 text-stone mb-4 max-w-3xl">

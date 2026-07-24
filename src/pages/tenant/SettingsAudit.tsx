@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { useAppState } from '@/lib/context/AppStateContext';
+
 
 const fmtDT = (iso: string) => {
   try {
@@ -56,9 +58,14 @@ export default function SettingsAuditPage() {
     <AppShell breadcrumb={[{ label: 'Configurações' }, { label: 'Log de Auditoria' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
         <div>
-          <h1 className="text-24 font-bold text-[var(--eggshell)] mb-1">Log de Auditoria</h1>
-          <p className="text-13 text-[var(--stone)]">Registro de todas as ações administrativas do workspace</p>
+          <div className="text-11 font-serif italic text-[var(--stone)] mb-1">Prova · Rastro imutável</div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-24 font-bold text-[var(--eggshell)]">Log de Auditoria</h1>
+            <PreviewBadge />
+          </div>
+          <p className="text-13 text-[var(--stone)] mt-1">Registro de todas as ações administrativas do workspace</p>
         </div>
+
 
         <div className="flex flex-col sm:flex-row gap-2">
           <input

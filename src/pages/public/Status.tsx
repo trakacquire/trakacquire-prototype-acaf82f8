@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'wouter';
-import { CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, AlertTriangle } from 'lucide-react';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+
 
 export default function StatusPage() {
   const services = [
@@ -16,16 +18,23 @@ export default function StatusPage() {
     <div className="min-h-screen bg-ink pt-16 pb-24 px-4 font-sans text-eggshell">
       <div className="max-w-4xl mx-auto space-y-12">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-24 font-bold">
-            <span className="w-6 h-6 rounded bg-proof-blue shrink-0"></span>
-            TrakAcquire System Status
-          </Link>
-          <button className="bg-zinc border border-line text-eggshell px-4 py-2 rounded-md font-medium text-14 hover:bg-line transition-colors">
-            Assinar Atualizações
-          </button>
+          <div>
+            <div className="text-11 font-serif italic text-stone mb-1">Prova · Uptime público</div>
+            <Link href="/" className="flex items-center gap-2 text-24 font-bold">
+              <span className="w-6 h-6 rounded bg-proof-blue shrink-0"></span>
+              TrakAcquire System Status
+            </Link>
+          </div>
+          <div className="flex items-center gap-2">
+            <PreviewBadge />
+            <button className="bg-zinc border border-line text-eggshell px-4 py-2 rounded-md font-medium text-14 hover:bg-line transition-colors">
+              Assinar Atualizações
+            </button>
+          </div>
         </div>
 
         <div className="bg-graphite border border-line rounded-xl p-8 text-center">
+
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-warning/10 text-warning mb-4">
             <AlertTriangle className="w-8 h-8" />
           </div>

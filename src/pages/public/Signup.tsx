@@ -6,12 +6,14 @@ export default function SignupPage() {
     <div className="min-h-screen bg-ink flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-graphite border border-line rounded-2xl shadow-2xl p-8">
         <div className="flex flex-col items-center mb-8">
+          <div className="text-11 font-serif italic text-stone mb-2">Access · Nova conta</div>
           <div className="text-24 font-bold text-eggshell flex items-center gap-2">
             <span className="w-6 h-6 rounded bg-proof-blue shrink-0"></span>
             TrakAcquire
           </div>
           <p className="text-14 text-stone mt-2">Crie sua conta. Proof over noise.</p>
         </div>
+
 
         <form className="space-y-4">
           <div>
@@ -42,9 +44,10 @@ export default function SignupPage() {
           <div className="flex items-start gap-2 pt-2">
             <input type="checkbox" id="terms" className="mt-1 bg-zinc border-line text-proof-blue rounded" />
             <label htmlFor="terms" className="text-12 text-stone">
-              Eu aceito os <a href="#" className="text-proof-blue hover:underline">Termos de Serviço</a> e a <a href="#" className="text-proof-blue hover:underline">Política de Privacidade</a>.
+              Eu aceito os <Link href="/legal/termos" className="text-proof-blue hover:underline">Termos de Serviço</Link>, a <Link href="/legal/privacidade" className="text-proof-blue hover:underline">Política de Privacidade</Link> e o <Link href="/legal/dpa" className="text-proof-blue hover:underline">DPA</Link>.
             </label>
           </div>
+
 
           <button type="button" onClick={() => window.location.href='/command'} className="w-full bg-eggshell text-ink font-medium py-2.5 rounded-md text-14 hover:bg-white transition-colors mt-4">
             Criar conta
