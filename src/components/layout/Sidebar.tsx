@@ -5,7 +5,7 @@ import {
   LayoutDashboard, BarChart3,
   Puzzle, Globe, Link2,
   Radio, Activity, UserSquare, ShieldAlert,
-  Zap, Megaphone,
+  Zap, Megaphone, Send, Inbox as InboxIcon, GitPullRequestArrow,
   DollarSign, ShieldCheck, FileText,
   Settings, UserCircle2, Construction,
 } from 'lucide-react';
