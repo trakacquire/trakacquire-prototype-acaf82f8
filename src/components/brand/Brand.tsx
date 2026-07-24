@@ -8,35 +8,32 @@ interface BrandProps {
 }
 
 /**
- * Brand — glifo Proofline em CSS puro conforme referência TrakPro.
- * Quadrado com gradient #1E1E21→#0E0E10, borda #3B3B40; olho eggshell + risco
- * proof-blue em 35° construídos como pseudo-elementos posicionados.
- *
- * A única presença de tipografia serif no chrome fica AQUI (wordmark), por
- * DECISIONS D1 · "sans no produto; serif só na marca e em hero narrativo".
+ * Brand — TrakAcquire (produto). Glifo Proofline em CSS puro + wordmark
+ * "TRAK" forte com sufixo "ACQUIRE" pequeno. Proofline é o design system,
+ * não o produto — assina discretamente no rodapé da Sidebar, nunca aqui.
  */
 export function Brand({ size = 'md', wordmark = true, className }: BrandProps) {
   const glyphSize = size === 'md' ? 'brand-glyph' : 'brand-glyph-sm';
+  const eyeSize = size === 'md' ? 9 : 6;
+  const dashLen = size === 'md' ? 22 : 14;
   return (
     <div className={cn('flex items-center gap-2.5', className)}>
       <span className={cn(glyphSize, 'relative')} aria-hidden>
-        {/* Olho eggshell */}
         <span
           className="absolute rounded-full bg-eggshell"
           style={{
-            width: size === 'md' ? 9 : 6,
-            height: size === 'md' ? 9 : 6,
+            width: eyeSize,
+            height: eyeSize,
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
             boxShadow: '0 0 6px hsl(45 42% 90% / 0.55)',
           }}
         />
-        {/* Risco proof-blue em 35° */}
         <span
           className="absolute bg-proof-blue"
           style={{
-            width: size === 'md' ? 22 : 14,
+            width: dashLen,
             height: 1.5,
             top: '50%',
             left: '50%',
@@ -48,14 +45,25 @@ export function Brand({ size = 'md', wordmark = true, className }: BrandProps) {
         />
       </span>
       {wordmark ? (
-        <span
-          className={cn(
-            'text-eggshell tracking-tight leading-none',
-            size === 'md' ? 'text-16' : 'text-13',
-          )}
-          style={{ fontFamily: 'var(--font-serif-family), Georgia, serif', fontStyle: 'italic', letterSpacing: '-0.01em' }}
-        >
-          Proofline
+        <span className="inline-flex items-baseline gap-1 leading-none">
+          <span
+            className={cn(
+              'text-eggshell font-semibold tracking-tight',
+              size === 'md' ? 'text-[17px]' : 'text-[14px]',
+            )}
+            style={{ letterSpacing: '-0.01em' }}
+          >
+            TRAK
+          </span>
+          <span
+            className={cn(
+              'font-mono text-stone uppercase',
+              size === 'md' ? 'text-[10px]' : 'text-[9px]',
+            )}
+            style={{ letterSpacing: '0.18em' }}
+          >
+            Acquire
+          </span>
         </span>
       ) : null}
     </div>
