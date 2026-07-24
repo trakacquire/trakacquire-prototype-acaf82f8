@@ -5,7 +5,7 @@ import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioSta
 
 import { buildEvidence } from '@/lib/evidence';
 import { db } from '@/lib/fake/db';
-import { StatusPill, CardFooter, MicroStatRow, type IntegrationPillState } from '@/components/ui/proofline';
+import { StatusPill, CardFooter, type IntegrationPillState } from '@/components/ui/proofline';
 import { Search } from 'lucide-react';
 import { AppIcon, kindFromIntegrationId } from '@/components/brand/AppIcon';
 import type { IntegrationState } from '@/lib/types';
@@ -188,30 +188,28 @@ export default function IntegrationsPage() {
                           key={i.id}
                           type="button"
                           onClick={() => navigate(`/integrations/${i.id}`)}
-                          className={`text-left rounded-[12px] p-6 surface-flat transition-colors hover:ring-hairline-strong focus:outline-none focus:ring-proof ${isActive ? 'ring-hairline-strong' : ''}`}
+                          title={i.state === 'production' ? `Saúde ${i.health.toFixed(1)}% · P95 ${i.p95}ms · ${i.errors24h} erros 24h` : undefined}
+                          className={`text-left rounded-[12px] p-4 surface-flat transition-colors hover:ring-hairline-strong focus:outline-none focus:ring-proof ${isActive ? 'ring-hairline-strong' : ''}`}
                         >
-                          <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3 items-start">
+                          <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-2.5 items-start">
                             <AppIcon kind={kindFromIntegrationId(i.id)} initials={i.initials} ariaLabel={i.name} />
                             <div className="min-w-0">
-                              <div className="card-title truncate">{i.name}</div>
+                              <div className="text-[15px] font-medium text-eggshell truncate leading-tight">{i.name}</div>
                               <div className="text-11 text-stone mt-0.5 truncate">{i.category}</div>
                             </div>
                             <StatusPill state={i.pill ?? pillFor(i.state)} />
                           </div>
-                          <p className="card-body mt-4 line-clamp-2">{i.description}</p>
-                          <MicroStatRow
-                            items={[
-                              { label: 'Adapter', value: `v${i.adapterVersion}` },
-                              { label: 'Contas', value: i.accounts, tone: i.accounts > 0 ? 'default' : 'default' },
-                              i.policyAware ? { label: 'Policy', value: 'aware', tone: 'proof' as const } : null,
-                            ].filter(Boolean) as any}
-                          />
+                          <p className="text-12 text-stone mt-2.5 line-clamp-2 leading-snug">{i.description}</p>
                           <CardFooter
-                            meta={i.state === 'production'
-                              ? <>Saúde <span className="text-verified">{i.health.toFixed(1)}%</span> · P95 {i.p95}ms</>
-                              : i.state === 'sandbox' ? 'Sandbox · aguardando promoção'
-                              : i.state === 'policy-blocked' ? 'Bloqueado pelo Policy Engine'
-                              : i.state === 'disabled' ? 'Desativado' : 'Piloto'}
+                            meta={<>
+                              <span className="font-mono tabular-nums">v{i.adapterVersion}</span>
+                              <span className="text-stone/60"> · </span>
+                              {i.accounts > 0 ? <>{i.accounts} conta{i.accounts > 1 ? 's' : ''}</> : <>—</>}
+                              {i.state === 'production' && <>
+                                <span className="text-stone/60"> · </span>
+                                <span className="text-verified">{i.health.toFixed(1)}%</span>
+                              </>}
+                            </>}
                             actionLabel={isActive ? 'Configurar' : 'Ativar'}
                             onAction={() => {
                               openEvidence(buildEvidence({
@@ -225,6 +223,7 @@ export default function IntegrationsPage() {
                             }}
                           />
                         </button>
+
                       );
                     })}
                   </div>
