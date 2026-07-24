@@ -173,22 +173,24 @@ export function Topbar({ breadcrumb }: TopbarProps) {
 
   return (
     <>
-      <header className="h-[70px] surface-topbar flex items-center justify-between gap-4 px-4 lg:px-6 sticky top-0 z-20">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-4 min-w-0">{breadcrumb}</div>
+      <header className="h-[58px] surface-topbar flex items-center justify-between gap-4 px-4 lg:px-6 sticky top-0 z-20">
+        {/* Breadcrumb (compacto) */}
+        <div className="flex items-center gap-4 min-w-0 flex-1 basis-0">{breadcrumb}</div>
 
-        {/* Center: global search */}
-        <div className="hidden md:block flex-1 max-w-md">
-          <CommandBar />
+        {/* Onda H1 · busca central em pílula 220×34 · não disputa espaço com o título. */}
+        <div className="hidden md:flex items-center justify-center flex-1 basis-0">
+          <div className="w-[220px] h-[34px]">
+            <CommandBar />
+          </div>
         </div>
 
-        {/* Right: actions */}
-        <div className="flex items-center gap-2">
-          {/* Period */}
+        {/* Right: actions compactas */}
+        <div className="flex items-center gap-1.5 flex-1 basis-0 justify-end">
+          {/* Period — chip discreto */}
           <select
             value={period}
             onChange={(e) => setPeriod(Number(e.target.value))}
-            className="hidden md:block bg-graphite border border-line text-eggshell text-12 font-mono rounded-md px-2 py-1.5 focus:outline-none focus:border-proof-blue"
+            className="hidden md:block bg-transparent border border-[hsl(var(--eggshell)/0.10)] text-stone hover:text-eggshell text-11 font-mono uppercase tracking-wider rounded-md h-[30px] px-2 focus:outline-none focus:border-proof-blue"
           >
             {periodOptions.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -198,17 +200,17 @@ export function Topbar({ breadcrumb }: TopbarProps) {
           {/* Briefing */}
           <button
             onClick={() => setBriefingOpen(true)}
-            className="hidden md:inline-flex items-center gap-1.5 h-9 px-3 rounded-md border border-line bg-graphite hover:bg-zinc text-13 text-eggshell transition-colors"
+            className="hidden md:inline-flex items-center gap-1.5 h-[30px] px-2.5 rounded-md border border-[hsl(var(--eggshell)/0.10)] hover:bg-[hsl(var(--eggshell)/0.04)] text-12 text-stone hover:text-eggshell transition-colors"
             title="Briefing diário (⌘⇧B)"
           >
-            <Sun className="w-3.5 h-3.5 text-stone" />
+            <Sun className="w-3.5 h-3.5" />
             Briefing
           </button>
 
           {/* Copilot */}
           <button
             onClick={() => setCopilotOpen(true)}
-            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md bg-eggshell text-ink hover:bg-eggshell/90 text-13 font-medium transition-colors"
+            className="inline-flex items-center gap-1.5 h-[30px] px-2.5 rounded-md bg-eggshell text-ink hover:bg-eggshell/90 text-12 font-medium transition-colors"
             title="Abrir Copiloto (⌘⇧J)"
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -216,17 +218,18 @@ export function Topbar({ breadcrumb }: TopbarProps) {
           </button>
 
           {/* Notifications */}
-          <button className="relative w-9 h-9 rounded-md border border-line bg-graphite hover:bg-zinc flex items-center justify-center text-stone hover:text-eggshell transition-colors">
-            <Bell className="w-4 h-4" />
-            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-verified" />
+          <button className="relative w-[30px] h-[30px] rounded-md border border-[hsl(var(--eggshell)/0.10)] hover:bg-[hsl(var(--eggshell)/0.04)] flex items-center justify-center text-stone hover:text-eggshell transition-colors">
+            <Bell className="w-3.5 h-3.5" />
+            <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-verified" />
           </button>
 
           {/* Avatar */}
-          <button className="w-9 h-9 rounded-full bg-zinc border border-line flex items-center justify-center text-eggshell text-12 font-mono font-medium hover:bg-line transition-colors">
+          <button className="w-[30px] h-[30px] rounded-full bg-zinc border border-[hsl(var(--eggshell)/0.10)] flex items-center justify-center text-eggshell text-11 font-mono font-medium hover:bg-line transition-colors">
             JO
           </button>
         </div>
       </header>
+
 
       <BriefingDrawer open={briefingOpen} onOpenChange={setBriefingOpen} />
       <CopilotDrawer open={copilotOpen} onOpenChange={setCopilotOpen} />

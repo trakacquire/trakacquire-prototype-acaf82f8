@@ -68,7 +68,7 @@ function SidebarGroup({ title, children }: { title: string; children: React.Reac
 
 export function Sidebar() {
   return (
-    <aside className="w-60 surface-sidebar h-[100dvh] flex-col flex-shrink-0 hidden md:flex relative">
+    <aside className="w-[232px] surface-sidebar h-[100dvh] flex-col flex-shrink-0 hidden md:flex relative">
       {/* Wordmark — glifo Proofline oficial (Fase F.2) */}
       <div className="px-5 pt-5 pb-3 flex items-center justify-between">
         <Brand size="sm" />
