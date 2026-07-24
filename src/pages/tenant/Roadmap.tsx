@@ -27,17 +27,28 @@ type PhaseGroup = {
 
 const GROUPS: PhaseGroup[] = [
   {
+    phase: 'E1',
+    title: 'Fundidos / movidos na Fase E (curadoria)',
+    status: 'concluida',
+    scope: 'Itens removidos da sidebar principal — acessíveis por atalho / redirect / card contextual.',
+    pages: [
+      { title: 'Eventos ao vivo (fundido no Ledger)', href: '/ledger?live=1', matrix: 'redirect', note: '/live → /ledger?live=1 · toggle "Ao vivo" na tabela' },
+      { title: 'Signals / CAPI (aba Meta)',           href: '/integrations/meta', matrix: 'redirect', note: '/signals → Integration360 · Meta' },
+      { title: 'Broadcasts (Fase 2)',                 href: '/broadcasts', matrix: 'fase 2', note: 'saiu da sidebar — pertence ao Bloco 4' },
+      { title: 'Caixa de Entrada (Fase 2)',           href: '/inbox', matrix: 'fase 2', note: 'saiu da sidebar — pertence ao Bloco 4' },
+      { title: 'Aprovações',                          href: '/approvals', matrix: 'contextual', note: 'acessível via card "Approval Center" em Governança' },
+    ],
+  },
+  {
     phase: 'P2',
     title: 'Signal Ledger + Observe',
-    status: 'em-andamento',
-    scope: 'Signal Ledger, Live Events, Monitoring, Reconciliation, EventDetail',
+    status: 'concluida',
+    scope: 'Signal Ledger, Monitoring, Reconciliation, EventDetail',
     pages: [
-      { title: 'Eventos ao vivo', href: '/live', matrix: 'na sidebar', note: 'promovida na P2' },
-      { title: 'Signal Ledger', href: '/ledger', matrix: 'na sidebar', note: 'promovida na P2' },
-      { title: 'Monitoring & DLQ', href: '/monitoring', matrix: '2/9', note: 'oculto até fechar 8 estados + evidence' },
-      { title: 'Reconciliação', href: '/revenue/reconciliation', matrix: '2/9' },
-      { title: 'Event Detail', href: '/ledger/evt_1', matrix: '2/9' },
-      { title: 'Saúde CAPI (Signals)', href: '/signals', matrix: '3/9' },
+      { title: 'Signal Ledger',       href: '/ledger', matrix: 'na sidebar', note: 'inclui modo "Ao vivo"' },
+      { title: 'Monitoring & DLQ',    href: '/monitoring', matrix: 'na sidebar' },
+      { title: 'Reconciliação',       href: '/revenue/reconciliation', matrix: '9/9' },
+      { title: 'Event Detail',        href: '/ledger/evt_1', matrix: '2/9' },
     ],
   },
   {

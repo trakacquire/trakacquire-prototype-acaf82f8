@@ -3,7 +3,7 @@ import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { EvidenceDrawer } from '../data/EvidenceDrawer';
 import { Link, useLocation } from 'wouter';
-import { ChevronRight, LayoutDashboard, BarChart2, Users, MessageSquare, Settings } from 'lucide-react';
+import { ChevronRight, LayoutDashboard, Puzzle, Activity, Megaphone, DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface AppShellProps {
@@ -21,22 +21,27 @@ const EvidenceContext = createContext<{
 
 export const useEvidence = () => useContext(EvidenceContext);
 
+// UI-SYSTEM §5 — barra inferior mobile (5 destinos por prioridade de trabalho).
+// Command · Connect · Signals · Media · Revenue.
 const MOBILE_TABS = [
-  { href: '/command', icon: LayoutDashboard, label: 'Command' },
-  { href: '/analytics', icon: BarChart2, label: 'Analytics' },
-  { href: '/players', icon: Users, label: 'Players' },
-  { href: '/inbox', icon: MessageSquare, label: 'Inbox' },
-  { href: '/settings/general', icon: Settings, label: 'Settings' },
+  { href: '/command',      icon: LayoutDashboard, label: 'Command'  },
+  { href: '/integrations', icon: Puzzle,          label: 'Connect'  },
+  { href: '/ledger',       icon: Activity,        label: 'Signals'  },
+  { href: '/media',        icon: Megaphone,       label: 'Media'    },
+  { href: '/revenue',      icon: DollarSign,      label: 'Revenue'  },
 ];
 
 export function AppShell({ children, breadcrumb = [] }: AppShellProps) {
   const [evidenceData, setEvidenceData] = useState<any | null>(null);
   const [location] = useLocation();
 
+  // E9 — nível 1 (sem pai navegável): esconde a trilha e mostra só o wordmark.
+  const isLevel1 = breadcrumb.length <= 1;
+
   const breadcrumbNode = (
     <div className="flex items-center text-sm">
       <span className="text-stone">TrakAcquire</span>
-      {breadcrumb.map((item, idx) => (
+      {!isLevel1 && breadcrumb.map((item, idx) => (
         <React.Fragment key={idx}>
           <ChevronRight className="w-4 h-4 text-line mx-1" />
           {item.href ? (
@@ -52,10 +57,12 @@ export function AppShell({ children, breadcrumb = [] }: AppShellProps) {
   );
 
   return (
-    <EvidenceContext.Provider value={{
-      openEvidence: setEvidenceData,
-      closeEvidence: () => setEvidenceData(null)
-    }}>
+    <EvidenceContext.Provider
+      value={{
+        openEvidence: setEvidenceData,
+        closeEvidence: () => setEvidenceData(null),
+      }}
+    >
       <div className="flex h-[100dvh] w-full bg-ink overflow-hidden text-eggshell font-sans">
         <Sidebar />
         <div className="flex-1 flex flex-col min-w-0">
@@ -64,31 +71,28 @@ export function AppShell({ children, breadcrumb = [] }: AppShellProps) {
             {children}
           </main>
         </div>
-        
-        {/* Evidence Drawer Overlay */}
-        <EvidenceDrawer 
-          isOpen={!!evidenceData} 
-          onClose={() => setEvidenceData(null)} 
-          data={evidenceData} 
+
+        <EvidenceDrawer
+          isOpen={!!evidenceData}
+          onClose={() => setEvidenceData(null)}
+          data={evidenceData}
         />
-        
-        {/* Mobile Bottom Nav */}
+
+        {/* Mobile bottom nav — UI-SYSTEM §5 */}
         <nav className="md:hidden h-14 bg-iron border-t border-line fixed bottom-0 left-0 w-full z-30 flex items-center justify-around px-2">
           {MOBILE_TABS.map(({ href, icon: Icon, label }) => {
-            const isActive = location === href || (href !== '/settings/general' && location.startsWith(href));
-            const isSettingsActive = href === '/settings/general' && location.startsWith('/settings');
-            const active = isActive || isSettingsActive;
+            const active = location === href || (href !== '/command' && location.startsWith(href));
             return (
               <Link
                 key={href}
                 href={href}
                 className={cn(
                   'flex flex-col items-center gap-0.5 flex-1 py-1 transition-colors',
-                  active ? 'text-[var(--proof-blue)]' : 'text-[var(--stone)]'
+                  active ? 'text-proof-blue' : 'text-stone hover:text-eggshell',
                 )}
               >
                 <Icon size={20} />
-                <span className="text-[9px]">{label}</span>
+                <span className="text-[9px] font-mono uppercase tracking-wider">{label}</span>
               </Link>
             );
           })}

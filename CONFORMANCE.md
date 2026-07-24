@@ -222,3 +222,50 @@ Fase esperada de detalhamento entre parênteses.
 - **Mapeamento externo → interno** editável em DataTable (tag "lead" → lead_created; bot start → bot_started; depósito da casa → deposit_made; first_deposit_confirmed → ftd_confirmed).
 - **Histórico de sincronização** em DataTable (data · plataforma · importados · erros · Status Sucesso/Parcial/Erro) com Evidence por linha.
 - Novo componente `src/components/data/TeachingError.tsx` (código + causa + ação + onde + hint) instanciado com o exemplo canônico "(#200) Missing Permissions".
+
+## Changelog · Fase E · Curadoria e Usabilidade (2026-07-24)
+
+**E1 · Sidebar deriva corrigida — 14 itens exatos.**
+- Overview (2): Command · Analytics.
+- Connect (3): Integrações · Tracking/Links · Domínios.
+- Observe (4): Signal Ledger · Monitoramento · Players · Identity Graph.
+- Operate (2): Automações · Mídia.
+- Prove (3): Receita · Relatórios · Governança.
+- **Fundidos**: `/live` → `/ledger?live=1` (toggle "Ao vivo" na tabela). `/signals` → `/integrations/meta`.
+- **Movidos para /roadmap** (Fase 2): Broadcasts, Caixa de Entrada.
+- **Contextual**: Aprovações agora só pelo card "Approval Center" em Governança.
+- Ícones únicos por item (fim de duplicatas Radio/UserSquare).
+
+**E2 · Período global persistido.**
+- `PeriodContext` grava seleção em `localStorage` (`proofline.period`), consumido por todas as telas via `usePeriod`.
+
+**E3 · Busca universal ⌘K funcional.**
+- CommandBar agora resolve por padrões diretos: `p_*`, `evt_*`, `clk_*`, `tg_*`, `cust_*`, email e telefone — cada match navega direto ao objeto.
+- Grupo "Ações" inclui: criar link, testar postback, abrir Ledger ao vivo, reconciliação, radar.
+- Grupo "Eventos" busca no Signal Ledger por `id`/`person_id`.
+
+**E4 · Todo número prova E navega.**
+- `EvidencePayload` ganhou `navigateTo` + `navigateLabel`.
+- `EvidenceDrawer` renderiza CTA proof-blue no rodapé (default: "Ver no Ledger" → `/ledger`).
+
+**E5 · Checklist de ativação no Command.**
+- `ActivationChecklist` renderiza 6 passos (provider · domínio · link · bot · Meta CAPI · primeiro FTD). Some quando `reconciledFtds > 0` (regra PRODUCT-MAP F1).
+
+**E6 · Radar de anomalias (DECISIONS D8).**
+- `RadarPanel` deriva até 3 anomalias do dataset canônico + regras (worst bottleneck, CPFTD vs. `KPI_TARGETS.cost_ftd`, Meta CAPI degradada). Cada card mostra POR QUÊ, IMPACTO e AÇÃO com destino navegável.
+
+**E7 · Hierarquia de leitura no Command.**
+- Adicionados marcadores "Nível 1 · Sinais" e "Nível 2 · Diagnóstico" separando visualmente o que do porquê.
+- **Analytics**: faixa de MetricCards duplicada removida — a exploração começa direto no gráfico.
+
+**E8 · Barra inferior mobile (UI-SYSTEM §5).**
+- `MOBILE_TABS` redefinido: Command · Connect (`/integrations`) · Signals (`/ledger`) · Media · Revenue. Ativos com token `text-proof-blue`, tipografia mono uppercase.
+
+**E9 · Breadcrumb suprimido em nível 1.**
+- `AppShell` esconde a trilha quando `breadcrumb.length <= 1` (páginas de topo sem pai navegável).
+
+**Correção de matriz (NAV).**
+- Login, Signup, Pricing, Docs, Status, Legal (todas): NAV = ➖ (páginas públicas nunca pertenceram à sidebar do tenant).
+- Removida linha órfã do changelog anterior ("Próximo: P6 …") — obsoleta.
+
+Contagem oficial da sidebar do tenant após a Fase E: **14 itens** (2 · 3 · 4 · 2 · 3).

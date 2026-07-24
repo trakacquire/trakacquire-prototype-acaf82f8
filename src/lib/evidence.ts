@@ -14,15 +14,12 @@ export interface EvidencePayload {
   freshness?: string;
   state?: 'Provisório' | 'Reconciliado' | 'Divergente';
   attribution?: string;
-  /**
-   * A qual vista do dataset canônico este número pertence.
-   *   - journey_proof       → Captured → Linked → Registered → Confirmed → Reconciled
-   *   - acquisition_funnel  → Clique → StartBot → EntradaCanal → Cadastro → FTD
-   *   - operational         → métrica operacional (latência, saúde, custo, etc.)
-   */
   view?: EvidenceView;
   formingEvents?: Array<{ id: string; type: string; timestamp: string; value?: number }>;
   ledgerHref?: string;
+  /** E4 — todo número prova E navega. CTA visível no rodapé do drawer. */
+  navigateTo?: string;
+  navigateLabel?: string;
 }
 
 import type React from 'react';
