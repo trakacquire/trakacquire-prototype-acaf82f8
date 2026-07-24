@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppShell } from '@/components/layout/AppShell';
+import { AppShell, useEvidence } from '@/components/layout/AppShell';
 import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { MetricCard } from '@/components/data/MetricCard';
 import { DataTable } from '@/components/data/DataTable';
@@ -12,7 +12,6 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts';
 
-import { AppShell, useEvidence } from '@/components/layout/AppShell';
 
 export default function RevenuePage() {
   const { openEvidence } = useEvidence();
