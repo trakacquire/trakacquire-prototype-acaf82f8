@@ -6,9 +6,10 @@ Matriz página × requisito. Atualizada a cada fase (P2 → P8). Célula = ✅ c
 
 ## Changelog
 
+- **2026-07-24 · Fase P4 concluída (Analytics, Revenue, Cohorts, Reports, ReportDetail, Governance)** — Analytics reescrita com kicker serif, PreviewBadge, ScenarioStateGate, KPIs abrindo Evidence Drawer, toggle diário/horário, comparação vs período anterior (série tracejada), annotations na timeline (ReferenceLine) e visões salvas. Revenue virou P&L operacional com 6 KPIs clicáveis (fórmulas explícitas), aba de reconciliação contextual e link direto para /revenue/cohorts. Cohorts com PreviewBadge, gate, KPIs (registros/D30/LTV médio) e evidência linha-a-linha. Reports com biblioteca + agendados + snapshots congelados (v3 · v4 = nova execução, nunca sobrescreve). ReportDetail ganhou versão imutável, PreviewBadge e gate. Governance virou hub de 6 cards ativos (Policy Engine, Approval Center, PII Vault sempre mascarado, Kill Switches com ConfirmDialog+justificativa, Tenant Isolation, Audit Log). Sidebar: **Relatórios** entra em PROVE; Cohorts permanece contextual sob Receita (decisão do PRODUCT-MAP §1.2 para não inflar o menu).
 - **2026-07-24 · Dívida da Command quitada + Backlog P2 (Signals/EventDetail/Reconciliation) + Fase P3 (Identity/IdentityDetail/Players/Player360)** — Command Dashboard ganhou `ScenarioStateGate` e Evidence Drawer em TODOS os KPIs e etapas do Journey (fórmula, fonte, frescor, estado). Signals refeita com `DataTable`, gate, `MetricValue` e evidência; EventDetail contextual do Ledger com gate + PreviewBadge + FreshnessTag; Reconciliation com gate, PreviewBadge e KPIs clicáveis que abrem evidência. P3: Identity reescrita (KPIs + DataTable com métodos e confiança + evidência), IdentityDetail usando `StatusChip` de domínio + tokens D1 (fim dos hex literais locais), Players com header serif/kicker + gate + StateShowcase, Player360 com PreviewBadge/StateShowcase/gate e `StatusChip` de domínio. Sidebar promovida: **Signals** e **Identity Graph** entram em OBSERVE.
 - **2026-07-24 · P2 concluída (LiveEvents, Ledger, Monitoring)** — 8 estados via `ScenarioStateGate`, Evidence Drawer em todo número, breadcrumb "Observe / …", tokens D1, mono tabular. Monitoring promovida à sidebar em OBSERVE.
-- Próximo: **P4 (Analytics + Revenue + Cohorts + Reports + Governance)**.
+- Próximo: **P5 (Tracking + Domains + Integrations + Campaign360 + Media)**.
 
 
 ## Legenda das colunas
@@ -55,8 +56,8 @@ Fase esperada de detalhamento entre parênteses.
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | Command | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ✅ | **P1/P3 ✔** |
-| Analytics | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ❌ | ❌ | ✅ | P4 |
-| Revenue | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ❌ | ❌ | ✅ | P4 |
+| Analytics | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P4 ✔** |
+| Revenue | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P4 ✔** |
 
 ### Connect
 
@@ -96,7 +97,7 @@ Fase esperada de detalhamento entre parênteses.
 | FlowBuilder | ❌ | ➖ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P6 |
 | Broadcasts | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P6 |
 | Segments | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P6 |
-| Cohorts | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P4 |
+| Cohorts | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | **P4 ✔** (contextual de Receita) |
 | Campaign360 | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P5 |
 | Media | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ✅ | P5 |
 | MediaCreatives | ❌ | ➖ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P5 |
@@ -108,9 +109,9 @@ Fase esperada de detalhamento entre parênteses.
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Reports | ❌ | ➖ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P4 |
-| ReportDetail | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P4 |
-| Governance | ❌ | ➖ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ✅ | P4 |
+| Reports | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P4 ✔** |
+| ReportDetail | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | **P4 ✔** (contextual de Reports) |
+| Governance | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P4 ✔** |
 
 ### Settings/Perfil
 
@@ -166,7 +167,7 @@ Fase esperada de detalhamento entre parênteses.
 | P1 · Command | Command definitivo, funil monotônico, live feed cronológico, MetricValue, PreviewBadge, dataset canônico | ✔ concluída |
 | P2 · Signal Ledger + Observe | LiveEvents · Ledger · Monitoring · Signals · EventDetail · Reconciliation | ✔ concluída em 2026-07-24 — Signals promovida à sidebar em Observe |
 | P3 · Identity + Players | Identity Graph, IdentityDetail, Players, Player360 | ✔ concluída em 2026-07-24 — Identity Graph promovida à sidebar em Observe |
-| P4 · Analytics + Revenue + Reports | Analytics, Revenue, Cohorts, Reports, ReportDetail, Governance | ⏸ |
+| P4 · Analytics + Revenue + Reports | Analytics, Revenue, Cohorts, Reports, ReportDetail, Governance | ✔ concluída em 2026-07-24 — Relatórios promovido à sidebar em Prove; Cohorts contextual de Receita |
 | P5 · Connect | Tracking, Domains, Integrations, Campaign360, Media | ⏸ |
 | P6 · Operate | Automations, FlowBuilder, Broadcasts, Segments, Inbox, Approvals | ⏸ |
 | P7 · Público + Settings | Login, Signup, Pricing, Docs, Status, Legal, Settings, Profile | ⏸ |

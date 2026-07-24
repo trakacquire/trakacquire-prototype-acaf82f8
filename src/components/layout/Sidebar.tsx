@@ -6,7 +6,7 @@ import {
   Puzzle, Globe, Link2,
   Radio, Activity, UserSquare, ShieldAlert,
   Zap, Megaphone,
-  DollarSign, ShieldCheck,
+  DollarSign, ShieldCheck, FileText,
   Settings, UserCircle2, Construction,
 } from 'lucide-react';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
@@ -119,6 +119,7 @@ export function Sidebar() {
 
         <SidebarGroup title="Prove">
           <SidebarItem href="/revenue" icon={<DollarSign className="w-4 h-4" />} label="Receita" />
+          <SidebarItem href="/reports" icon={<FileText className="w-4 h-4" />} label="Relatórios" />
           <SidebarItem href="/governance" icon={<ShieldCheck className="w-4 h-4" />} label="Governança" />
         </SidebarGroup>
       </nav>
