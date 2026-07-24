@@ -1,14 +1,19 @@
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { PreviewBadge } from '@/components/data/PreviewBadge';
-import { PhasePreviewBanner } from '@/components/state/PhasePreviewBanner';
 
 export default function GeneralSettingsPage() {
   return (
     <AppShell breadcrumb={[{ label: 'Configurações' }, { label: 'Geral' }]}>
       <div className="max-w-3xl mx-auto space-y-6">
-          <PhasePreviewBanner phase="P7" scope="Preferências, fuso, moeda, branding" />
-        <div className="flex flex-wrap items-center gap-3"><h1 className="text-24 font-bold text-eggshell mb-6">Configurações Gerais</h1><PreviewBadge /></div>
+        <div>
+          <div className="text-11 font-serif italic text-stone mb-1">Operação · Preferências</div>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-24 font-bold text-eggshell">Configurações Gerais</h1>
+            <PreviewBadge />
+          </div>
+        </div>
+
         
         <div className="bg-graphite border border-line rounded-xl overflow-hidden">
           <div className="p-6 border-b border-line">
