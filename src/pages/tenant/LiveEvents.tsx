@@ -4,6 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AppShell } from '@/components/layout/AppShell';
 import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { StatusChip } from '@/components/domain/StatusChip';
+import { EvidenceDrawer } from '@/components/data/EvidenceDrawer';
+import { MetricValue } from '@/components/data/MetricValue';
+import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
+import { buildEvidence, type EvidencePayload } from '@/lib/evidence';
 import { Link } from 'wouter';
 import type { SignalEvent, EventStatus } from '@/lib/fake/db';
 
