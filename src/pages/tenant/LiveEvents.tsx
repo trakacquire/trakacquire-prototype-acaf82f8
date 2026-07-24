@@ -100,10 +100,30 @@ export default function LiveEvents() {
     return () => clearInterval(interval);
   }, []);
 
+  const [evidence, setEvidence] = useState<EvidencePayload | null>(null);
+
+  const openEvidenceFor = (evt: SignalEvent) => {
+    const origin = originOf(evt);
+    setEvidence(
+      buildEvidence({
+        label: `${evt.type.toUpperCase()} · ${evt.id}`,
+        value: evt.value != null ? `R$ ${evt.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '—',
+        formula:
+          evt.type === 'ftd'
+            ? 'first(deposit) per person where confirmed = true'
+            : 'sum(events.value) where person_id = ? and type = ?',
+        source: `${origin.source} · ${origin.campaign}`,
+        state: evt.status === 'Reconciled' ? 'Reconciliado' : evt.status === 'Divergent' ? 'Divergente' : 'Provisório',
+        freshness: `latência ${evt.latency_ms}ms`,
+        formingEvents: [{ id: evt.id, type: evt.type, timestamp: evt.timestamp, value: evt.value ?? undefined }],
+      }),
+    );
+  };
+
   const filtered = typeFilter === 'all' ? evts : evts.filter(e => e.type === typeFilter);
 
   return (
-    <AppShell breadcrumb={[{ label: 'Eventos ao Vivo' }]}>
+    <AppShell breadcrumb={[{ label: 'Observe', href: '/live' }, { label: 'Eventos ao Vivo' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* ── Editorial header ─────────────────────────────────────────── */}
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pt-2">
@@ -120,8 +140,9 @@ export default function LiveEvents() {
             <p className="text-stone text-14 mt-3 max-w-xl">
               Cada linha é um sinal — capturado, confirmado e correlacionado a uma pessoa e uma campanha.
             </p>
-            <div className="mt-3"><PreviewBadge /></div>
+            <div className="mt-3 flex flex-wrap items-center gap-2"><PreviewBadge /><StateShowcase /></div>
           </div>
+
 
           <div className="flex items-center gap-3 shrink-0">
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-verified/10 border border-verified/20">
