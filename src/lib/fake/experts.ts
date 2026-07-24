@@ -15,13 +15,14 @@ export interface Expert {
   status: 'active' | 'paused';
 }
 
+// Operação Tainá — cliente-zero contratual (DECISIONS.md, Parte III).
 export const EXPERTS: Expert[] = [
-  { id: 'exp_aline',  name: 'Aline Rocha',   handle: '@alinerocha',   status: 'active' },
-  { id: 'exp_bruno',  name: 'Bruno Faria',   handle: '@brunofaria',   status: 'active' },
-  { id: 'exp_camila', name: 'Camila Nunes',  handle: '@camilanunes',  status: 'active' },
-  { id: 'exp_diego',  name: 'Diego Sá',      handle: '@diegosa',      status: 'active' },
-  { id: 'exp_elisa',  name: 'Elisa Prado',   handle: '@elisaprado',   status: 'paused' },
-  { id: 'exp_fabio',  name: 'Fábio Torres',  handle: '@fabiotorres',  status: 'active' },
+  { id: 'exp_taina',   name: 'Tainá Souza',      handle: '@tainasouza',      status: 'active' },
+  { id: 'exp_renata',  name: 'Renata Alves',     handle: '@renataalves',     status: 'active' },
+  { id: 'exp_jeferson',name: 'Jeferson Lima',    handle: '@jefersonlima',    status: 'active' },
+  { id: 'exp_marcos',  name: 'Marcos Vinícius',  handle: '@marcosvinicius',  status: 'active' },
+  { id: 'exp_larissa', name: 'Larissa Prado',    handle: '@larissaprado',    status: 'paused' },
+  { id: 'exp_gabriel', name: 'Gabriel Menezes',  handle: '@gabrielmenezes',  status: 'active' },
 ];
 
 /** Mapa determinístico personId → expertId (null para órfãs). */
