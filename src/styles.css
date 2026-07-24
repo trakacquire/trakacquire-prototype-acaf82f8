@@ -475,30 +475,30 @@
   box-shadow: 0 0 0 1px hsl(var(--proof-blue) / 0.35), 0 0 22px hsl(var(--proof-blue) / 0.28);
   position: relative;
   flex-shrink: 0;
-}
-@utility health-orb::after {
-  content: '';
-  position: absolute;
-  inset: 12px;
-  border-radius: 50%;
-  background: hsl(var(--proof-blue));
-  filter: blur(6px);
-  opacity: 0.55;
-  animation: proof-pulse 2.4s ease-in-out infinite;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border-radius: 50%;
+    background: hsl(var(--proof-blue));
+    filter: blur(6px);
+    opacity: 0.55;
+    animation: proof-pulse 2.4s ease-in-out infinite;
+  }
 }
 
 /* Conector tracejado entre etapas do JourneyStrip (Fase F.3) */
 @utility journey-connector {
   position: relative;
-}
-@utility journey-connector::after {
-  content: '';
-  position: absolute;
-  right: -12px;
-  top: 50%;
-  width: 8px;
-  height: 1px;
-  border-top: 1px dashed hsl(var(--eggshell) / 0.18);
+  &::after {
+    content: '';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    width: 8px;
+    height: 1px;
+    border-top: 1px dashed hsl(var(--eggshell) / 0.18);
+  }
 }
 
 
