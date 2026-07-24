@@ -107,7 +107,9 @@ export function Sidebar() {
           <SidebarItem href="/live" icon={<Radio className="w-4 h-4" />} label="Eventos ao vivo" badge={<LiveDot />} />
           <SidebarItem href="/ledger" icon={<Activity className="w-4 h-4" />} label="Signal Ledger" />
           <SidebarItem href="/monitoring" icon={<ShieldAlert className="w-4 h-4" />} label="Monitoramento" />
+          <SidebarItem href="/signals" icon={<Radio className="w-4 h-4" />} label="Signals" />
           <SidebarItem href="/players" icon={<UserSquare className="w-4 h-4" />} label="Players" />
+          <SidebarItem href="/identity" icon={<UserSquare className="w-4 h-4" />} label="Identity Graph" />
         </SidebarGroup>
 
         <SidebarGroup title="Operate">
