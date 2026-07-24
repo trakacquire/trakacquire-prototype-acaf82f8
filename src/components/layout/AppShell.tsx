@@ -3,7 +3,8 @@ import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { EvidenceDrawer } from '../data/EvidenceDrawer';
 import { Link, useLocation } from 'wouter';
-import { ChevronRight, LayoutDashboard, Puzzle, Activity, Megaphone, DollarSign } from 'lucide-react';
+import { LayoutDashboard, Puzzle, Activity, Megaphone, DollarSign } from 'lucide-react';
+import { workspaces } from '@/lib/fake';
 import { cn } from '@/lib/utils';
 
 interface AppShellProps {
