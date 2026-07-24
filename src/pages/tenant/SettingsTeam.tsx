@@ -63,10 +63,16 @@ export default function SettingsTeamPage() {
   ];
 
   return (
-    <AppShell breadcrumb={[{ label: 'Settings' }, { label: 'Team' }]}>
+    <AppShell breadcrumb={[{ label: 'Configurações' }, { label: 'Equipe' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-end">
-          <h1 className="text-24 font-bold text-eggshell">Equipe & Acessos</h1>
+          <div>
+            <div className="text-11 font-serif italic text-stone mb-1">Governança · Assentos</div>
+            <div className="flex items-center gap-3">
+              <h1 className="text-24 font-bold text-eggshell">Equipe & Acessos</h1>
+              <PreviewBadge />
+            </div>
+          </div>
           <button
             onClick={() => setInviteOpen(true)}
             className="bg-eggshell text-ink px-4 py-2 rounded-md font-medium text-14 hover:bg-white transition-colors"
@@ -74,6 +80,7 @@ export default function SettingsTeamPage() {
             Convidar Membro
           </button>
         </div>
+
 
         {/* Pending invites */}
         {state.pendingInvites.length > 0 && (
