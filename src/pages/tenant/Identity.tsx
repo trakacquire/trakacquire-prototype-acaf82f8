@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLocation, Link } from 'wouter';
 import { AppShell, useEvidence } from '@/components/layout/AppShell';
 import { StatusChip } from '@/components/domain/StatusChip';
@@ -6,9 +6,11 @@ import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { MetricValue } from '@/components/data/MetricValue';
 import { DataTable, ColumnDef } from '@/components/data/DataTable';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
+import { IdentityGraph } from '@/components/data/IdentityGraph';
 import { buildEvidence } from '@/lib/evidence';
 import { db, Person } from '@/lib/fake/db';
 import { useIsMobile } from '@/hooks/use-mobile';
+
 
 /**
  * Identity Graph — lista de identidades registradas com confiança,
