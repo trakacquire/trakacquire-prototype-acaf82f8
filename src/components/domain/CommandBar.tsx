@@ -131,14 +131,15 @@ export function CommandBar() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 px-3 py-1.5 text-sm text-stone bg-zinc border border-line rounded-md hover:text-eggshell hover:border-stone transition-colors w-full"
+        className="flex items-center gap-2 h-[34px] w-full px-3 text-12 text-stone bg-[hsl(var(--surface-inset))] border border-[hsl(var(--eggshell)/0.10)] rounded-[8px] hover:text-eggshell hover:border-[hsl(var(--eggshell)/0.18)] transition-colors"
       >
-        <Search className="w-4 h-4" />
-        <span>Buscar pessoa, evento, link, ação…</span>
-        <kbd className="ml-auto inline-flex h-5 items-center gap-1 rounded border border-line bg-graphite px-1.5 font-mono text-[10px] font-medium text-stone">
-          <span className="text-xs">⌘</span>K
+        <Search className="w-3.5 h-3.5" />
+        <span className="truncate">Buscar…</span>
+        <kbd className="ml-auto inline-flex items-center gap-0.5 font-mono text-[11px] text-stone/55">
+          ⌘K
         </kbd>
       </button>
+
 
       <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
         <DialogContent className="p-0 border-line bg-graphite shadow-2xl max-w-2xl gap-0">
