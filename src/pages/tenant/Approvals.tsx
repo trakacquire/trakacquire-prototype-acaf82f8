@@ -10,6 +10,11 @@ import { useAppState } from '@/lib/context/AppStateContext';
 import { toast } from 'sonner';
 import { ShieldCheck, Clock } from 'lucide-react';
 
+const fmt = {
+  int: (n: number) => n.toLocaleString('pt-BR'),
+  cur: (n: number) => 'R$ ' + n.toLocaleString('pt-BR', { maximumFractionDigits: 0 }),
+};
+
 const HISTORY_ROWS = [
   { id: 'ap_h001', label: 'Escalar Budget TikTok +15%', hash: 'ap_h001', result: 'approved', when: '2026-07-17 09:22', user: 'jota@operacao.com', audit: 'aud_84a2f' },
   { id: 'ap_h002', label: 'Desativar Campanha Baixo ROAS', hash: 'ap_h002', result: 'rejected', when: '2026-07-10 15:41', user: 'ana@operacao.com', audit: 'aud_b13de' },
@@ -92,25 +97,25 @@ export default function ApprovalsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button onClick={() => openEvidence(buildEvidence({
-            label: 'Planos pendentes', value: {(pendingCount).toLocaleString("pt-BR")},
+            label: 'Planos pendentes', value: fmt.int(pendingCount),
             formula: 'count(action_plans.status="pending")', source: 'Approval Center',
           }))} className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors">
             <div className="text-11 uppercase tracking-wider text-stone font-mono">Pendentes</div>
-            <div className="text-24 font-bold text-warning font-mono tabular-nums mt-2">{pendingCount}</div>
+            <div className="mt-2"><MetricValue value={fmt.int(pendingCount)} size="lg" tone="warning" /></div>
           </button>
           <button onClick={() => openEvidence(buildEvidence({
-            label: 'Aprovações 30d', value: {(1).toLocaleString("pt-BR")},
+            label: 'Aprovações 30d', value: '1',
             formula: 'count(audit_log.action="APPROVE_PLAN") window=30d', source: 'Audit Log',
           }))} className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors">
             <div className="text-11 uppercase tracking-wider text-stone font-mono">Aprovadas 30d</div>
-            <div className="text-24 font-bold text-verified font-mono tabular-nums mt-2">1</div>
+            <div className="mt-2"><MetricValue value="1" size="lg" tone="verified" /></div>
           </button>
           <button onClick={() => openEvidence(buildEvidence({
-            label: 'Rejeitadas 30d', value: {(1).toLocaleString("pt-BR")},
+            label: 'Rejeitadas 30d', value: '1',
             formula: 'count(audit_log.action="REJECT_PLAN") window=30d', source: 'Audit Log',
           }))} className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors">
             <div className="text-11 uppercase tracking-wider text-stone font-mono">Rejeitadas 30d</div>
-            <div className="text-24 font-bold text-critical font-mono tabular-nums mt-2">1</div>
+            <div className="mt-2"><MetricValue value="1" size="lg" tone="critical" /></div>
           </button>
         </div>
 
@@ -151,7 +156,7 @@ export default function ApprovalsPage() {
                     </div>
                     <button
                       onClick={() => openEvidence(buildEvidence({
-                        label: 'Impacto estimado', value: {`R$ ${(1200).toLocaleString("pt-BR",{maximumFractionDigits:0})}`},
+                        label: 'Impacto estimado', value: fmt.cur(1200),
                         formula: '(spend_uplift × ROAS_p50) − spend_uplift',
                         source: 'Attribution engine · janela 72h', state: 'Provisório',
                         freshness: 'amostra congelada às 2026-07-24 09:00',
@@ -159,7 +164,7 @@ export default function ApprovalsPage() {
                       className="text-right flex-shrink-0 group"
                     >
                       <div className="text-11 font-mono uppercase tracking-wider text-stone">impacto est.</div>
-                      <div className="text-16 font-bold text-verified font-mono tabular-nums group-hover:underline">+R$ 1.200</div>
+                      <div className="text-16 font-bold text-verified font-mono tabular-nums group-hover:underline">+{fmt.cur(1200)}</div>
                     </button>
                   </div>
 
@@ -180,7 +185,7 @@ export default function ApprovalsPage() {
                 <div className="bg-graphite border border-line rounded-xl p-8 text-center space-y-2">
                   <ResultBadge result={planStatus === 'approved' ? 'approved' : 'rejected'} />
                   <div className="text-13 text-stone">Plano ap_001 já foi resolvido.</div>
-                  {lastAudit && <AuditRef id={lastAudit} kind="audit" className="mx-auto" />}
+                  {lastAudit && <div className="flex justify-center"><AuditRef id={lastAudit} kind="audit" /></div>}
                 </div>
               )}
             </div>

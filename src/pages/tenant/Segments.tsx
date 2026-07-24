@@ -11,6 +11,8 @@ import { Plus, Filter, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { toast } from 'sonner';
 
+const fmt = { int: (n: number) => n.toLocaleString('pt-BR') };
+
 interface Clause { field: string; op: string; value: string }
 interface Group { op: 'AND' | 'OR'; clauses: Clause[]; groups: Group[] }
 
@@ -115,13 +117,13 @@ export default function SegmentsPage() {
     { header: 'Players', accessorKey: 'count', className: 'text-right', cell: (s) => (
       <button
         onClick={(e) => { e.stopPropagation(); openEvidence(buildEvidence({
-          label: `Contagem · ${s.name}`, value: {(s.count).toLocaleString("pt-BR")},
+          label: `Contagem · ${s.name}`, value: fmt.int(s.count),
           formula: `count(persons) where ${s.rule_summary}`,
           source: 'Query Builder · avaliação materializada',
           freshness: 'atualizado há 12m',
         })); }}
         className="font-mono text-13 text-eggshell tabular-nums hover:text-proof-blue"
-      >{s.count.toLocaleString('pt-BR')}</button>
+      >{fmt.int(s.count)}</button>
     )},
     { header: 'Ação', accessorKey: 'id', className: 'text-right', cell: (s) => (
       <button onClick={(e) => { e.stopPropagation(); setLocation(`/broadcasts?seg=${s.id}`); }} className="text-12 text-proof-blue hover:underline">Usar em Broadcast →</button>
@@ -146,18 +148,18 @@ export default function SegmentsPage() {
         <ScenarioStateGate>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button onClick={() => openEvidence(buildEvidence({
-              label: 'Segmentos ativos', value: {(allSegments.length).toLocaleString("pt-BR")},
+              label: 'Segmentos ativos', value: fmt.int(allSegments.length),
               formula: 'count(segments)', source: 'Query Builder',
             }))} className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors">
               <div className="text-11 uppercase tracking-wider text-stone font-mono">Segmentos ativos</div>
-              <div className="text-24 font-bold text-eggshell font-mono tabular-nums mt-2">{allSegments.length}</div>
+              <div className="mt-2"><MetricValue value={fmt.int(allSegments.length)} size="lg" /></div>
             </button>
             <button onClick={() => openEvidence(buildEvidence({
-              label: 'Players cobertos', value: {(totalCovered).toLocaleString("pt-BR")},
+              label: 'Players cobertos', value: fmt.int(totalCovered),
               formula: 'sum(distinct segment.count)', source: 'Query Builder',
             }))} className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors">
               <div className="text-11 uppercase tracking-wider text-stone font-mono">Players cobertos</div>
-              <div className="text-24 font-bold text-eggshell font-mono tabular-nums mt-2">{totalCovered.toLocaleString('pt-BR')}</div>
+              <div className="mt-2"><MetricValue value={fmt.int(totalCovered)} size="lg" /></div>
             </button>
           </div>
 

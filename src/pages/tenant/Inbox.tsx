@@ -8,6 +8,10 @@ import { conversations } from '@/lib/fake/extra';
 import { Bot, User, Sparkles, StickyNote, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
+const fmt = {
+  cur: (n: number) => 'R$ ' + n.toLocaleString('pt-BR', { maximumFractionDigits: 0 }),
+};
+
 export default function InboxPage() {
   const { openEvidence } = useEvidence();
   const [message, setMessage] = useState('');
@@ -29,7 +33,7 @@ export default function InboxPage() {
           emptyPrerequisite="Configure Telegram/WhatsApp em Integrações."
         >
           <div className="h-[calc(100vh-180px)] flex -mx-4 -my-4 lg:-mx-6 lg:-my-6 bg-ink border-t border-line">
-            {/* Filas / Conversas */}
+            {/* Filas */}
             <div className="w-80 bg-graphite border-r border-line flex flex-col">
               <div className="p-4 border-b border-line flex justify-between items-center bg-iron">
                 <h3 className="text-14 font-semibold text-eggshell">Ativas</h3>
@@ -92,9 +96,9 @@ export default function InboxPage() {
                     <div className="flex items-center gap-1.5 mb-1 text-11 font-mono uppercase tracking-wider text-proof-blue">
                       <Sparkles className="w-3 h-3" /> Sugestão IA · não enviada
                     </div>
-                    <div className="text-13 text-eggshell">Parabéns pelo depósito, João! Seu bônus de boas-vindas de R$ 100 foi liberado. Confira na aba "Bônus". Precisa de ajuda?</div>
+                    <div className="text-13 text-eggshell">Parabéns pelo depósito, João! Seu bônus de boas-vindas foi liberado. Precisa de ajuda?</div>
                     <div className="mt-2 flex gap-2">
-                      <button onClick={() => { setMessage('Parabéns pelo depósito, João! Seu bônus de boas-vindas de R$ 100 foi liberado. Confira na aba "Bônus". Precisa de ajuda?'); toast('Sugestão inserida no editor.'); }} className="text-11 text-eggshell bg-zinc border border-line rounded px-2 py-1">Usar</button>
+                      <button onClick={() => { setMessage('Parabéns pelo depósito, João! Seu bônus de boas-vindas foi liberado. Precisa de ajuda?'); toast('Sugestão inserida no editor.'); }} className="text-11 text-eggshell bg-zinc border border-line rounded px-2 py-1">Usar</button>
                       <button onClick={() => toast('Sugestão descartada.')} className="text-11 text-stone hover:text-eggshell">Descartar</button>
                     </div>
                   </div>
@@ -127,7 +131,7 @@ export default function InboxPage() {
               <div className="space-y-5">
                 <button
                   onClick={() => openEvidence(buildEvidence({
-                    label: 'Confiança de identidade', value: <span className="font-mono">94%</span>,
+                    label: 'Confiança de identidade', value: '94%',
                     formula: 'identity_graph.confidence(person=jsilva)',
                     source: 'Identity Graph · v2.3',
                     freshness: 'atualizado há 45s',
@@ -148,7 +152,7 @@ export default function InboxPage() {
                 <button
                   onClick={() => openEvidence(buildEvidence({
                     label: 'Total depositado · João Silva',
-                    value: {`R$ ${(1840).toLocaleString("pt-BR",{maximumFractionDigits:0})}`},
+                    value: fmt.cur(1840),
                     formula: 'sum(deposits.confirmed) where person_id=jsilva',
                     source: 'TAP Postback',
                     state: 'Reconciliado',
@@ -162,13 +166,13 @@ export default function InboxPage() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-13 text-eggshell">Total depósitos</span>
-                    <span className="font-mono text-13 font-bold text-verified tabular-nums">{`R$ ${(1840).toLocaleString("pt-BR",{maximumFractionDigits:0})}`}</span>
+                    <span className="font-mono text-13 font-bold text-verified tabular-nums">{fmt.cur(1840)}</span>
                   </div>
                 </button>
 
                 <button
                   onClick={() => openEvidence(buildEvidence({
-                    label: 'Influência do atendente', value: <span className="font-mono">+R$ 320 · 2 FTDs</span>,
+                    label: 'Influência do atendente', value: '+R$ 320 · 2 FTDs',
                     formula: 'sum(revenue) where last_touch=agent within 24h',
                     source: 'Attribution engine · window=24h',
                   }))}

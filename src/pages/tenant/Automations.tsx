@@ -10,6 +10,11 @@ import { FLOWS } from '@/lib/fake/db';
 import { toast } from 'sonner';
 import { GitBranch, RotateCcw, Eye } from 'lucide-react';
 
+const fmt = {
+  int: (n: number) => n.toLocaleString('pt-BR'),
+  cur: (n: number) => 'R$ ' + n.toLocaleString('pt-BR', { maximumFractionDigits: 0 }),
+};
+
 type Row = (typeof FLOWS)[number] & { version: string; prevVersion: string; shadow: boolean };
 
 const rows: Row[] = FLOWS.map((f, i) => ({
@@ -65,7 +70,7 @@ export default function AutomationsPage() {
         <div className="flex items-center gap-2">
           <span className="font-mono text-12 text-eggshell tabular-nums">{f.version}</span>
           <button
-            onClick={(e) => { e.stopPropagation(); toast(`Rollback disparado para ${f.prevVersion} — plano imutável enviado a Aprovações.`); }}
+            onClick={(e) => { e.stopPropagation(); toast(`Rollback para ${f.prevVersion} — plano imutável enviado a Aprovações.`); }}
             className="inline-flex items-center gap-1 text-11 text-stone hover:text-eggshell font-mono"
             title={`Rollback para ${f.prevVersion}`}
           >
@@ -87,14 +92,14 @@ export default function AutomationsPage() {
         <button
           onClick={(e) => { e.stopPropagation(); openEvidence(buildEvidence({
             label: `Entradas · ${f.name}`,
-            value: {(f.persons_total).toLocaleString("pt-BR")},
+            value: fmt.int(f.persons_total),
             formula: 'count(person_enter_flow) where flow_id = ' + f.id,
             source: 'FLOWS · engine de automação',
             freshness: 'atualizado há 2m',
           })); }}
           className="font-mono text-13 text-eggshell tabular-nums hover:text-proof-blue"
         >
-          {(f.persons_total).toLocaleString("pt-BR")}
+          {fmt.int(f.persons_total)}
         </button>
       ),
     },
@@ -106,14 +111,14 @@ export default function AutomationsPage() {
         <button
           onClick={(e) => { e.stopPropagation(); openEvidence(buildEvidence({
             label: `FTDs · ${f.name}`,
-            value: {(f.ftds_generated).toLocaleString("pt-BR")},
+            value: fmt.int(f.ftds_generated),
             formula: 'count(ftd) attributed to flow = ' + f.id,
             source: 'Signal Ledger · confirmados',
             state: 'Reconciliado',
           })); }}
           className="font-mono text-13 text-verified tabular-nums font-bold hover:underline"
         >
-          {(f.ftds_generated).toLocaleString("pt-BR")}
+          {fmt.int(f.ftds_generated)}
         </button>
       ),
     },
@@ -125,16 +130,23 @@ export default function AutomationsPage() {
         <button
           onClick={(e) => { e.stopPropagation(); openEvidence(buildEvidence({
             label: `Receita · ${f.name}`,
-            value: {`R$ ${(f.revenue).toLocaleString("pt-BR",{maximumFractionDigits:0})}`},
+            value: fmt.cur(f.revenue),
             formula: 'sum(net_deposit) where flow_id = ' + f.id,
             source: 'Revenue provider · TAP',
           })); }}
           className="font-mono text-13 text-eggshell tabular-nums hover:text-proof-blue"
         >
-          {`R$ ${(f.revenue).toLocaleString("pt-BR",{maximumFractionDigits:0})}`}
+          {fmt.cur(f.revenue)}
         </button>
       ),
     },
+  ];
+
+  const kpis = [
+    { label: 'Fluxos ativos', value: fmt.int(activeFlows), formula: 'count(flows.status="active")' },
+    { label: 'Entradas 30d', value: fmt.int(totalEntries), formula: 'sum(persons_enter)' },
+    { label: 'FTDs gerados', value: fmt.int(totalFtds), formula: 'sum(ftds_by_flow)' },
+    { label: 'Receita atribuída', value: fmt.cur(totalRevenue), formula: 'sum(net_deposit_by_flow)' },
   ];
 
   return (
@@ -164,24 +176,15 @@ export default function AutomationsPage() {
           emptyPrerequisite="Configure ao menos um canal de mensageria em Integrações."
         >
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {[
-              { label: 'Fluxos ativos', value: activeFlows, fmt: 'int' as const, formula: 'count(flows.status="active")' },
-              { label: 'Entradas 30d', value: totalEntries, fmt: 'int' as const, formula: 'sum(persons_enter)' },
-              { label: 'FTDs gerados', value: totalFtds, fmt: 'int' as const, formula: 'sum(ftds_by_flow)' },
-              { label: 'Receita atribuída', value: totalRevenue, fmt: 'currency' as const, formula: 'sum(net_deposit_by_flow)' },
-            ].map(k => (
+            {kpis.map(k => (
               <button
                 key={k.label}
-                onClick={() => openEvidence(buildEvidence({
-                  label: k.label,
-                  value: <MetricValue value={k.value} format={k.fmt} />,
-                  formula: k.formula,
-                }))}
+                onClick={() => openEvidence(buildEvidence({ label: k.label, value: k.value, formula: k.formula }))}
                 className="text-left bg-graphite border border-line rounded-xl p-4 hover:border-stone transition-colors"
               >
                 <div className="text-11 uppercase tracking-wider text-stone font-mono">{k.label}</div>
-                <div className="mt-2 text-24 font-bold text-eggshell font-mono tabular-nums">
-                  <MetricValue value={k.value} format={k.fmt} />
+                <div className="mt-2">
+                  <MetricValue value={k.value} size="lg" />
                 </div>
               </button>
             ))}
