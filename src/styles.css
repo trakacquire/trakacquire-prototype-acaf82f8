@@ -297,39 +297,39 @@
 }
 
 /* ==== Fase D · Superfícies recalibradas — degrau curto, borda sugerida ==== */
-/* ==== Fase F · Superfícies com peso físico (gradient + inset) ==== */
+/* ==== Onda H1 · borda default sobe para .09 (default) e .12 (strong) ==== */
 @utility surface-flat {
   background: var(--gradient-card);
-  border: 1px solid hsl(var(--eggshell) / 0.06);
+  border: 1px solid hsl(var(--eggshell) / 0.09);
   box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.025);
 }
 @utility surface-raised {
   background: var(--gradient-card);
-  border: 1px solid hsl(var(--eggshell) / 0.06);
+  border: 1px solid hsl(var(--eggshell) / 0.09);
   box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.025);
 }
 @utility surface-inset {
   background: hsl(var(--surface-inset));
-  border: 1px solid hsl(var(--eggshell) / 0.06);
+  border: 1px solid hsl(var(--eggshell) / 0.09);
 }
 @utility surface-floating {
   background: var(--gradient-card);
-  border: 1px solid hsl(var(--eggshell) / 0.10);
+  border: 1px solid hsl(var(--eggshell) / 0.12);
   box-shadow: var(--shadow-node);
 }
 @utility surface-glass {
   background: hsl(var(--iron) / 0.55);
   backdrop-filter: blur(18px) saturate(140%);
-  border: 1px solid hsl(var(--eggshell) / 0.06);
+  border: 1px solid hsl(var(--eggshell) / 0.09);
 }
 @utility surface-topbar {
   background: hsl(10 8% 4% / 0.86); /* rgba(10,10,11,.86) */
   backdrop-filter: blur(22px) saturate(150%);
-  border-bottom: 1px solid hsl(var(--eggshell) / 0.065);
+  border-bottom: 1px solid hsl(var(--eggshell) / 0.09);
 }
 @utility surface-sidebar {
   background: var(--gradient-sidebar);
-  border-right: 1px solid hsl(var(--eggshell) / 0.095);
+  border-right: 1px solid hsl(var(--eggshell) / 0.10);
 }
 @utility surface-proof {
   background: hsl(var(--surface));
@@ -337,22 +337,47 @@
   box-shadow: inset 0 0 0 1px hsl(var(--proof-blue) / 0.12);
 }
 @utility ring-hairline {
-  box-shadow: inset 0 0 0 1px hsl(var(--eggshell) / 0.06);
+  box-shadow: inset 0 0 0 1px hsl(var(--eggshell) / 0.09);
 }
 @utility ring-hairline-strong {
-  box-shadow: inset 0 0 0 1px hsl(var(--eggshell) / 0.10);
+  box-shadow: inset 0 0 0 1px hsl(var(--eggshell) / 0.12);
 }
 @utility ring-proof {
   box-shadow: inset 0 0 0 1px hsl(var(--proof-blue) / 0.35), 0 0 0 1px hsl(var(--proof-blue) / 0.12);
 }
 @utility hairline-divider {
-  border-top: 1px solid hsl(var(--eggshell) / 0.06);
+  border-top: 1px solid hsl(var(--eggshell) / 0.10);
 }
 @utility hairline-top { position: relative; }
 @utility shadow-elevated { box-shadow: var(--shadow-elevated); }
 @utility shadow-floating { box-shadow: var(--shadow-floating); }
 @utility shadow-node { box-shadow: var(--shadow-node); }
 @utility shadow-proof-glow { box-shadow: var(--shadow-proof-glow); }
+
+/* Onda H1 · chip honesto — funde PRÉVIA + estado + freshness num único badge
+   discreto (estados não somem, só se organizam). */
+@utility chip-honest {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid hsl(var(--eggshell) / 0.10);
+  background: hsl(var(--surface-inset));
+  font-family: var(--font-mono-family);
+  font-size: 10px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: hsl(var(--stone));
+}
+@utility chip-honest-sep {
+  display: inline-block;
+  width: 1px;
+  height: 10px;
+  background: hsl(var(--eggshell) / 0.14);
+}
 
 /* ==== Fase F · Botões físicos ==== */
 @utility btn-eggshell {
