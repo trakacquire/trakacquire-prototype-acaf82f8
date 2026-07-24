@@ -34,7 +34,7 @@ function BriefingDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (
             Briefing diário
           </div>
           <SheetTitle asChild>
-            <h2 className="font-serif text-eggshell text-[28px] leading-tight tracking-tight capitalize">
+            <h2 className="text-eggshell text-[28px] leading-tight tracking-tight capitalize">
               {dateLabel}.
             </h2>
           </SheetTitle>
@@ -98,7 +98,7 @@ function CopilotDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v
             Copiloto
           </div>
           <SheetTitle asChild>
-            <h2 className="font-serif text-eggshell text-[26px] leading-tight tracking-tight">
+            <h2 className="text-eggshell text-[26px] leading-tight tracking-tight">
               Pergunte sobre seus sinais.
             </h2>
           </SheetTitle>

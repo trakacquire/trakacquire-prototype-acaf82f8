@@ -363,8 +363,6 @@
   border-radius: 9px;
   font-weight: 600;
   transition: filter 140ms ease-out, transform 120ms ease-out;
-}
-@utility btn-eggshell-hover {
   &:hover { filter: brightness(1.04); }
   &:active { transform: translateY(0.5px); }
 }

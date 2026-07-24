@@ -168,7 +168,7 @@ export default function RoadmapPage() {
           </div>
           <div className="flex flex-wrap items-center gap-3 mb-3">
             <h1
-              className="text-eggshell font-serif tracking-tight leading-[1.02]"
+              className="text-eggshell tracking-tight leading-[1.02]"
               style={{ fontSize: 'clamp(30px, 3.4vw, 44px)' }}
             >
               Em construção.

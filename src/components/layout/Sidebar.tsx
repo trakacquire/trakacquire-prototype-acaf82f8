@@ -10,6 +10,7 @@ import {
   Settings, UserCircle2, Construction,
 } from 'lucide-react';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
+import { Brand } from '@/components/brand/Brand';
 
 interface SidebarItemProps {
   href: string;
@@ -66,13 +67,10 @@ function SidebarGroup({ title, children }: { title: string; children: React.Reac
 export function Sidebar() {
   return (
     <aside className="w-60 surface-sidebar h-[100dvh] flex-col flex-shrink-0 hidden md:flex relative">
-      {/* Wordmark */}
-      <div className="px-5 pt-5 pb-3">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-proof-blue" />
-          <span className="text-13 font-serif text-eggshell tracking-tight">Proofline</span>
-          <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-stone ml-auto">v1</span>
-        </div>
+      {/* Wordmark — glifo Proofline oficial (Fase F.2) */}
+      <div className="px-5 pt-5 pb-3 flex items-center justify-between">
+        <Brand size="sm" />
+        <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-stone">v1</span>
       </div>
 
       <div className="px-3 pb-3 border-b border-line">

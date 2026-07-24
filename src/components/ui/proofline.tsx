@@ -131,7 +131,7 @@ export function EntityHeader({
   return (
     <section className="surface-flat rounded-[12px] p-6">
       <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-4 items-start">
-        <div className="grid place-items-center w-11 h-11 rounded-[10px] surface-inset text-eggshell font-serif italic text-16 shrink-0">
+        <div className="grid place-items-center w-11 h-11 rounded-[10px] surface-inset text-eggshell text-16 shrink-0">
           {logo}
         </div>
         <div className="min-w-0">
