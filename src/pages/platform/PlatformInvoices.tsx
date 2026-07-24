@@ -40,7 +40,9 @@ export default function PlatformInvoicesPage() {
   }
 
   return (
-    <PlatformShell breadcrumb={[{ label<PlatformPageHeader kicker="Platform · Finance" title="Faturas" />ce-y-6">
+    <PlatformShell breadcrumb={[{ label: 'Invoices' }]}>
+      <div className="max-w-7xl mx-auto space-y-6">
+        <PlatformPageHeader kicker="Platform · Finance" title="Faturas" description="Cobrança recorrente e histórico consolidado dos tenants." />
         {/* Stat card */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-graphite border border-line rounded-xl p-5">
