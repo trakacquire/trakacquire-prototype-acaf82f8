@@ -96,10 +96,8 @@ export default function MediaCreativesPage() {
         </header>
 
         <ScenarioStateGate emptyTitle="Sem criativos ativos">
-          <DataTable data={rows} columns={columns.map((c) => c.header === '#' ? {
-            ...c,
-            cell: (r, i) => <span className="font-mono text-11 text-stone tabular-nums">#{(i ?? 0) + 1}</span>,
-          } as ColumnDef<CrRow> : c)} />
+          <DataTable data={rows} columns={columns} />
+
         </ScenarioStateGate>
       </div>
     </AppShell>
