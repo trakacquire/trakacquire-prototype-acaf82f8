@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'wouter';
-import { CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, AlertTriangle } from 'lucide-react';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+
 
 export default function StatusPage() {
   const services = [
