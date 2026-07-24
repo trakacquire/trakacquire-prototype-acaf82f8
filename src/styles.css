@@ -424,9 +424,84 @@
   position: relative;
 }
 
+/* Brand glyph — quadrado 35px, gradient #1E1E21→#0E0E10, borda #3B3B40, olho
+   eggshell + risco proof-blue 35° (Fase F.2). */
+@utility brand-glyph {
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #1E1E21 0%, #0E0E10 100%);
+  border: 1px solid #3B3B40;
+  position: relative;
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.05), 0 2px 6px -2px hsl(0 0% 0% / 0.55);
+  display: inline-block;
+  flex-shrink: 0;
+}
+@utility brand-glyph-sm {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #1E1E21 0%, #0E0E10 100%);
+  border: 1px solid #3B3B40;
+  position: relative;
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.05);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Grid pontilhado do canvas (FlowBuilder) — Fase F.5 */
+@utility canvas-dot-grid {
+  background-image: radial-gradient(#333238 1px, transparent 1px);
+  background-size: 23px 23px;
+  background-color: hsl(var(--ink));
+}
+
+/* Wires com fade nas pontas (IdentityGraph) — Fase F.5 */
+@utility wire-fade {
+  background: linear-gradient(90deg, transparent 0%, hsl(var(--proof-blue) / 0.85) 50%, transparent 100%);
+}
+
+/* Connector direcional (FlowBuilder) — degrade azul → eggshell */
+@utility connector-flow {
+  background: linear-gradient(90deg, hsl(var(--proof-blue)) 0%, hsl(var(--eggshell)) 100%);
+}
+
+/* Health orb (Command Hero) — Fase F.3 */
+@utility health-orb {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, hsl(var(--proof-blue) / 0.9), hsl(230 60% 25%) 55%, hsl(240 8% 6%) 100%);
+  box-shadow: 0 0 0 1px hsl(var(--proof-blue) / 0.35), 0 0 22px hsl(var(--proof-blue) / 0.28);
+  position: relative;
+  flex-shrink: 0;
+}
+@utility health-orb::after {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  background: hsl(var(--proof-blue));
+  filter: blur(6px);
+  opacity: 0.55;
+  animation: proof-pulse 2.4s ease-in-out infinite;
+}
+
+/* Conector tracejado entre etapas do JourneyStrip (Fase F.3) */
+@utility journey-connector {
+  position: relative;
+}
+@utility journey-connector::after {
+  content: '';
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  width: 8px;
+  height: 1px;
+  border-top: 1px dashed hsl(var(--eggshell) / 0.18);
+}
 
 
-/* ==== Proofline motion & interaction ==== */
 @utility hover-lift {
   transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms ease-out, border-color 180ms ease-out;
   &:hover {
