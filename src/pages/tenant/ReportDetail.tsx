@@ -120,27 +120,36 @@ export default function ReportDetailPage() {
   };
 
   return (
-    <AppShell breadcrumb={[{ label: 'Relatórios', href: '/reports' }, { label: report.name }]}>
+    <AppShell breadcrumb={[{ label: 'Prove' }, { label: 'Relatórios', href: '/reports' }, { label: report.name }]}>
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Header */}
         <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-6">
           <div className="flex flex-col md:flex-row justify-between items-start gap-4">
             <div>
-              <div className="flex items-center gap-3 mb-1">
+              <div className="text-12 font-serif italic text-stone/80 mb-1">Prove / Relatório</div>
+              <div className="flex flex-wrap items-center gap-3 mb-1">
                 <h1 className="text-24 font-bold text-[var(--eggshell)]">{report.name}</h1>
                 <span className={`px-2 py-0.5 rounded text-11 uppercase font-bold ${typeBadgeStyle(report.type)}`}>
                   {typeName(report.type)}
                 </span>
+                <PreviewBadge />
+                <StateShowcase />
               </div>
-              <div className="text-13 text-[var(--stone)]">Período: {report.period}</div>
+              <div className="flex flex-wrap items-center gap-3 text-13 text-[var(--stone)]">
+                <span>Período: {report.period}</span>
+                <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-verified/10 text-verified text-11 font-mono uppercase tabular-nums">
+                  <Lock className="w-3 h-3" /> v3 · congelado
+                </span>
+                <span className="font-mono text-11 tabular-nums">reabrir gera v4</span>
+              </div>
             </div>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={handleRun}
                 className="flex items-center gap-2 bg-[var(--verified)] text-[var(--ink)] px-3 py-1.5 rounded-md font-medium text-13 hover:opacity-90 transition-opacity"
               >
-                <Play className="w-4 h-4" /> Executar agora
+                <Play className="w-4 h-4" /> Executar (nova versão)
               </button>
               <button
                 onClick={handleExportCSV}
@@ -157,6 +166,9 @@ export default function ReportDetailPage() {
             </div>
           </div>
         </div>
+
+        <ScenarioStateGate emptyTitle="Snapshot vazio" emptyDescription="Este relatório ainda não gerou dados neste período." emptyPrerequisite="Execute agora para produzir a primeira versão.">
+
 
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Main content */}
