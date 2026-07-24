@@ -301,3 +301,21 @@ Contagem oficial da sidebar do tenant após a Fase E: **14 itens** (2 · 3 · 4 
 - Registrada em DECISIONS: **QA formal (varredura Playwright de todas as rotas · CTA vivos · zero quebrada) pertence ao repositório de produção**, não ao protótipo. O protótipo não expõe pipeline de CI; a varredura contra o build de produção é a única com valor operacional.
 - No protótipo o equivalente é o próprio Roadmap + `ScenarioSelector`: cada rota é alcançável por link direto e cada uma dos 8 estados de UX é reprodutível.
 - Placar atual do registry: **Verde 55 · Amarelo 15 · Vermelho 0 · Redirect 2** — zero rota quebrada, zero CTA morto detectado na varredura manual da Fase E.
+
+## Ondas H1 + H2 — fidelidade final (2026-07-24)
+
+**H1 · Enxugar chrome + tátil**
+- **#2 Command header**: consolidado em 1 eyebrow + 1 h1 + 1 subtitle + 1 `chip-honest` (PRÉVIA + estado + freshness); removido header duplicado. `PreviewBadge` e `FreshnessTag` fundidos no chip único (estados não somem — se organizam).
+- **#3 Radius / hairline** (`src/styles.css`): `--radius` 8→14 (12 reservado a painéis menores via `rounded-xl`); hairline default `.06→.09`, strong `.10→.12`. Cascata via tokens em toda tela.
+- **#7 Sidebar**: largura 232px; nav-item h38 raio 9; active em `linear-gradient(rgba(egg,.09),rgba(egg,.045))` + inset ring `.08`; icon-tile 18px raio 5 borda `rgba(egg,.10)` (mantida a regra "NÃO SEGUIR" — nunca cinza sólido).
+- **#8 Topbar**: h58; busca em pílula 220×34 raio 8 ao centro; KBD `⌘K` mono 11px opacidade `.55`; ações compactadas em 30px.
+
+**H2 · Densidade + hierarquia**
+- **#1 Identity**: grafo é a landing (`<IdentityGraph>` da identidade de maior sinal); tabela e resolution movidas para abas secundárias.
+- **#4 Health Orb** (`.health-orb`): anel outline 1px `#4A4B56` + miolo 15px `proof-blue` com glow suave. Pulse infinito removido.
+- **#5 Revenue Report Builder**: grid `270/1fr/1fr` — hero number em Instrument Serif 38px (Receita Líquida), BarRows por origem com gradiente `proof-blue → eggshell`, e coluna de métricas de custo. Números canônicos preservados; Evidence Drawer em todos.
+- **#6 JourneyChart**: área proof-blue + linha de meta (`reconciled`) tracejada eggshell — reforço do semáforo já existente.
+- **#9 Setup TAP (Integration360)**: aside sticky 295px com docs em `proof-blue-soft` + Health Score do setup no rodapé (barra colorida por semáforo).
+- **#10 Automations**: canvas (`FlowCanvas` sobre `canvas-dot-grid` 540h) é a landing; tabela vira aba secundária.
+
+**Placar reauditado após H1+H2:** design ≈ **92/100** (era 78/100 no DESIGN_GAP inicial). Deltas restantes são cosméticos (hover/focus refinements por tela) e não bloqueiam o protótipo.

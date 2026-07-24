@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLocation, Link } from 'wouter';
 import { AppShell, useEvidence } from '@/components/layout/AppShell';
 import { StatusChip } from '@/components/domain/StatusChip';
@@ -6,9 +6,11 @@ import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { MetricValue } from '@/components/data/MetricValue';
 import { DataTable, ColumnDef } from '@/components/data/DataTable';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
+import { IdentityGraph } from '@/components/data/IdentityGraph';
 import { buildEvidence } from '@/lib/evidence';
 import { db, Person } from '@/lib/fake/db';
 import { useIsMobile } from '@/hooks/use-mobile';
+
 
 /**
  * Identity Graph — lista de identidades registradas com confiança,
@@ -18,8 +20,17 @@ export default function IdentityPage() {
   const [, setLocation] = useLocation();
   const { openEvidence } = useEvidence();
   const isMobile = useIsMobile();
+  const [tab, setTab] = useState<'grafo' | 'tabela' | 'resolution'>('grafo');
 
   const persons = useMemo(() => db.persons.filter((p) => p.registered_at), []);
+  // H2 · landing = grafo. Pega a identidade com maior sinal (mais tokens amarrados).
+  const landingPerson = useMemo(() => {
+    const scored = persons.map((p) => ({
+      p,
+      score: (p.click_id ? 1 : 0) + (p.telegram_id ? 1 : 0) + (p.phone_token ? 1 : 0) + (p.customer_id ? 1 : 0),
+    }));
+    return scored.sort((a, b) => b.score - a.score)[0]?.p ?? persons[0];
+  }, [persons]);
   const totalRegistered = persons.length;
   const avgConfidence = persons.reduce((s, p) => s + p.identity_confidence, 0) / Math.max(1, persons.length);
   const highConfidence = persons.filter((p) => p.identity_confidence > 75).length;
@@ -163,73 +174,108 @@ export default function IdentityPage() {
             />
           </div>
 
-          <DataTable
-            data={persons}
-            columns={columns}
-            onRowClick={(p) => setLocation(`/identity/${p.id}`)}
-          />
+          {/* H2 · Grafo é a landing, tabela e resolution são abas. */}
+          <div className="bg-graphite border border-line rounded-xl overflow-hidden">
+            <div className="flex border-b border-line overflow-x-auto">
+              {([
+                { key: 'grafo', label: 'Grafo (landing)' },
+                { key: 'tabela', label: `Pessoas · ${persons.length}` },
+                { key: 'resolution', label: 'Resolution debug' },
+              ] as const).map((t) => (
+                <button
+                  key={t.key}
+                  onClick={() => setTab(t.key)}
+                  className={`px-5 py-3 text-13 font-medium whitespace-nowrap transition-colors ${
+                    tab === t.key
+                      ? 'text-eggshell border-b-2 border-proof-blue -mb-px'
+                      : 'text-stone hover:text-eggshell'
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
 
-          {/* Bloco R.3.13 — Tabela de Identity Resolution (complementa o grafo) */}
-          <div className="mt-8 bg-graphite border border-line rounded-xl overflow-hidden">
-            <div className="p-4 border-b border-line flex items-baseline justify-between">
-              <div>
-                <h2 className="text-16 font-medium text-eggshell">Identity Resolution</h2>
-                <p className="text-12 text-stone mt-0.5">Uma linha por identidade: qual sinal amarrou qual pessoa a qual canal — clique em "Debug" para inspecionar a costura.</p>
+            {tab === 'grafo' && landingPerson && (
+              <div className="p-4">
+                <div className="flex items-baseline justify-between mb-3">
+                  <div>
+                    <div className="text-13 text-eggshell font-medium">{landingPerson.name}</div>
+                    <div className="text-11 font-mono text-stone">{landingPerson.id} · confiança {landingPerson.identity_confidence}%</div>
+                  </div>
+                  <Link href={`/identity/${landingPerson.id}`} className="text-11 font-mono uppercase text-proof-blue-soft hover:text-proof-blue">
+                    abrir 360 →
+                  </Link>
+                </div>
+                <IdentityGraph person={landingPerson} />
               </div>
-              <span className="font-mono text-11 text-stone">{persons.length} identidades</span>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-12">
-                <thead>
-                  <tr className="border-b border-line">
-                    <th className="p-3 text-11 font-mono uppercase text-stone">Identidade</th>
-                    <th className="p-3 text-11 font-mono uppercase text-stone">Session</th>
-                    <th className="p-3 text-11 font-mono uppercase text-stone">User</th>
-                    <th className="p-3 text-11 font-mono uppercase text-stone">Telegram</th>
-                    <th className="p-3 text-11 font-mono uppercase text-stone">Canal</th>
-                    <th className="p-3 text-11 font-mono uppercase text-stone">Player</th>
-                    <th className="p-3 text-11 font-mono uppercase text-stone text-right">Eventos</th>
-                    <th className="p-3 text-11 font-mono uppercase text-stone text-right">Debug</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {persons.slice(0, 24).map((p) => {
-                    const sessionId = `sess_${p.id.slice(-6)}`;
-                    const userId    = p.customer_id ? p.customer_id : '—';
-                    const tg        = p.telegram_id ? `@${p.name.split(' ')[0].toLowerCase()}` : '—';
-                    const canal     = p.telegram_id ? 'grupo_vip_bra' : p.source === 'tiktok' ? 'tt_bio' : p.source === 'organic' ? 'ig_bio' : 'presell_v2';
-                    const player    = p.customer_id ?? '—';
-                    const evCount   = db.events.filter((e) => e.person_id === p.id).length;
-                    return (
-                      <tr key={p.id} className="border-b border-line last:border-0 hover:bg-zinc/40">
-                        <td className="p-3 font-mono text-11 text-proof-blue tabular-nums">{p.id}</td>
-                        <td className="p-3 font-mono text-11 text-stone tabular-nums">{sessionId}</td>
-                        <td className="p-3 font-mono text-11 text-stone tabular-nums">{userId}</td>
-                        <td className="p-3 font-mono text-11 text-stone">{tg}</td>
-                        <td className="p-3 font-mono text-11 text-stone">{canal}</td>
-                        <td className="p-3 font-mono text-11 text-stone tabular-nums">{player}</td>
-                        <td className="p-3 font-mono text-12 text-eggshell text-right tabular-nums">{evCount}</td>
-                        <td className="p-3 text-right">
-                          <button
-                            onClick={() => openEvidence(buildEvidence({
-                              label: `Debug identity · ${p.name}`,
-                              value: `${evCount} evento(s)`,
-                              formula: 'trace(events) group by identity_id → session → user → telegram → channel → player',
-                              source: `Identity resolver · método ${p.identity_method ?? 'manual'} · confiança ${p.identity_confidence}%`,
-                              state: p.identity_confidence > 75 ? 'Reconciliado' : 'Provisório',
-                            }))}
-                            className="text-11 font-mono uppercase text-stone hover:text-proof-blue"
-                          >
-                            debug
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            )}
+
+            {tab === 'tabela' && (
+              <div className="p-2">
+                <DataTable
+                  data={persons}
+                  columns={columns}
+                  onRowClick={(p) => setLocation(`/identity/${p.id}`)}
+                />
+              </div>
+            )}
+
+            {tab === 'resolution' && (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-12">
+                  <thead>
+                    <tr className="border-b border-line">
+                      <th className="p-3 text-11 font-mono uppercase text-stone">Identidade</th>
+                      <th className="p-3 text-11 font-mono uppercase text-stone">Session</th>
+                      <th className="p-3 text-11 font-mono uppercase text-stone">User</th>
+                      <th className="p-3 text-11 font-mono uppercase text-stone">Telegram</th>
+                      <th className="p-3 text-11 font-mono uppercase text-stone">Canal</th>
+                      <th className="p-3 text-11 font-mono uppercase text-stone">Player</th>
+                      <th className="p-3 text-11 font-mono uppercase text-stone text-right">Eventos</th>
+                      <th className="p-3 text-11 font-mono uppercase text-stone text-right">Debug</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {persons.slice(0, 24).map((p) => {
+                      const sessionId = `sess_${p.id.slice(-6)}`;
+                      const userId    = p.customer_id ? p.customer_id : '—';
+                      const tg        = p.telegram_id ? `@${p.name.split(' ')[0].toLowerCase()}` : '—';
+                      const canal     = p.telegram_id ? 'grupo_vip_bra' : p.source === 'tiktok' ? 'tt_bio' : p.source === 'organic' ? 'ig_bio' : 'presell_v2';
+                      const player    = p.customer_id ?? '—';
+                      const evCount   = db.events.filter((e) => e.person_id === p.id).length;
+                      return (
+                        <tr key={p.id} className="border-b border-line last:border-0 hover:bg-zinc/40">
+                          <td className="p-3 font-mono text-11 text-proof-blue tabular-nums">{p.id}</td>
+                          <td className="p-3 font-mono text-11 text-stone tabular-nums">{sessionId}</td>
+                          <td className="p-3 font-mono text-11 text-stone tabular-nums">{userId}</td>
+                          <td className="p-3 font-mono text-11 text-stone">{tg}</td>
+                          <td className="p-3 font-mono text-11 text-stone">{canal}</td>
+                          <td className="p-3 font-mono text-11 text-stone tabular-nums">{player}</td>
+                          <td className="p-3 font-mono text-12 text-eggshell text-right tabular-nums">{evCount}</td>
+                          <td className="p-3 text-right">
+                            <button
+                              onClick={() => openEvidence(buildEvidence({
+                                label: `Debug identity · ${p.name}`,
+                                value: `${evCount} evento(s)`,
+                                formula: 'trace(events) group by identity_id → session → user → telegram → channel → player',
+                                source: `Identity resolver · método ${p.identity_method ?? 'manual'} · confiança ${p.identity_confidence}%`,
+                                state: p.identity_confidence > 75 ? 'Reconciliado' : 'Provisório',
+                              }))}
+                              className="text-11 font-mono uppercase text-stone hover:text-proof-blue"
+                            >
+                              debug
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
+
         </ScenarioStateGate>
       </div>
     </AppShell>

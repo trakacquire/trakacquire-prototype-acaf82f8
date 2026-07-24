@@ -2,8 +2,8 @@ import React from 'react';
 import { AppShell, useEvidence } from '@/components/layout/AppShell';
 import { db } from '@/lib/fake/db';
 import { usePeriod } from '@/lib/context/PeriodContext';
-import { PreviewBadge } from '@/components/data/PreviewBadge';
-import { FreshnessTag } from '@/components/data/FreshnessTag';
+// PreviewBadge + FreshnessTag consolidados no chip-honest do header (Onda H1).
+
 import { MetricValue } from '@/components/data/MetricValue';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
 import { TargetKpi } from '@/components/data/TargetKpi';
@@ -139,27 +139,26 @@ export default function CommandPage() {
     <AppShell breadcrumb={[{ label: 'Command' }]}>
       <div className="max-w-7xl mx-auto space-y-8">
 
-        {/* ── Editorial header ─────────────────────────────────────────── */}
+        {/* ── Onda H1 · header enxuto: 1 eyebrow + 1 h1 + 1 subtitle + chip único ── */}
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pt-2">
-          <div>
-            {/* Kicker editorial em serifa (única presença de serif no chrome) */}
-            <div className="flex items-center gap-3 mb-3 flex-wrap">
-              <span className="text-16 kicker leading-none">
-                Proofline · Command
-              </span>
-              <PreviewBadge />
-              <FreshnessTag ageSeconds={lastEventAgo ?? 0} source="stream ao vivo" />
-              <StateShowcase />
-            </div>
-            <h1
-              className="text-eggshell font-sans font-semibold tracking-tight leading-[1.05]"
-              style={{ fontSize: 'clamp(28px, 3.2vw, 40px)' }}
-            >
-              Todos os sinais estão sob controle.
-            </h1>
-            <p className="text-stone text-14 mt-3 max-w-xl">
+          <div className="min-w-0">
+            <div className="eyebrow mb-2">Proofline · Command</div>
+            <h1 className="page-title">Todos os sinais estão sob controle.</h1>
+            <p className="page-subtitle mt-1.5 max-w-xl">
               Uma visão objetiva da aquisição, identidade, receita e integridade das integrações.
             </p>
+            {/* Chip honesto — funde PRÉVIA + estado + freshness (estados não somem, se organizam) */}
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span className="chip-honest">
+                <span className="w-1 h-1 rounded-full bg-warning" />
+                Prévia
+                <span className="chip-honest-sep" />
+                {lastEventAgo !== null ? <>ao vivo · há {lastEventAgo}s</> : 'sem eventos'}
+                <span className="chip-honest-sep" />
+                <span className="text-verified">{pendingReconcile === 0 ? 'reconciliado D+1' : `${pendingReconcile} pendentes`}</span>
+              </span>
+              <StateShowcase />
+            </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button className="h-9 px-4 rounded-[9px] border border-line bg-graphite hover:bg-zinc text-13 text-eggshell transition-colors press">
@@ -170,6 +169,7 @@ export default function CommandPage() {
             </button>
           </div>
         </header>
+
 
         {/* ── KPI row (Proof integrity + 4 métricas Proofline) ─────────── */}
         <ScenarioStateGate

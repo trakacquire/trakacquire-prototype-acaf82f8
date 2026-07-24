@@ -235,28 +235,66 @@ export default function Integration360Page() {
             </div>
           )}
 
-          {tab === 'setup' && (
-            <div className="space-y-3">
-              {config.setupSteps.map((s, i) => (
-                <div key={i} className={`bg-graphite border rounded-xl p-4 flex items-start gap-4 ${s.done ? 'border-verified/30' : 'border-line'}`}>
-                  <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-mono text-13 font-semibold ${s.done ? 'bg-verified/10 text-verified border border-verified/30' : 'bg-zinc text-stone border border-line'}`}>{i + 1}</div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <span className="text-14 font-semibold text-eggshell">{s.label}</span>
-                      {s.done ? <StatusChip status="Confirmed" /> : <StatusChip status="Captured" />}
+          {tab === 'setup' && (() => {
+            const doneCount = config.setupSteps.filter((s) => s.done).length;
+            const health = Math.round((doneCount / config.setupSteps.length) * 100);
+            const healthTone = health === 100 ? 'text-verified' : health >= 50 ? 'text-warning' : 'text-critical';
+            return (
+              <div className="grid gap-6 lg:grid-cols-[1fr_295px]">
+                <div className="space-y-3 min-w-0">
+                  {config.setupSteps.map((s, i) => (
+                    <div key={i} className={`bg-graphite border rounded-xl p-4 flex items-start gap-4 ${s.done ? 'border-verified/30' : 'border-line'}`}>
+                      <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-mono text-13 font-semibold ${s.done ? 'bg-verified/10 text-verified border border-verified/30' : 'bg-zinc text-stone border border-line'}`}>{i + 1}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <span className="text-14 font-semibold text-eggshell">{s.label}</span>
+                          {s.done ? <StatusChip status="Confirmed" /> : <StatusChip status="Captured" />}
+                        </div>
+                        <p className="text-12 text-stone mt-1">{s.description}</p>
+                        <div className="mt-2 flex flex-wrap items-center gap-3">
+                          <button className="text-11 font-mono border border-line rounded-md px-2 py-1 text-stone hover:text-eggshell hover:border-stone transition-colors">Testar: {s.test}</button>
+                          {s.evidence && (
+                            <span className="text-11 text-stone">Evidência: <span className="font-mono text-eggshell">{s.evidence}</span></span>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-12 text-stone mt-1">{s.description}</p>
-                    <div className="mt-2 flex flex-wrap items-center gap-3">
-                      <button className="text-11 font-mono border border-line rounded-md px-2 py-1 text-stone hover:text-eggshell hover:border-stone transition-colors">Testar: {s.test}</button>
-                      {s.evidence && (
-                        <span className="text-11 text-stone">Evidência: <span className="font-mono text-eggshell">{s.evidence}</span></span>
-                      )}
+                  ))}
+                </div>
+
+                {/* H2 · Aside sticky 295px de docs + health score no rodapé */}
+                <aside className="w-[295px] hidden lg:block">
+                  <div className="sticky top-4 space-y-4">
+                    <div className="bg-graphite border border-line rounded-xl p-4">
+                      <div className="eyebrow mb-2">Documentação</div>
+                      <h3 className="text-14 font-semibold text-eggshell mb-2">Setup do adapter {config.name}</h3>
+                      <p className="text-12 text-stone leading-relaxed">
+                        Cada passo cria uma evidência (sig, ping ou postback assinado). O adapter só promove quando 100% dos passos têm evidência recente.
+                      </p>
+                      <ul className="mt-3 space-y-1.5 text-12">
+                        <li><a className="text-proof-blue-soft hover:text-proof-blue" href="#">Referência de escopos e credenciais →</a></li>
+                        <li><a className="text-proof-blue-soft hover:text-proof-blue" href="#">Assinatura de postbacks (HMAC) →</a></li>
+                        <li><a className="text-proof-blue-soft hover:text-proof-blue" href="#">Como testar sem afetar produção →</a></li>
+                        <li><a className="text-proof-blue-soft hover:text-proof-blue" href="#">Runbook de rollback →</a></li>
+                      </ul>
+                    </div>
+                    <div className="bg-graphite border border-line rounded-xl p-4">
+                      <div className="eyebrow mb-2">Health score do setup</div>
+                      <div className={`font-mono tabular-nums text-24 font-semibold ${healthTone}`}>{health}%</div>
+                      <div className="text-11 text-stone mt-1">{doneCount} de {config.setupSteps.length} passos com evidência</div>
+                      <div className="mt-3 h-1.5 rounded-full bg-line overflow-hidden">
+                        <div
+                          className={`h-full ${health === 100 ? 'bg-verified' : health >= 50 ? 'bg-warning' : 'bg-critical'}`}
+                          style={{ width: `${health}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                </aside>
+              </div>
+            );
+          })()}
+
 
           {tab === 'eventos' && (
             <DataTable data={events} columns={eventColumns} />

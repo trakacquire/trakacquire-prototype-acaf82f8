@@ -30,12 +30,14 @@ function SidebarItem({ href, icon, label, badge }: SidebarItemProps) {
     <Link
       href={href}
       className={cn(
-        'relative flex items-center gap-2.5 pl-3 pr-2 py-1.5 rounded-md text-13 font-medium transition-colors group',
-        active ? 'text-eggshell' : 'text-stone hover:text-eggshell',
+        'relative flex items-center gap-2.5 h-[38px] pl-3 pr-2 rounded-[9px] text-13 font-medium transition-colors group',
+        active
+          ? 'text-eggshell bg-[linear-gradient(180deg,hsl(var(--eggshell)/0.09),hsl(var(--eggshell)/0.045))] ring-1 ring-inset ring-[hsl(var(--eggshell)/0.08)]'
+          : 'text-stone hover:text-eggshell hover:bg-[hsl(var(--eggshell)/0.025)]',
       )}
     >
       {active && (
-        <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-r-full bg-proof-blue" />
+        <span className="absolute left-0 top-2 bottom-2 w-[2px] rounded-r-full bg-proof-blue" />
       )}
       <span
         className={cn(
@@ -66,7 +68,7 @@ function SidebarGroup({ title, children }: { title: string; children: React.Reac
 
 export function Sidebar() {
   return (
-    <aside className="w-60 surface-sidebar h-[100dvh] flex-col flex-shrink-0 hidden md:flex relative">
+    <aside className="w-[232px] surface-sidebar h-[100dvh] flex-col flex-shrink-0 hidden md:flex relative">
       {/* Wordmark — glifo Proofline oficial (Fase F.2) */}
       <div className="px-5 pt-5 pb-3 flex items-center justify-between">
         <Brand size="sm" />
