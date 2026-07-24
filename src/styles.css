@@ -57,6 +57,7 @@
   --color-stone: hsl(var(--stone));
 
   --color-proof-blue: hsl(var(--proof-blue));
+  --color-proof-blue-soft: hsl(var(--proof-blue-soft));
   --color-verified: hsl(var(--verified));
   --color-warning: hsl(var(--warning));
   --color-amber: hsl(var(--warning));
