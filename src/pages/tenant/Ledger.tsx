@@ -147,11 +147,30 @@ export default function LedgerPage() {
         {
           header: 'Latência',
           accessorKey: 'latency_ms',
-          cell: (e) => (
-            <span className={`font-mono text-12 tabular-nums ${e.latency_ms > 500 ? 'text-warning' : 'text-stone'}`}>
-              {e.latency_ms}ms
-            </span>
-          ),
+          cell: (e) => {
+            // Confidence-bar (F.5) — bar 4px representando "prontidão" do sinal.
+            // 0ms → 100% · 1000ms+ → 0%. Reconciled empurra a barra verificada.
+            const raw = Math.max(0, Math.min(100, Math.round(100 - e.latency_ms / 10)));
+            const conf = e.status === 'Reconciled' ? Math.max(raw, 92) : raw;
+            const barTone = conf >= 80
+              ? 'hsl(var(--verified))'
+              : conf >= 55
+                ? 'hsl(var(--proof-blue))'
+                : 'hsl(var(--warning))';
+            return (
+              <div className="flex flex-col items-end gap-1 min-w-[92px]">
+                <span className={`font-mono text-12 tabular-nums ${e.latency_ms > 500 ? 'text-warning' : 'text-stone'}`}>
+                  {e.latency_ms}ms
+                </span>
+                <div className="confidence-bar w-full" aria-label={`confiança ${conf}%`}>
+                  <span
+                    className="block h-full rounded-[2px]"
+                    style={{ width: `${conf}%`, background: barTone }}
+                  />
+                </div>
+              </div>
+            );
+          },
           className: 'text-right',
         },
         {

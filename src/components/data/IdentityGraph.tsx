@@ -108,9 +108,15 @@ export function IdentityGraph({ person }: IdentityGraphProps) {
             <stop offset="60%" stopColor="hsl(var(--proof-blue))" stopOpacity="0.06" />
             <stop offset="100%" stopColor="hsl(var(--proof-blue))" stopOpacity="0" />
           </radialGradient>
+          {/* Wire-fade — fade nas duas pontas para dar profundidade ao grafo (F.5). */}
+          <linearGradient id="wire-fade-h" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stopColor="hsl(var(--proof-blue))" stopOpacity="0" />
+            <stop offset="45%"  stopColor="hsl(var(--proof-blue))" stopOpacity="0.7" />
+            <stop offset="100%" stopColor="hsl(var(--proof-blue))" stopOpacity="0" />
+          </linearGradient>
         </defs>
 
-        {/* connectors */}
+        {/* connectors — wire-fade (F.5) */}
         {nodes.map((n, i) => {
           const a = i * angleStep - Math.PI / 2;
           const nx = cx + radius * Math.cos(a);
@@ -119,10 +125,11 @@ export function IdentityGraph({ person }: IdentityGraphProps) {
             <line
               key={n.key + '-l'}
               x1={cx} y1={cy} x2={nx} y2={ny}
-              className={TONE_STROKE[n.tone]}
+              stroke="url(#wire-fade-h)"
               strokeWidth={lineStroke}
-              strokeOpacity={0.35}
               strokeLinecap="round"
+              className={TONE_STROKE[n.tone]}
+              strokeOpacity={0.9}
             />
           );
         })}

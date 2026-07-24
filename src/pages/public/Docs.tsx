@@ -21,23 +21,23 @@ export default function DocsPage() {
             <div>
               <h4 className="text-11 font-bold uppercase tracking-wider text-stone mb-2">Getting Started</h4>
               <ul className="space-y-2 text-14 text-eggshell">
-                <li><a href="#" className="text-proof-blue font-medium">Início</a></li>
-                <li><a href="#" className="hover:text-proof-blue transition-colors">Guia TAP</a></li>
+                <li><a href="#" className="text-proof-blue-soft font-medium">Início</a></li>
+                <li><a href="#" className="hover:text-proof-blue-soft transition-colors">Guia TAP</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-11 font-bold uppercase tracking-wider text-stone mb-2">Integration</h4>
               <ul className="space-y-2 text-14 text-stone">
-                <li><a href="#" className="hover:text-proof-blue transition-colors">Meta/CAPI</a></li>
-                <li><a href="#" className="hover:text-proof-blue transition-colors">Telegram</a></li>
-                <li><a href="#" className="hover:text-proof-blue transition-colors">WhatsApp</a></li>
+                <li><a href="#" className="hover:text-proof-blue-soft transition-colors">Meta/CAPI</a></li>
+                <li><a href="#" className="hover:text-proof-blue-soft transition-colors">Telegram</a></li>
+                <li><a href="#" className="hover:text-proof-blue-soft transition-colors">WhatsApp</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-11 font-bold uppercase tracking-wider text-stone mb-2">Developers</h4>
               <ul className="space-y-2 text-14 text-stone">
-                <li><a href="#" className="hover:text-proof-blue transition-colors">API Reference</a></li>
-                <li><a href="#" className="hover:text-proof-blue transition-colors">Webhooks</a></li>
+                <li><a href="#" className="hover:text-proof-blue-soft transition-colors">API Reference</a></li>
+                <li><a href="#" className="hover:text-proof-blue-soft transition-colors">Webhooks</a></li>
               </ul>
             </div>
           </nav>

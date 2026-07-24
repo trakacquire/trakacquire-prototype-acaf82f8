@@ -11,6 +11,7 @@ import { CAMPAIGNS, PERSONS, spendForPeriod } from '@/lib/fake/db';
 import { funnelSteps } from '@/lib/fake/funnelSteps';
 import { TargetKpi } from '@/components/data/TargetKpi';
 import { expertForPerson } from '@/lib/fake/experts';
+import { RecommendationCard } from '@/components/data/RecommendationCard';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 
 interface ActionPlan {
@@ -193,6 +194,27 @@ export default function Campaign360Page() {
               })}
             </div>
           </div>
+
+          {/* Copiloto — sugestão contextual (F.4) */}
+          <RecommendationCard
+            title={cpftd > 0 && roi < 100 ? 'Realocar 20% do orçamento para o adset "Lookalike 1% BR"' : 'Aumentar frequência de bid caps no adset campeão'}
+            hypothesis={`ROAS observado ${(roi / 100 + 1).toFixed(2)}x com CPFTD R$ ${cpftd.toLocaleString('pt-BR')} — abaixo da média do canal ${campaign.source === 'meta' ? 'Meta' : 'TikTok'} nos últimos 14 dias.`}
+            expectedImpact={`+${Math.max(2, Math.round(ftds * 0.18))} FTDs projetados · CPFTD −${Math.min(24, Math.max(6, Math.round((150 - cpftd) / 3)))}% em 7d`}
+            confidence={roi >= 100 ? 88 : 72}
+            risk={roi >= 100 ? 'baixo' : 'médio'}
+            onExplain={() => openEvidence(buildEvidence({
+              label: 'Copiloto · realocação de orçamento',
+              value: `confiança ${roi >= 100 ? 88 : 72}%`,
+              formula: 'model.reallocation(campaign, ROAS_14d, CPFTD_delta)',
+              source: 'Copiloto v2025.06 · sugestão nunca decide sozinha',
+              state: 'Provisório',
+              attribution: `Baseado em ${ftds} FTDs recentes e spend R$ ${spend30.toLocaleString('pt-BR')}`,
+            }))}
+            onCta={() => setPlans((prev) => [
+              { id: `plan-${Date.now()}`, title: 'Realocação sugerida pelo Copiloto', hypothesis: 'ROAS acima da média há 14d.', expected: `+${Math.round(ftds * 0.18)} FTDs projetados`, risk: 'médio', status: 'pending' },
+              ...prev,
+            ])}
+          />
 
           {/* Action plans */}
           <div className="space-y-3">

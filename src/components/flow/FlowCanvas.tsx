@@ -46,7 +46,9 @@ export default function FlowCanvas({ flowObj, onNodeSelect, onDeleteNode, onNode
   }));
 
   // ── Convert db edges → ReactFlow edges ─────────────────────────────────────
+  // Edges com gradiente proof-blue → eggshell (F.5 · connector-flow).
   const isActive = flowObj.status === 'active';
+  const EDGE_STROKE = 'url(#flow-connector-gradient)';
   const initialEdges: Edge[] = flowObj.edges.map((e) => ({
     id: e.id,
     source: e.source,
@@ -54,7 +56,7 @@ export default function FlowCanvas({ flowObj, onNodeSelect, onDeleteNode, onNode
     label: e.label,
     animated: isActive,
     type: 'smoothstep',
-    style: { stroke: 'hsl(var(--line))', strokeWidth: 2 },
+    style: { stroke: isActive ? EDGE_STROKE : 'hsl(var(--eggshell) / 0.10)', strokeWidth: 2 },
     labelStyle: {
       fill: 'hsl(var(--stone))',
       fontSize: 11,
@@ -155,7 +157,16 @@ export default function FlowCanvas({ flowObj, onNodeSelect, onDeleteNode, onNode
   }, [setNodes, setEdges, onDeleteNode]);
 
   return (
-    <div ref={reactFlowWrapper} style={{ width: '100%', height: '100%' }}>
+    <div ref={reactFlowWrapper} className="canvas-dot-grid" style={{ width: '100%', height: '100%' }}>
+      {/* Gradient defs para os edges — proof-blue → eggshell */}
+      <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden>
+        <defs>
+          <linearGradient id="flow-connector-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"  stopColor="hsl(var(--proof-blue))" />
+            <stop offset="100%" stopColor="hsl(var(--eggshell))" />
+          </linearGradient>
+        </defs>
+      </svg>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -171,14 +182,14 @@ export default function FlowCanvas({ flowObj, onNodeSelect, onDeleteNode, onNode
         fitViewOptions={{ padding: 0.15 }}
         minZoom={0.3}
         maxZoom={2}
-        style={{ background: 'hsl(var(--ink))' }}
+        style={{ background: 'transparent' }}
         deleteKeyCode="Delete"
       >
         <Background
           variant={BackgroundVariant.Dots}
-          color="#38383D"
-          gap={20}
-          size={1.5}
+          color="hsl(var(--eggshell) / 0.14)"
+          gap={23}
+          size={1}
         />
         <MiniMap
           style={{ background: 'hsl(var(--graphite))' }}

@@ -8,6 +8,7 @@ import { buildEvidence } from '@/lib/evidence';
 import { db } from '@/lib/fake/db';
 import { StatusPill, CardFooter, MicroStatRow, type IntegrationPillState } from '@/components/ui/proofline';
 import { Search } from 'lucide-react';
+import { AppIcon, kindFromIntegrationId } from '@/components/brand/AppIcon';
 import type { IntegrationState } from '@/lib/types';
 
 /**
@@ -178,9 +179,7 @@ export default function IntegrationsPage() {
                           className={`text-left rounded-[12px] p-6 surface-flat transition-colors hover:ring-hairline-strong focus:outline-none focus:ring-proof ${isActive ? 'ring-hairline-strong' : ''}`}
                         >
                           <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3 items-start">
-                            <div className="grid place-items-center w-10 h-10 rounded-[10px] surface-inset text-eggshell text-14 shrink-0">
-                              {i.initials}
-                            </div>
+                            <AppIcon kind={kindFromIntegrationId(i.id)} initials={i.initials} ariaLabel={i.name} />
                             <div className="min-w-0">
                               <div className="card-title truncate">{i.name}</div>
                               <div className="text-11 text-stone mt-0.5 truncate">{i.category}</div>

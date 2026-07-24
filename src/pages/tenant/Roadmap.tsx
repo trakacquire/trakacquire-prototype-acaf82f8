@@ -1,224 +1,132 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'wouter';
 import { AppShell } from '@/components/layout/AppShell';
 import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { ExternalLink } from 'lucide-react';
+import { ROUTE_REGISTRY, routesByGroup, REGISTRY_COUNT, type RouteEntry, type RouteStatus } from '@/lib/routes/registry';
 
 /**
- * Roadmap vivo do protótipo.
- * Regra: página só entra na sidebar quando a linha dela na matriz
- * CONFORMANCE.md está verde. Enquanto não estiver, mora aqui.
+ * Roadmap vivo — Fase G.2.
+ *
+ * Consome src/lib/routes/registry.ts como fonte única. Não mantém lista
+ * paralela. Se uma rota some daqui, sumiu do produto.
  */
 
-type PageRow = {
-  title: string;
-  href: string;
-  matrix: string; // resumo do estado (ex.: "3/9")
-  note?: string;
+const STATUS_META: Record<RouteStatus, { label: string; cls: string }> = {
+  verde:    { label: 'Verde',    cls: 'bg-verified/10 text-verified border-verified/25' },
+  amarelo:  { label: 'Amarelo',  cls: 'bg-warning/10 text-warning border-warning/25' },
+  vermelho: { label: 'Vermelho', cls: 'bg-critical/10 text-critical border-critical/25' },
+  redirect: { label: 'Redirect', cls: 'bg-proof-blue-soft/10 text-proof-blue-soft border-proof-blue-soft/25' },
 };
 
-type PhaseGroup = {
-  phase: string;
-  title: string;
-  status: 'em-andamento' | 'planejada' | 'concluida';
-  scope: string;
-  pages: PageRow[];
-};
-
-const GROUPS: PhaseGroup[] = [
-  {
-    phase: 'E1',
-    title: 'Fundidos / movidos na Fase E (curadoria)',
-    status: 'concluida',
-    scope: 'Itens removidos da sidebar principal — acessíveis por atalho / redirect / card contextual.',
-    pages: [
-      { title: 'Eventos ao vivo (fundido no Ledger)', href: '/ledger?live=1', matrix: 'redirect', note: '/live → /ledger?live=1 · toggle "Ao vivo" na tabela' },
-      { title: 'Signals / CAPI (aba Meta)',           href: '/integrations/meta', matrix: 'redirect', note: '/signals → Integration360 · Meta' },
-      { title: 'Broadcasts (Fase 2)',                 href: '/broadcasts', matrix: 'fase 2', note: 'saiu da sidebar — pertence ao Bloco 4' },
-      { title: 'Caixa de Entrada (Fase 2)',           href: '/inbox', matrix: 'fase 2', note: 'saiu da sidebar — pertence ao Bloco 4' },
-      { title: 'Aprovações',                          href: '/approvals', matrix: 'contextual', note: 'acessível via card "Approval Center" em Governança' },
-    ],
-  },
-  {
-    phase: 'P2',
-    title: 'Signal Ledger + Observe',
-    status: 'concluida',
-    scope: 'Signal Ledger, Monitoring, Reconciliation, EventDetail',
-    pages: [
-      { title: 'Signal Ledger',       href: '/ledger', matrix: 'na sidebar', note: 'inclui modo "Ao vivo"' },
-      { title: 'Monitoring & DLQ',    href: '/monitoring', matrix: 'na sidebar' },
-      { title: 'Reconciliação',       href: '/revenue/reconciliation', matrix: '9/9' },
-      { title: 'Event Detail',        href: '/ledger/evt_1', matrix: '2/9' },
-    ],
-  },
-  {
-    phase: 'P3',
-    title: 'Identity + Players',
-    status: 'planejada',
-    scope: 'Grafo de identidade e 360º de jogadores',
-    pages: [
-      { title: 'Grafo de identidade', href: '/identity', matrix: '1/9' },
-      { title: 'Identity Detail', href: '/identity/p_001', matrix: '1/9' },
-      { title: 'Player 360', href: '/players/p_001', matrix: '1/9' },
-    ],
-  },
-  {
-    phase: 'P4',
-    title: 'Analytics + Revenue + Reports',
-    status: 'concluida',
-    scope: 'Coortes, relatórios, receita e governança',
-    pages: [
-      { title: 'Coortes', href: '/revenue/cohorts', matrix: '9/9', note: 'contextual de Receita' },
-      { title: 'Relatórios', href: '/reports', matrix: 'na sidebar', note: 'promovida na P4' },
-      { title: 'Report Detail', href: '/reports/report_001', matrix: '9/9', note: 'contextual de Relatórios' },
-    ],
-  },
-  {
-    phase: 'P5',
-    title: 'Connect',
-    status: 'em-andamento',
-    scope: '360º de domínios, links, integrações, campanhas e mídia',
-    pages: [
-      { title: 'Domain 360', href: '/domains/d_1', matrix: '1/9' },
-      { title: 'Link 360', href: '/tracking/l_1', matrix: '1/9' },
-      { title: 'Fontes de tracking', href: '/tracking/sources', matrix: '1/9' },
-      { title: 'Integration 360', href: '/integrations/tap', matrix: '1/9' },
-      { title: 'Setup TAP', href: '/integrations/tap', matrix: '1/9' },
-      { title: 'Setup Meta CAPI', href: '/integrations/meta', matrix: '1/9' },
-      { title: 'Setup Telegram', href: '/integrations/telegram', matrix: '1/9' },
-      { title: 'Campanha 360', href: '/media/camp_1', matrix: '1/9' },
-      { title: 'Media Creatives', href: '/media/creatives', matrix: '1/9' },
-    ],
-  },
-  {
-    phase: 'P6',
-    title: 'Operate',
-    status: 'planejada',
-    scope: 'Flow builder, segmentos, broadcasts, inbox, aprovações',
-    pages: [
-      { title: 'Flow Builder', href: '/automations/f_1', matrix: '1/9' },
-      { title: 'Segmentos', href: '/segments', matrix: '1/9' },
-      { title: 'Broadcasts', href: '/broadcasts', matrix: '1/9' },
-      { title: 'Caixa de entrada', href: '/inbox', matrix: '1/9' },
-      { title: 'Inbox Settings', href: '/inbox/settings', matrix: '1/9' },
-      { title: 'Aprovações', href: '/approvals', matrix: '1/9' },
-    ],
-  },
-  {
-    phase: 'P7',
-    title: 'Público + Settings',
-    status: 'planejada',
-    scope: 'Login, signup, pricing, docs, status, legal, settings, perfil',
-    pages: [
-      { title: 'Login', href: '/login', matrix: '1/9' },
-      { title: 'Signup', href: '/signup', matrix: '1/9' },
-      { title: 'Pricing', href: '/pricing', matrix: '1/9' },
-      { title: 'Docs', href: '/docs', matrix: '1/9' },
-      { title: 'Status (público)', href: '/status', matrix: '1/9' },
-      { title: 'Legal — Termos', href: '/legal/termos', matrix: '1/9' },
-      { title: 'Legal — Privacidade', href: '/legal/privacidade', matrix: '1/9' },
-      { title: 'Legal — DPA', href: '/legal/dpa', matrix: '1/9' },
-      { title: 'Legal — Subprocessadores', href: '/legal/subprocessadores', matrix: '1/9' },
-      { title: 'Settings — Time', href: '/settings/team', matrix: '1/9' },
-      { title: 'Settings — Billing', href: '/settings/billing', matrix: '1/9' },
-      { title: 'Settings — API', href: '/settings/api', matrix: '1/9' },
-      { title: 'Settings — Notificações', href: '/settings/notifications', matrix: '1/9' },
-      { title: 'Settings — Auditoria', href: '/settings/audit', matrix: '1/9' },
-    ],
-  },
-  {
-    phase: 'P8',
-    title: 'Super Admin (identidade visual)',
-    status: 'planejada',
-    scope: 'Só re-estilização visual — sem reestruturação',
-    pages: [
-      { title: 'Platform Command', href: '/platform', matrix: '1/9' },
-      { title: 'Platform Tenants', href: '/platform/tenants', matrix: '1/9' },
-      { title: 'Platform Usage', href: '/platform/usage', matrix: '1/9' },
-      { title: 'Platform Incidents', href: '/platform/incidents', matrix: '1/9' },
-      { title: 'Platform Status', href: '/platform/status', matrix: '1/9' },
-      { title: 'Platform AI Cost', href: '/platform/ai/cost', matrix: '1/9' },
-    ],
-  },
-];
-
-function StatusChipRoadmap({ status }: { status: PhaseGroup['status'] }) {
-  const cls =
-    status === 'em-andamento'
-      ? 'bg-proof-blue/10 text-proof-blue border-proof-blue/25'
-      : status === 'concluida'
-        ? 'bg-verified/10 text-verified border-verified/25'
-        : 'bg-zinc text-stone border-line';
-  const label = status === 'em-andamento' ? 'Em andamento' : status === 'concluida' ? 'Concluída' : 'Planejada';
+function StatusPill({ s }: { s: RouteStatus }) {
+  const m = STATUS_META[s];
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-11 font-mono uppercase tracking-wider ${cls}`}>
-      {label}
+    <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-11 font-mono uppercase tracking-wider ${m.cls}`}>
+      {m.label}
     </span>
   );
 }
 
+function Row({ r }: { r: RouteEntry }) {
+  return (
+    <li>
+      <Link
+        href={r.exampleHref}
+        className="flex items-center gap-4 px-5 py-2.5 hover:bg-zinc/40 transition-colors group"
+      >
+        <span className="flex-1 min-w-0">
+          <span className="block text-13 text-eggshell truncate">{r.label}</span>
+          {r.note && <span className="block text-11 text-stone/80 truncate">{r.note}</span>}
+        </span>
+        <span className="hidden lg:inline font-mono text-11 text-stone/70 truncate w-56">{r.path}</span>
+        <span className="hidden md:inline font-mono text-11 text-stone/80 tabular-nums w-12 text-right">{r.phase}</span>
+        <StatusPill s={r.status} />
+        <ExternalLink className="w-3.5 h-3.5 text-stone group-hover:text-eggshell" />
+      </Link>
+    </li>
+  );
+}
+
 export default function RoadmapPage() {
+  const groups = useMemo(() => routesByGroup(), []);
+  const counts = useMemo(() => {
+    const c = { verde: 0, amarelo: 0, vermelho: 0, redirect: 0 };
+    for (const r of ROUTE_REGISTRY) c[r.status]++;
+    return c;
+  }, []);
+  const pctGreen = Math.round((counts.verde / REGISTRY_COUNT) * 100);
+
   return (
     <AppShell breadcrumb={[{ label: 'Em construção' }]}>
       <div className="max-w-5xl mx-auto space-y-8">
-        {/* Header editorial */}
         <header className="pt-2">
           <div className="text-11 font-mono uppercase tracking-[0.18em] text-stone mb-3">
-            Proofline · Roadmap vivo
+            Proofline · Roadmap vivo · gerado do route-registry
           </div>
           <div className="flex flex-wrap items-center gap-3 mb-3">
-            <h1
-              className="text-eggshell tracking-tight leading-[1.02]"
-              style={{ fontSize: 'clamp(30px, 3.4vw, 44px)' }}
-            >
-              Em construção.
+            <h1 className="text-eggshell tracking-tight leading-[1.02]" style={{ fontSize: 'clamp(30px, 3.4vw, 44px)' }}>
+              Mapa de rotas.
             </h1>
             <PreviewBadge />
           </div>
           <p className="text-stone text-14 max-w-2xl">
-            Toda tela fora da navegação principal mora aqui. A regra é simples:{' '}
-            <span className="text-eggshell">a página só entra na sidebar quando sua linha na matriz{' '}
-              <span className="font-mono">CONFORMANCE.md</span> está verde
-            </span>. A navegação cresce com a qualidade — nunca antes.
+            Toda rota do protótipo mora aqui. A regra é a mesma:{' '}
+            <span className="text-eggshell">
+              a página só entra na sidebar quando sua linha na matriz{' '}
+              <span className="font-mono">CONFORMANCE.md</span> está verde.
+            </span>{' '}
+            Fonte única: <span className="font-mono text-eggshell">src/lib/routes/registry.ts</span>.
           </p>
+
+          {/* Placar */}
+          <div className="mt-5 grid grid-cols-2 md:grid-cols-5 gap-2">
+            <div className="rounded-lg border border-line bg-graphite/60 px-3 py-2">
+              <div className="text-11 uppercase tracking-wider text-stone">Total</div>
+              <div className="font-mono tabular-nums text-18 text-eggshell">{REGISTRY_COUNT}</div>
+            </div>
+            <div className="rounded-lg border border-verified/30 bg-verified/5 px-3 py-2">
+              <div className="text-11 uppercase tracking-wider text-verified">Verde</div>
+              <div className="font-mono tabular-nums text-18 text-eggshell">{counts.verde} <span className="text-11 text-stone">· {pctGreen}%</span></div>
+            </div>
+            <div className="rounded-lg border border-warning/30 bg-warning/5 px-3 py-2">
+              <div className="text-11 uppercase tracking-wider text-warning">Amarelo</div>
+              <div className="font-mono tabular-nums text-18 text-eggshell">{counts.amarelo}</div>
+            </div>
+            <div className="rounded-lg border border-critical/30 bg-critical/5 px-3 py-2">
+              <div className="text-11 uppercase tracking-wider text-critical">Vermelho</div>
+              <div className="font-mono tabular-nums text-18 text-eggshell">{counts.vermelho}</div>
+            </div>
+            <div className="rounded-lg border border-proof-blue-soft/30 bg-proof-blue-soft/5 px-3 py-2">
+              <div className="text-11 uppercase tracking-wider text-proof-blue-soft">Redirect</div>
+              <div className="font-mono tabular-nums text-18 text-eggshell">{counts.redirect}</div>
+            </div>
+          </div>
         </header>
 
         <div className="space-y-6">
-          {GROUPS.map((g) => (
-            <section key={g.phase} className="bg-graphite border border-line rounded-xl overflow-hidden">
-              <div className="flex flex-wrap items-baseline justify-between gap-3 px-5 py-4 border-b border-line bg-iron/40">
-                <div>
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-11 font-mono uppercase tracking-[0.18em] text-stone">Fase</span>
-                    <span className="font-mono text-13 text-eggshell tabular-nums">{g.phase}</span>
-                    <h2 className="text-16 font-medium text-eggshell">{g.title}</h2>
+          {groups.map(({ group, entries }) => (
+            entries.length === 0 ? null : (
+              <section key={group} className="bg-graphite border border-line rounded-xl overflow-hidden">
+                <div className="flex flex-wrap items-baseline justify-between gap-3 px-5 py-4 border-b border-line bg-iron/40">
+                  <div>
+                    <div className="flex items-baseline gap-3">
+                      <span className="text-11 font-mono uppercase tracking-[0.18em] text-stone">Grupo</span>
+                      <h2 className="text-16 font-medium text-eggshell">{group}</h2>
+                    </div>
+                    <p className="text-12 text-stone mt-1">{entries.length} rota{entries.length === 1 ? '' : 's'}.</p>
                   </div>
-                  <p className="text-12 text-stone mt-1">{g.scope}</p>
                 </div>
-                <StatusChipRoadmap status={g.status} />
-              </div>
-
-              <ul className="divide-y divide-line/60">
-                {g.pages.map((p) => (
-                  <li key={p.href + p.title}>
-                    <Link
-                      href={p.href}
-                      className="flex items-center gap-4 px-5 py-2.5 hover:bg-zinc/40 transition-colors group"
-                    >
-                      <span className="flex-1 text-13 text-eggshell truncate">{p.title}</span>
-                      <span className="hidden md:inline font-mono text-11 text-stone truncate">{p.href}</span>
-                      <span className="font-mono text-11 text-stone/80 tabular-nums w-16 text-right">{p.matrix}</span>
-                      <ExternalLink className="w-3.5 h-3.5 text-stone group-hover:text-eggshell" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
+                <ul className="divide-y divide-line/60">
+                  {entries.map((r) => <Row key={r.path} r={r} />)}
+                </ul>
+              </section>
+            )
           ))}
         </div>
 
         <p className="text-11 font-mono text-stone/70 pt-2">
-          Fonte da verdade: <span className="text-eggshell">CONFORMANCE.md</span> · DECISIONS.md (D1) · UI-SYSTEM.md · PRODUCT-MAP.md.
+          Fonte: <span className="text-eggshell">src/lib/routes/registry.ts</span> · CONFORMANCE.md · DECISIONS.md (D1) · UI-SYSTEM.md · PRODUCT-MAP.md.
         </p>
       </div>
     </AppShell>
