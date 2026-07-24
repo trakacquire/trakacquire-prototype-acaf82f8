@@ -119,6 +119,7 @@ export function Sidebar() {
 
         <SidebarGroup title="Prove">
           <SidebarItem href="/revenue" icon={<DollarSign className="w-4 h-4" />} label="Receita" />
+          <SidebarItem href="/reports" icon={<FileText className="w-4 h-4" />} label="Relatórios" />
           <SidebarItem href="/governance" icon={<ShieldCheck className="w-4 h-4" />} label="Governança" />
         </SidebarGroup>
       </nav>
