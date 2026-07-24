@@ -49,7 +49,7 @@ export function IdentityGraph({ person }: IdentityGraphProps) {
 
   const nodes: GraphNode[] = useMemo(() => {
     const list: GraphNode[] = [];
-    const baseTs = new Date(person.first_seen ?? new Date().toISOString()).getTime();
+    const baseTs = new Date(person.clicked_at ?? new Date().toISOString()).getTime();
     let off = 0;
     const push = (n: Omit<GraphNode, 'observedAt'> & { deltaSec?: number }) => {
       off += n.deltaSec ?? 60;
@@ -98,7 +98,7 @@ export function IdentityGraph({ person }: IdentityGraphProps) {
         <MicroStat label="Person ID" value={person.id.slice(-8)} />
         <MicroStat label="Identificadores" value={nodes.length} />
         <MicroStat label="Confiança" value={`${confidence}%`} tone={confidence >= 95 ? 'verified' : confidence >= 80 ? 'proof' : 'warning'} />
-        <MicroStat label="Primeiro contato" value={new Date(person.first_seen ?? Date.now()).toLocaleDateString('pt-BR')} />
+        <MicroStat label="Primeiro contato" value={new Date(person.clicked_at ?? Date.now()).toLocaleDateString('pt-BR')} />
       </div>
 
       <svg viewBox="0 0 560 380" className="w-full" style={{ maxHeight: 380 }} role="img" aria-label="Identity graph">
