@@ -122,6 +122,36 @@ export default function Campaign360Page() {
             </div>
           </div>
 
+          {/* Custo por etapa (StartBot · Canal · Cadastro · FTD) */}
+          <section className="space-y-3">
+            <div className="flex items-baseline justify-between">
+              <h3 className="text-14 font-semibold text-eggshell">Custo por etapa do funil</h3>
+              <span className="text-11 font-mono text-stone tabular-nums">
+                clique share · {(shareClicks * 100).toFixed(1)}% do funil
+              </span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {stageCosts.map((s) => (
+                <TargetKpi
+                  key={s.key}
+                  label={s.costLabel}
+                  value={s.cost}
+                  format={brl}
+                  target={s.target}
+                  onOpenEvidence={() => openEvidence(buildEvidence({
+                    label: `${s.costLabel} · ${campaign.name}`,
+                    value: `${brl(s.cost)} · meta < ${brl(s.target)}`,
+                    formula: `spend_campaign / count(events.${s.key} × share)`,
+                    source: `${campaign.source} spend × funil canônico`,
+                    state: 'Reconciliado',
+                    attribution: `Etapa: ${s.count.toLocaleString('pt-BR')} eventos atribuídos`,
+                  }))}
+                />
+              ))}
+            </div>
+          </section>
+
+
           {/* Árvore campanha → adset → ad */}
           <div className="bg-graphite border border-line rounded-xl overflow-hidden">
             <div className="px-5 py-3 border-b border-line flex items-center justify-between">
