@@ -54,12 +54,12 @@ const GROUPS: PhaseGroup[] = [
   {
     phase: 'P4',
     title: 'Analytics + Revenue + Reports',
-    status: 'planejada',
+    status: 'concluida',
     scope: 'Coortes, relatórios, receita e governança',
     pages: [
-      { title: 'Coortes', href: '/revenue/cohorts', matrix: '1/9' },
-      { title: 'Relatórios', href: '/reports', matrix: '1/9' },
-      { title: 'Report Detail', href: '/reports/r_1', matrix: '1/9' },
+      { title: 'Coortes', href: '/revenue/cohorts', matrix: '9/9', note: 'contextual de Receita' },
+      { title: 'Relatórios', href: '/reports', matrix: 'na sidebar', note: 'promovida na P4' },
+      { title: 'Report Detail', href: '/reports/report_001', matrix: '9/9', note: 'contextual de Relatórios' },
     ],
   },
   {
