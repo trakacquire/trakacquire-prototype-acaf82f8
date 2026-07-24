@@ -90,6 +90,7 @@ import SettingsGeneral from '@/pages/tenant/SettingsGeneral';
 import Profile from '@/pages/tenant/Profile';
 import LiveEvents from '@/pages/tenant/LiveEvents';
 import Approvals from '@/pages/tenant/Approvals';
+import Roadmap from '@/pages/tenant/Roadmap';
 
 
 
