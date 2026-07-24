@@ -21,7 +21,7 @@ interface IntegrationRow {
   initials: string;
   category: 'Revenue providers' | 'Acquisition' | 'Messaging' | 'Infra' | 'IA';
   state: IntegrationState;
-  pill: IntegrationPillState;
+  pill?: IntegrationPillState;
   adapterVersion: string;
   eventType?: string;
   lastEventAt?: string;
