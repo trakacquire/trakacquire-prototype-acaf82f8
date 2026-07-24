@@ -53,7 +53,7 @@ export default function MonitoringPage() {
       cell: (r) => (
         <div className="flex items-center gap-2">
           <span className="text-13 text-eggshell">{r.integration}</span>
-          <IntegrationStateBadge state="degraded" version="v3.2.1" />
+          <IntegrationStateBadge state="pilot" adapterVersion="3.2.1" />
         </div>
       ),
     },
@@ -90,7 +90,7 @@ export default function MonitoringPage() {
               Saúde das integrações críticas, latência ponta-a-ponta e fila morta de eventos.
             </p>
           </div>
-          <FreshnessTag source="reliability-agent" ageLabel="há 1m" />
+          <FreshnessTag source="reliability-agent" label="há 1m" />
         </header>
 
         <ScenarioStateGate
@@ -103,7 +103,7 @@ export default function MonitoringPage() {
             <div className="bg-graphite border border-line rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-11 font-mono uppercase text-stone">Disponibilidade (24h)</span>
-                <IntegrationStateBadge state="production" version="v3.2.1" />
+                <IntegrationStateBadge state="production" adapterVersion="3.2.1" />
               </div>
               <MetricValue
                 value={availability.toFixed(2)}
@@ -128,7 +128,7 @@ export default function MonitoringPage() {
             <div className="bg-graphite border border-line rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-11 font-mono uppercase text-stone">Latência P95</span>
-                <IntegrationStateBadge state="production" version="v3.2.1" />
+                <IntegrationStateBadge state="production" adapterVersion="3.2.1" />
               </div>
               <MetricValue
                 value={p95}
@@ -153,7 +153,7 @@ export default function MonitoringPage() {
             <div className="bg-graphite border border-line rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-11 font-mono uppercase text-stone">Fila morta (DLQ)</span>
-                <IntegrationStateBadge state={errorCount > 0 ? 'policy-blocked' : 'production'} version="v3.2.1" />
+                <IntegrationStateBadge state={errorCount > 0 ? "policy-blocked" : "production"} adapterVersion="3.2.1" />
               </div>
               <MetricValue
                 value={errorCount}
