@@ -5,7 +5,7 @@ import {
   LayoutDashboard, BarChart3,
   Puzzle, Globe, Link2,
   Radio, Activity, UserSquare, ShieldAlert,
-  Zap, Megaphone,
+  Zap, Megaphone, Send, Inbox as InboxIcon, GitPullRequestArrow,
   DollarSign, ShieldCheck, FileText,
   Settings, UserCircle2, Construction,
 } from 'lucide-react';
@@ -114,6 +114,9 @@ export function Sidebar() {
 
         <SidebarGroup title="Operate">
           <SidebarItem href="/automations" icon={<Zap className="w-4 h-4" />} label="Automações" />
+          <SidebarItem href="/broadcasts" icon={<Send className="w-4 h-4" />} label="Broadcasts" />
+          <SidebarItem href="/inbox" icon={<InboxIcon className="w-4 h-4" />} label="Caixa de Entrada" />
+          <SidebarItem href="/approvals" icon={<GitPullRequestArrow className="w-4 h-4" />} label="Aprovações" />
           <SidebarItem href="/media" icon={<Megaphone className="w-4 h-4" />} label="Mídia" />
         </SidebarGroup>
 
