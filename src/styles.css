@@ -80,23 +80,27 @@
 
 
 :root {
-  /* TrakAcquire Proofline Design System — CANONICAL D1 TOKENS.
+  /* TrakAcquire Proofline Design System — CANONICAL D1 TOKENS (Fase D recalibrada).
      Source of truth: DECISIONS.md (D1 · Proofline) > UI-SYSTEM.md §2.
-     Where the reference PDF diverges from D1, D1 WINS. No hex outside this list.
-     No component may use hex literals — always reference these tokens. */
-  --ink:       240 8% 3%;    /* #0A0A0B fundo raiz */
-  --iron:      240 5% 8%;    /* #121214 sidebar / superfície profunda */
-  --graphite: 240 5% 11%;    /* #1A1A1D cards, drawers */
-  --panel:    240 5% 11%;    /* #1A1A1D alias para cards */
-  --zinc:     240 6% 17%;    /* #28282D superfície elevada / hover */
-  --line:     240 3% 23%;    /* #38383D bordas e separadores */
-  --eggshell: 40 33% 94%;    /* #F6F1E7 texto primário e CTA primário */
-  --stone:    45 4% 64%;     /* #A8A6A0 texto secundário */
+     Superfícies com degrau curto — card é sugerido, não desenhado. */
+  --ink:            240 8% 3%;   /* #08080A · canvas raiz */
+  --canvas:         240 8% 3%;   /* alias semântico do canvas */
+  --iron:           240 7% 5%;   /* #0C0C0E · sidebar */
+  --graphite:       240 7% 6%;   /* #0E0E10 · card padrão (achatado) */
+  --panel:          240 7% 6%;   /* #0E0E10 · alias para cards */
+  --surface:        240 7% 6%;   /* #0E0E10 · superfície nominal */
+  --surface-raised: 240 6% 9%;   /* #131316 · hover / drawer */
+  --surface-inset:  240 8% 4%;   /* #0B0B0D · campo/input rebaixado */
+  --zinc:           240 6% 12%;  /* #1D1D22 · hover ativo */
+  --line:           240 3% 23%;  /* legado — reservado para --color-line-solid */
+  --eggshell:       40 33% 94%;  /* #F6F1E7 · texto primário e CTA */
+  --stone:          45 4% 64%;   /* #A8A6A0 · texto secundário */
 
-  --proof-blue: 230 100% 74%; /* #7C91FF seleção, identidade, em trânsito */
-  --verified:   147 65% 68%;  /* #72E6A6 reconciliado, sucesso, FTD confirmado */
-  --warning:    38 82% 71%;   /* #F1C778 pendente, provisório, divergente */
-  --critical:   352 76% 71%;  /* #EF7D8B falha, bloqueio, órfão */
+  --proof-blue: 230 100% 74%;    /* #7C91FF · seleção, identidade, em trânsito */
+  --verified:   147 65% 68%;     /* #72E6A6 · reconciliado, sucesso, FTD */
+  --warning:    38 82% 71%;      /* #F1C778 · pendente, divergente */
+  --critical:   352 76% 71%;     /* #EF7D8B · falha, bloqueio, órfão */
+
 
 
   --background: var(--ink);
