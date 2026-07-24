@@ -920,6 +920,14 @@ export interface PeriodMetrics {
   divergent_count: number;
 }
 
+/**
+ * CANONICAL_CLICKS_30D — âncora imutável do topo do funil de aquisição.
+ * PERSONS mantém apenas as identidades RESOLVIDAS (~78 no período canônico);
+ * a diferença entre cliques capturados e identidades resolvidas é a perda
+ * Captured→Linked (cliques sem cookie/UTM/telegram_id que dê para amarrar).
+ */
+export const CANONICAL_CLICKS_30D = 5000;
+
 export function metricsForPeriod(days: number): PeriodMetrics {
   const ps = PERSONS.filter(p => {
     // Include persons who had ANY activity in the period
@@ -928,9 +936,13 @@ export function metricsForPeriod(days: number): PeriodMetrics {
     return clickIn || regIn;
   });
 
-  const clicks = ps.filter(p => p.clicked_at && isInLastDays(p.clicked_at, days)).length;
+  const linked = ps.filter(p => p.clicked_at && isInLastDays(p.clicked_at, days)).length;
+  // Cliques capturados = identidades resolvidas × fator de inflação (Captured ≫ Linked)
+  const clicks = Math.round(CANONICAL_CLICKS_30D * (days / 30));
   const regs = ps.filter(p => p.registered_at && isInLastDays(p.registered_at, days)).length;
   const ftds = PERSONS.filter(p => p.ftd_at && isInLastDays(p.ftd_at, days)).length;
+  void linked; // exposto via journeyLinked() abaixo
+
 
   // Deposits in period
   const allDeposits = PERSONS.flatMap(p => p.deposits).filter(d => isInLastDays(d.at, days) && d.amount > 0 && d.type !== 'chargeback');
