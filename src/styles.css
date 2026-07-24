@@ -96,10 +96,11 @@
   --eggshell:       40 33% 94%;  /* #F6F1E7 · texto primário e CTA */
   --stone:          45 4% 64%;   /* #A8A6A0 · texto secundário */
 
-  --proof-blue: 230 100% 74%;    /* #7C91FF · seleção, identidade, em trânsito */
-  --verified:   147 65% 68%;     /* #72E6A6 · reconciliado, sucesso, FTD */
-  --warning:    38 82% 71%;      /* #F1C778 · pendente, divergente */
-  --critical:   352 76% 71%;     /* #EF7D8B · falha, bloqueio, órfão */
+  --proof-blue:      230 100% 74%; /* #7C91FF · seleção, identidade, em trânsito */
+  --proof-blue-soft: 226 100% 87%; /* #B9C5FF · links de documentação, wires suaves */
+  --verified:        147 65% 68%;  /* #72E6A6 · reconciliado, sucesso, FTD */
+  --warning:         38 82% 71%;   /* #F1C778 · pendente, divergente */
+  --critical:        352 76% 71%;  /* #EF7D8B · falha, bloqueio, órfão */
 
 
 
