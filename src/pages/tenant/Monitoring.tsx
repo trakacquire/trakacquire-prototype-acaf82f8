@@ -181,6 +181,46 @@ export default function MonitoringPage() {
             </div>
           </div>
 
+          {/* Bloco R.3.16 — Alertas ativos (acionáveis) */}
+          {(() => {
+            type Alert = { id: string; severity: 'Crítico' | 'Alto' | 'Médio' | 'Baixo'; status: 'Aberto' | 'Resolvido'; title: string; cause: string; action: string; at: string };
+            const alerts: Alert[] = [
+              { id: 'alr_9412', severity: 'Crítico', status: 'Aberto', title: 'Meta CAPI · Missing Permissions (#200)', cause: 'token sem ads_read — deixou de puxar campanhas.', action: 'Gerar token com ads_read em Business Manager → Usuários do sistema.', at: '2026-07-24 08:12' },
+              { id: 'alr_9411', severity: 'Alto',    status: 'Aberto', title: 'TAP Postback · latência acima do SLO', cause: 'p95 subiu para 480ms (SLO 200ms) nos últimos 30min.',           action: 'Abrir DLQ e reprocessar lote alr_9411 antes de re-testar.',       at: '2026-07-24 07:41' },
+              { id: 'alr_9408', severity: 'Médio',   status: 'Aberto', title: 'Domínio dev.operacaobr.com sem DNS',    cause: 'CNAME não propagou depois de 48h.',                             action: 'Rechecar zona no provedor ou remover domínio.',                    at: '2026-07-23 22:03' },
+              { id: 'alr_9401', severity: 'Baixo',   status: 'Resolvido', title: 'TikTok Ads · rate-limit intermitente',cause: 'Bursts de 429 na sincronização das 15h.',                        action: 'Backoff aplicado automaticamente — sem ação necessária.',           at: '2026-07-23 15:22' },
+            ];
+            const abertos = alerts.filter((a) => a.status === 'Aberto');
+            const sevTone = (s: Alert['severity']) => s === 'Crítico' ? 'text-critical border-critical/40 bg-critical/5' : s === 'Alto' ? 'text-warning border-warning/40 bg-warning/5' : s === 'Médio' ? 'text-proof-blue border-proof-blue/30 bg-proof-blue/5' : 'text-stone border-line bg-zinc';
+            return (
+              <div className="bg-graphite border border-line rounded-xl overflow-hidden">
+                <div className="p-4 border-b border-line flex items-baseline justify-between">
+                  <div>
+                    <h2 className="text-16 font-medium text-eggshell">Alertas ativos</h2>
+                    <p className="text-12 text-stone mt-0.5">Cada linha diz o que quebrou, por quê e o que fazer — não é feed decorativo.</p>
+                  </div>
+                  <span className="font-mono text-11 text-stone">{abertos.length} aberto(s) · {alerts.length - abertos.length} resolvido(s)</span>
+                </div>
+                <ul className="divide-y divide-line">
+                  {alerts.map((a) => (
+                    <li key={a.id} className="p-4 flex flex-col md:flex-row md:items-start gap-3">
+                      <div className="flex items-center gap-2 md:w-40 flex-shrink-0">
+                        <span className={`text-11 font-mono uppercase px-2 py-0.5 rounded border ${sevTone(a.severity)}`}>{a.severity}</span>
+                        <span className={`text-11 font-mono uppercase ${a.status === 'Aberto' ? 'text-warning' : 'text-verified'}`}>{a.status}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-13 font-medium text-eggshell">{a.title}</div>
+                        <div className="text-12 text-stone mt-1"><span className="text-stone/80">Causa:</span> {a.cause}</div>
+                        <div className="text-12 text-eggshell mt-1"><span className="font-mono uppercase text-11 text-proof-blue">Ação:</span> {a.action}</div>
+                      </div>
+                      <div className="font-mono text-11 text-stone tabular-nums whitespace-nowrap md:text-right">{a.at}</div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })()}
+
           {/* DLQ table */}
           <div>
             <div className="flex items-baseline justify-between mb-3">
@@ -195,6 +235,7 @@ export default function MonitoringPage() {
               <DataTable data={dlq} columns={dlqColumns} searchPlaceholder="Buscar por ID ou integração..." />
             )}
           </div>
+
         </ScenarioStateGate>
       </div>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams } from 'wouter';
 import { AppShell, useEvidence } from '@/components/layout/AppShell';
 import { PreviewBadge } from '@/components/data/PreviewBadge';
@@ -7,10 +7,11 @@ import { MetricValue } from '@/components/data/MetricValue';
 import { StatusChip } from '@/components/domain/StatusChip';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
 import { buildEvidence } from '@/lib/evidence';
-import { LINKS } from '@/lib/fake/db';
+import { LINKS, db } from '@/lib/fake/db';
+import { EXPERTS } from '@/lib/fake/experts';
 import { Copy, Check } from 'lucide-react';
 
-type Tab = 'visao' | 'ab' | 'regras' | 'snippet' | 'historico';
+type Tab = 'visao' | 'builder' | 'ab' | 'regras' | 'snippet' | 'historico';
 
 export default function Link360Page() {
   const params = useParams<{ id: string }>();
@@ -19,19 +20,46 @@ export default function Link360Page() {
   const [tab, setTab] = useState<Tab>('visao');
   const [copied, setCopied] = useState<string | null>(null);
 
+  // Bloco R.3.15 — construtor UTM
+  const [utm, setUtm] = useState({
+    source: 'meta',
+    medium: 'cpc',
+    campaign: link.campaign_id?.replace(/^camp_/, '') ?? 'presell_br_v2',
+    content: 'creative_a',
+    term: 'apostas_brasil',
+    expert: EXPERTS[0].handle,
+    slug: link.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 40),
+  });
+
   const conv = link.clicks > 0 ? (link.ftds / link.clicks) * 100 : 0;
   const clickId = `cid_${link.id.slice(-4)}A19f2c`;
   const fullUrl = `https://${link.url}?click_id=${clickId}`;
+
+  const linkedCampaign = link.campaign_id ? db.campaigns.find((c) => c.id === link.campaign_id) : null;
+  const builtUrl = useMemo(() => {
+    const base = `https://tk.operacaobr.com/${utm.slug || 'novo-link'}`;
+    const params = new URLSearchParams({
+      utm_source: utm.source,
+      utm_medium: utm.medium,
+      utm_campaign: utm.campaign,
+      utm_content: utm.content,
+      utm_term: utm.term,
+      expert: utm.expert.replace(/^@/, ''),
+    });
+    return `${base}?${params.toString()}`;
+  }, [utm]);
 
   const copy = (v: string, k: string) => { navigator.clipboard.writeText(v); setCopied(k); setTimeout(() => setCopied(null), 1500); };
 
   const tabs: Array<{ id: Tab; label: string }> = [
     { id: 'visao', label: 'Visão' },
+    { id: 'builder', label: 'Construtor UTM' },
     { id: 'ab', label: 'Split A/B' },
     { id: 'regras', label: 'Regras device/geo/hora' },
     { id: 'snippet', label: 'QR + snippet' },
     { id: 'historico', label: 'Histórico' },
   ];
+
 
   return (
     <AppShell breadcrumb={[{ label: 'Connect', href: '/integrations' }, { label: 'Tracking', href: '/tracking' }, { label: link.name }]}>
@@ -85,8 +113,86 @@ export default function Link360Page() {
             </div>
           )}
 
+          {tab === 'builder' && (
+            <div className="bg-graphite border border-line rounded-xl p-5 space-y-4">
+              <div>
+                <h3 className="text-14 font-semibold text-eggshell">Construtor UTM</h3>
+                <p className="text-12 text-stone mt-1">Amarrar source/medium/campaign/content/term + Expert + campanha. A URL é gerada com slug estável.</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {([
+                  { k: 'source',   label: 'utm_source',   options: ['meta', 'tiktok', 'organic', 'direct'] },
+                  { k: 'medium',   label: 'utm_medium',   options: ['cpc', 'cpm', 'social', 'affiliate', 'email'] },
+                  { k: 'campaign', label: 'utm_campaign' },
+                  { k: 'content',  label: 'utm_content' },
+                  { k: 'term',     label: 'utm_term' },
+                ] as const).map((f) => (
+                  <div key={f.k}>
+                    <label className="text-11 font-mono uppercase text-stone mb-1 block">{f.label}</label>
+                    {'options' in f && f.options ? (
+                      <select
+                        value={(utm as any)[f.k]}
+                        onChange={(e) => setUtm({ ...utm, [f.k]: e.target.value })}
+                        className="w-full bg-zinc border border-line rounded-md px-3 py-2 text-13 text-eggshell focus:outline-none focus:border-proof-blue"
+                      >
+                        {f.options.map((o) => <option key={o} value={o}>{o}</option>)}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        value={(utm as any)[f.k]}
+                        onChange={(e) => setUtm({ ...utm, [f.k]: e.target.value })}
+                        className="w-full bg-zinc border border-line rounded-md px-3 py-2 text-13 font-mono text-eggshell focus:outline-none focus:border-proof-blue"
+                      />
+                    )}
+                  </div>
+                ))}
+                <div>
+                  <label className="text-11 font-mono uppercase text-stone mb-1 block">Expert / Afiliado</label>
+                  <select
+                    value={utm.expert}
+                    onChange={(e) => setUtm({ ...utm, expert: e.target.value })}
+                    className="w-full bg-zinc border border-line rounded-md px-3 py-2 text-13 text-eggshell focus:outline-none focus:border-proof-blue"
+                  >
+                    {EXPERTS.map((ex) => <option key={ex.id} value={ex.handle}>{ex.name} · {ex.handle}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-11 font-mono uppercase text-stone mb-1 block">Campanha vinculada</label>
+                  <select
+                    value={link.campaign_id ?? ''}
+                    onChange={() => { /* prototype: read-only vínculo */ }}
+                    className="w-full bg-zinc border border-line rounded-md px-3 py-2 text-13 text-eggshell focus:outline-none focus:border-proof-blue"
+                  >
+                    <option value="">— sem vínculo —</option>
+                    {db.campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                  {linkedCampaign && (
+                    <div className="text-11 text-stone mt-1">Atual: <span className="font-mono text-eggshell">{linkedCampaign.name}</span></div>
+                  )}
+                </div>
+                <div className="md:col-span-2">
+                  <label className="text-11 font-mono uppercase text-stone mb-1 block">Slug</label>
+                  <input
+                    type="text"
+                    value={utm.slug}
+                    onChange={(e) => setUtm({ ...utm, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') })}
+                    className="w-full bg-zinc border border-line rounded-md px-3 py-2 text-13 font-mono text-eggshell focus:outline-none focus:border-proof-blue"
+                  />
+                </div>
+              </div>
+              <div className="rounded-md border border-line bg-ink p-3 flex items-center gap-2">
+                <code className="flex-1 font-mono text-12 text-eggshell break-all">{builtUrl}</code>
+                <button onClick={() => copy(builtUrl, 'built')} className="border border-line rounded-md px-3 py-2 text-stone hover:text-eggshell hover:border-stone flex-shrink-0">
+                  {copied === 'built' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+          )}
+
           {tab === 'ab' && (
             <div className="bg-graphite border border-line rounded-xl p-5 space-y-3">
+
               <h3 className="text-14 font-semibold text-eggshell">Split A/B</h3>
               <div className="grid grid-cols-2 gap-3">
                 {[{ v: 'A', share: 50, conv: (conv * 0.95).toFixed(1) }, { v: 'B', share: 50, conv: (conv * 1.05).toFixed(1) }].map((v) => (

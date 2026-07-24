@@ -9,19 +9,23 @@
  * PERIOD: 90 days ending 2026-07-23 (TODAY).
  *
  * ── ANCHOR VALUES (numbers all screens must reconcile to) ─────────────────
+ *   Clicks canônicos (30d) ... 5.000 (inflado sobre PERSONS via CLICK_INFLATION;
+ *                              PERSONS mantém 78 identidades resolvidas → Linked)
+ *   Registrations (30d) ...... 75 (âncora imutável)
+ *   FTDs (30d) ............... 36 (âncora imutável)
+ *   Investimento ............. R$ 12.013 · CPFTD R$ 334 · Net R$ 19.618
  *   Persons total ............ 240 (240 personas geradas, seed fixa)
- *   Sources .................. 144 Meta · 48 TikTok · 36 Orgânico · 12 Órfãos
- *   FTDs canônicos ........... 89 no total (47 nos 30d · 26 nos 31–60d · 16 nos 61–90d)
  *
  * ── DUAS VISTAS DA MESMA VERDADE ──────────────────────────────────────────
  *   Journey proof (CADEIA DE PROVA da atribuição):
- *     Captured → Linked → Registered → Confirmed → Reconciled
+ *     Captured (5.000 cliques) → Linked (78 identidades resolvidas) →
+ *     Registered (75) → Confirmed (36) → Reconciled (36)
  *   Funil de aquisição (comportamento operacional — funnelSteps.ts):
- *     Clique → StartBot → Entrada Canal → Cadastro → FTD
- *   Ambas as vistas partilham as MESMAS âncoras: começam em `clicks` (78)
- *   e terminam em `ftds` (36). Etapas intermediárias podem diferir porque
- *   respondem a jobs diferentes (provar × operar), mas âncoras jamais
- *   divergem. O Evidence Drawer marca cada número com o campo `view`.
+ *     Clique (5.000) → StartBot (~780) → Entrada Canal (~320) → Cadastro (75) → FTD (36)
+ *   Ambas partilham as MESMAS âncoras nas pontas (5.000 no topo, 36 no fim).
+ *   Linked ≠ 100% dos Captured: só cliques amarrados a uma pessoa entram.
+ *   O Evidence Drawer marca cada número com o campo `view`.
+
  *
  *   Journey (90d) monotônico:  Captured ≥ Linked ≥ Registered ≥ Confirmed ≥ Reconciled
  *   Investimento ............. spendForPeriod(days) — Meta cresce R$180→R$300, TikTok R$120/d
@@ -916,6 +920,14 @@ export interface PeriodMetrics {
   divergent_count: number;
 }
 
+/**
+ * CANONICAL_CLICKS_30D — âncora imutável do topo do funil de aquisição.
+ * PERSONS mantém apenas as identidades RESOLVIDAS (~78 no período canônico);
+ * a diferença entre cliques capturados e identidades resolvidas é a perda
+ * Captured→Linked (cliques sem cookie/UTM/telegram_id que dê para amarrar).
+ */
+export const CANONICAL_CLICKS_30D = 5000;
+
 export function metricsForPeriod(days: number): PeriodMetrics {
   const ps = PERSONS.filter(p => {
     // Include persons who had ANY activity in the period
@@ -924,9 +936,13 @@ export function metricsForPeriod(days: number): PeriodMetrics {
     return clickIn || regIn;
   });
 
-  const clicks = ps.filter(p => p.clicked_at && isInLastDays(p.clicked_at, days)).length;
+  const linked = ps.filter(p => p.clicked_at && isInLastDays(p.clicked_at, days)).length;
+  // Cliques capturados = identidades resolvidas × fator de inflação (Captured ≫ Linked)
+  const clicks = Math.round(CANONICAL_CLICKS_30D * (days / 30));
   const regs = ps.filter(p => p.registered_at && isInLastDays(p.registered_at, days)).length;
   const ftds = PERSONS.filter(p => p.ftd_at && isInLastDays(p.ftd_at, days)).length;
+  void linked; // exposto via journeyLinked() abaixo
+
 
   // Deposits in period
   const allDeposits = PERSONS.flatMap(p => p.deposits).filter(d => isInLastDays(d.at, days) && d.amount > 0 && d.type !== 'chargeback');
@@ -975,7 +991,10 @@ export function dailySeries(days: number, metric: 'clicks' | 'registrations' | '
     const dayStr = daysAgo(i).toISOString().slice(0, 10);
     let value = 0;
     if (metric === 'clicks') {
-      value = PERSONS.filter(p => p.clicked_at?.startsWith(dayStr)).length;
+      // Cliques capturados/dia = identidades resolvidas × fator de inflação (âncora 5.000 em 30d)
+      const raw = PERSONS.filter(p => p.clicked_at?.startsWith(dayStr)).length;
+      value = Math.round(raw * (CANONICAL_CLICKS_30D / Math.max(1, PERSONS.filter(p => p.clicked_at && isInLastDays(p.clicked_at, 30)).length)));
+
     } else if (metric === 'registrations') {
       value = PERSONS.filter(p => p.registered_at?.startsWith(dayStr)).length;
     } else if (metric === 'ftds') {
@@ -1029,7 +1048,7 @@ export function cohortData(): Array<{ week: string; entered: number; d0: number;
 
 // Funnel breakdown
 export function funnelData(days: number): Array<{ stage: string; count: number; pct_prev: number }> {
-  const clicks = PERSONS.filter(p => p.clicked_at && isInLastDays(p.clicked_at, days)).length;
+  const clicks = Math.round(CANONICAL_CLICKS_30D * (days / 30));
   const regs = PERSONS.filter(p => p.registered_at && isInLastDays(p.registered_at, days)).length;
   const ftds = PERSONS.filter(p => p.ftd_at && isInLastDays(p.ftd_at, days)).length;
   const repeat = PERSONS.filter(p => p.deposits.filter(d => d.type === 'repeat' && isInLastDays(d.at, days)).length > 0).length;
@@ -1040,6 +1059,12 @@ export function funnelData(days: number): Array<{ stage: string; count: number; 
     { stage: 'Depósito Recorrente', count: repeat, pct_prev: ftds > 0 ? Math.round((repeat / ftds) * 1000) / 10 : 0 },
   ];
 }
+
+/** Identidades resolvidas (Linked) — cliques amarrados a uma pessoa via cookie/UTM/telegram_id. */
+export function journeyLinked(days: number): number {
+  return PERSONS.filter(p => p.clicked_at && isInLastDays(p.clicked_at, days)).length;
+}
+
 
 // ── PRIMARY EXPORT ────────────────────────────────────────────────────────────
 export const db = {
@@ -1060,7 +1085,9 @@ export const db = {
   revenueBySource,
   cohortData,
   funnelData,
+  journeyLinked,
   spendForPeriod,
+
 
   // Helpers
   getPerson: (id: string) => PERSONS.find(p => p.id === id),

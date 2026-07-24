@@ -65,8 +65,10 @@ export default function CommandPage() {
   // Monotonic funnel: each stage <= previous. Enforced by clamping so the
   // narrative of proof never inverts — Reconciled can never exceed Confirmed, etc.
   const capturedTotal = m.clicks;
-  const linkedRaw = db.persons.filter((p) => !p.is_orphan).length;
-  const linkedTotal = Math.min(linkedRaw, capturedTotal);
+  // Linked = cliques amarrados a uma pessoa (identidade resolvida via cookie/UTM/telegram_id).
+  // NÃO é 100% dos capturados: a diferença Captured→Linked é a perda de atribuição.
+  const linkedTotal = db.journeyLinked(period);
+
   const registeredTotal = Math.min(m.registrations, linkedTotal);
   const confirmedTotal = Math.min(m.ftds, registeredTotal);
   const reconciledTotal = Math.min(reconciledCount, confirmedTotal);
