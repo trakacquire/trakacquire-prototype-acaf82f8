@@ -18,12 +18,14 @@ export function StatusChip({ status, className }: StatusChipProps) {
       case 'Reconciled':
         return 'bg-verified/10 text-verified border-verified/20';
       case 'Divergent':
+      case 'Stale':
         return 'bg-warning/10 text-warning border-warning/20';
       case 'Failed':
       case 'Orphan':
-        return 'bg-critical/10 text-critical border-critical/20';
       case 'Policy blocked':
         return 'bg-critical/10 text-critical border-critical/20';
+      case 'Sandbox':
+        return 'bg-proof-blue/8 text-proof-blue/90 border-proof-blue/25';
       case 'Synthetic':
         return 'bg-stone/10 text-stone border-stone/20';
       default:
