@@ -360,7 +360,9 @@ export default function ReportDetailPage() {
             </div>
           </aside>
         </div>
+        </ScenarioStateGate>
       </div>
+
 
       {/* Schedule Dialog */}
       <Dialog open={scheduleOpen} onOpenChange={v => { if (!v) setScheduleOpen(false); }}>
