@@ -8,8 +8,10 @@ export default function PlatformTenantsNewPage() {
   const [, setLocation] = useLocation();
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Tenants', href: '/platform/tenants' }, { label: 'Provisionar' }]}><PlatformPageHeader kicker="Platform · Provisioning" title="Provisionar Tenant" /> <p className="text-14 text-stone">Crie um novo ambiente isolado de workspace.</p>
-        </div>
+    <PlatformShell breadcrumb={[{ label: 'Tenants', href: '/platform/tenants' }, { label: 'Provisionar' }]}>
+      <div className="max-w-7xl mx-auto space-y-6">
+        <PlatformPageHeader kicker="Platform · Provisioning" title="Provisionar Tenant" description="Crie um novo ambiente isolado de workspace." />
+
 
         <div className="flex items-center gap-4 mb-8 text-14 font-medium">
           <div className="flex items-center gap-2 text-eggshell">
