@@ -20,8 +20,17 @@ export default function IdentityPage() {
   const [, setLocation] = useLocation();
   const { openEvidence } = useEvidence();
   const isMobile = useIsMobile();
+  const [tab, setTab] = useState<'grafo' | 'tabela' | 'resolution'>('grafo');
 
   const persons = useMemo(() => db.persons.filter((p) => p.registered_at), []);
+  // H2 · landing = grafo. Pega a identidade com maior sinal (mais tokens amarrados).
+  const landingPerson = useMemo(() => {
+    const scored = persons.map((p) => ({
+      p,
+      score: (p.click_id ? 1 : 0) + (p.telegram_id ? 1 : 0) + (p.phone_token ? 1 : 0) + (p.customer_id ? 1 : 0),
+    }));
+    return scored.sort((a, b) => b.score - a.score)[0]?.p ?? persons[0];
+  }, [persons]);
   const totalRegistered = persons.length;
   const avgConfidence = persons.reduce((s, p) => s + p.identity_confidence, 0) / Math.max(1, persons.length);
   const highConfidence = persons.filter((p) => p.identity_confidence > 75).length;
