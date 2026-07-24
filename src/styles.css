@@ -211,6 +211,10 @@
   @media (prefers-reduced-motion: no-preference) {
     :root { --motion-fast: 140ms; --motion-base: 220ms; --motion-slow: 420ms; }
   }
+
+  /* Fase F · icon-tile 20px → glifo interno 12px, sem depender do caller */
+  .icon-tile svg { width: 12px; height: 12px; }
+  .icon-tile-lg svg { width: 16px; height: 16px; }
 }
 
 
