@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams } from 'wouter';
 import { AppShell, useEvidence } from '@/components/layout/AppShell';
 import { PreviewBadge } from '@/components/data/PreviewBadge';
@@ -7,10 +7,11 @@ import { MetricValue } from '@/components/data/MetricValue';
 import { StatusChip } from '@/components/domain/StatusChip';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
 import { buildEvidence } from '@/lib/evidence';
-import { LINKS } from '@/lib/fake/db';
+import { LINKS, db } from '@/lib/fake/db';
+import { EXPERTS } from '@/lib/fake/experts';
 import { Copy, Check } from 'lucide-react';
 
-type Tab = 'visao' | 'ab' | 'regras' | 'snippet' | 'historico';
+type Tab = 'visao' | 'builder' | 'ab' | 'regras' | 'snippet' | 'historico';
 
 export default function Link360Page() {
   const params = useParams<{ id: string }>();
@@ -19,19 +20,46 @@ export default function Link360Page() {
   const [tab, setTab] = useState<Tab>('visao');
   const [copied, setCopied] = useState<string | null>(null);
 
+  // Bloco R.3.15 — construtor UTM
+  const [utm, setUtm] = useState({
+    source: 'meta',
+    medium: 'cpc',
+    campaign: link.campaign_id?.replace(/^camp_/, '') ?? 'presell_br_v2',
+    content: 'creative_a',
+    term: 'apostas_brasil',
+    expert: EXPERTS[0].handle,
+    slug: link.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 40),
+  });
+
   const conv = link.clicks > 0 ? (link.ftds / link.clicks) * 100 : 0;
   const clickId = `cid_${link.id.slice(-4)}A19f2c`;
   const fullUrl = `https://${link.url}?click_id=${clickId}`;
+
+  const linkedCampaign = link.campaign_id ? db.campaigns.find((c) => c.id === link.campaign_id) : null;
+  const builtUrl = useMemo(() => {
+    const base = `https://tk.operacaobr.com/${utm.slug || 'novo-link'}`;
+    const params = new URLSearchParams({
+      utm_source: utm.source,
+      utm_medium: utm.medium,
+      utm_campaign: utm.campaign,
+      utm_content: utm.content,
+      utm_term: utm.term,
+      expert: utm.expert.replace(/^@/, ''),
+    });
+    return `${base}?${params.toString()}`;
+  }, [utm]);
 
   const copy = (v: string, k: string) => { navigator.clipboard.writeText(v); setCopied(k); setTimeout(() => setCopied(null), 1500); };
 
   const tabs: Array<{ id: Tab; label: string }> = [
     { id: 'visao', label: 'Visão' },
+    { id: 'builder', label: 'Construtor UTM' },
     { id: 'ab', label: 'Split A/B' },
     { id: 'regras', label: 'Regras device/geo/hora' },
     { id: 'snippet', label: 'QR + snippet' },
     { id: 'historico', label: 'Histórico' },
   ];
+
 
   return (
     <AppShell breadcrumb={[{ label: 'Connect', href: '/integrations' }, { label: 'Tracking', href: '/tracking' }, { label: link.name }]}>
