@@ -26,7 +26,7 @@ Fase esperada de detalhamento entre parênteses.
 ## Plano PÚBLICO (`src/pages/public/*`)
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
-|---|---|---|---|---|---|---|---|---|---|------|
+|---|---|---|---|---|---|---|---|---|---|---|---|
 | Login | ❌ | ➖ | ➖ | ⏳ | ➖ | ➖ | ➖ | ➖ | ❌ | ❌ | P7 |
 | Signup | ❌ | ➖ | ➖ | ⏳ | ➖ | ➖ | ➖ | ➖ | ❌ | ❌ | P7 |
 | AuthCallback | ❌ | ➖ | ➖ | ⏳ | ➖ | ➖ | ➖ | ➖ | ❌ | ❌ | P7 |
@@ -46,7 +46,7 @@ Fase esperada de detalhamento entre parênteses.
 ### Overview
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
-|---|---|---|---|---|---|---|---|---|---|------|
+|---|---|---|---|---|---|---|---|---|---|---|---|
 | Command | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | ⏳ | ✅ | **P1 ✔** (banner de estados na P3) |
 | Analytics | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ❌ | ❌ | ✅ | P4 |
 | Revenue | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ❌ | ❌ | ✅ | P4 |
@@ -54,7 +54,7 @@ Fase esperada de detalhamento entre parênteses.
 ### Connect
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
-|---|---|---|---|---|---|---|---|---|---|------|
+|---|---|---|---|---|---|---|---|---|---|---|---|
 | Tracking | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ✅ | P5 |
 | TrackingSources | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P5 |
 | Domains | ❌ | ➖ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ✅ | P5 |
@@ -69,7 +69,7 @@ Fase esperada de detalhamento entre parênteses.
 ### Observe
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
-|---|---|---|---|---|---|---|---|---|---|------|
+|---|---|---|---|---|---|---|---|---|---|---|---|
 | Signals | ❌ | ❌ | ✅ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | **P2** |
 | LiveEvents | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⏳ | ✅ | **P2** |
 | EventDetail | ❌ | ❌ | ✅ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P2 |
@@ -84,7 +84,7 @@ Fase esperada de detalhamento entre parênteses.
 ### Operate
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
-|---|---|---|---|---|---|---|---|---|---|------|
+|---|---|---|---|---|---|---|---|---|---|---|---|
 | Automations | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ✅ | P6 |
 | FlowBuilder | ❌ | ➖ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P6 |
 | Broadcasts | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P6 |
@@ -100,7 +100,7 @@ Fase esperada de detalhamento entre parênteses.
 ### Prove
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
-|---|---|---|---|---|---|---|---|---|---|------|
+|---|---|---|---|---|---|---|---|---|---|---|---|
 | Reports | ❌ | ➖ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P4 |
 | ReportDetail | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P4 |
 | Governance | ❌ | ➖ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ✅ | P4 |
@@ -108,7 +108,7 @@ Fase esperada de detalhamento entre parênteses.
 ### Settings/Perfil
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
-|---|---|---|---|---|---|---|---|---|---|------|
+|---|---|---|---|---|---|---|---|---|---|---|---|
 | SettingsGeneral | ❌ | ➖ | ➖ | ✅ | ⏳ | ➖ | ✅ | ➖ | ❌ | ✅ | P7 |
 | SettingsTeam | ❌ | ➖ | ➖ | ✅ | ⏳ | ➖ | ✅ | ✅ | ❌ | ❌ | P7 |
 | SettingsBilling | ❌ | ➖ | ➖ | ✅ | ⏳ | ➖ | ✅ | ✅ | ❌ | ❌ | P7 |
@@ -124,7 +124,7 @@ Fase esperada de detalhamento entre parênteses.
 **Preservada até a P8.** Só herda tokens via CSS vars (revertidos ao D1 nesta rodada). Sem reestruturação nas fases P2–P7.
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
-|---|---|---|---|---|---|---|---|---|---|------|
+|---|---|---|---|---|---|---|---|---|---|---|---|
 | PlatformCommand | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P8 |
 | PlatformTenants | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P8 |
 | PlatformTenantsNew | ❌ | ➖ | ➖ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P8 |
