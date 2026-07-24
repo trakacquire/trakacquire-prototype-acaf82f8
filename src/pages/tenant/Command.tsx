@@ -147,7 +147,7 @@ export default function CommandPage() {
             <p className="page-subtitle mt-1.5 max-w-xl">
               Uma visão objetiva da aquisição, identidade, receita e integridade das integrações.
             </p>
-            {/* Chip honesto — funde PRÉVIA + estado + freshness (estados não somem, se organizam) */}
+            {/* Chip honesto — funde PRÉVIA + freshness + reconciliação + estado do cenário */}
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <span className="chip-honest">
                 <span className="w-1 h-1 rounded-full bg-warning" />
@@ -156,8 +156,9 @@ export default function CommandPage() {
                 {lastEventAgo !== null ? <>ao vivo · há {lastEventAgo}s</> : 'sem eventos'}
                 <span className="chip-honest-sep" />
                 <span className="text-verified">{pendingReconcile === 0 ? 'reconciliado D+1' : `${pendingReconcile} pendentes`}</span>
+                <span className="chip-honest-sep" />
+                <ScenarioChipSegment />
               </span>
-              <StateShowcase />
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
