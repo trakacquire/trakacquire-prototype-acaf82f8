@@ -175,7 +175,7 @@ Fase esperada de detalhamento entre parênteses.
 | P3 · Identity + Players | Identity Graph, IdentityDetail, Players, Player360 | ✔ concluída em 2026-07-24 — Identity Graph promovida à sidebar em Observe |
 | P4 · Analytics + Revenue + Reports | Analytics, Revenue, Cohorts, Reports, ReportDetail, Governance | ✔ concluída em 2026-07-24 — Relatórios promovido à sidebar em Prove; Cohorts contextual de Receita |
 | P5 · Connect | Tracking, TrackingSources, Link360, Domains, Domain360, Integrations, Integration360, IntegrationTAP/Meta/Telegram, Media, MediaCreatives, Campaign360 | ✔ concluída em 2026-07-24 — 13 páginas 100% verdes; Integrações, Tracking e Domínios já estavam em Connect na sidebar; páginas-objeto e TrackingSources permanecem contextuais |
-| P6 · Operate | Automations, FlowBuilder, Broadcasts, Segments, Inbox, Approvals | ⏸ |
+| P6 · Operate | Automations, FlowBuilder, Broadcasts, Segments, Inbox, InboxSettings, Approvals | ✔ concluída em 2026-07-24 — 7 páginas 100% verdes; Automations, Broadcasts, Inbox e Approvals promovidas à sidebar em OPERATE; Segments contextual de Broadcasts; FlowBuilder contextual de Automations; InboxSettings contextual de Inbox |
 | P7 · Público + Settings | Login, Signup, Pricing, Docs, Status, Legal, Settings, Profile | ⏸ |
 | P8 · Super Admin | Reestilização da plataforma (só identidade visual, sem reestruturar) | ⏸ |
 
