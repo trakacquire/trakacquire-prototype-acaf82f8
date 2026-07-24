@@ -168,11 +168,74 @@ export default function IdentityPage() {
             columns={columns}
             onRowClick={(p) => setLocation(`/identity/${p.id}`)}
           />
+
+          {/* Bloco R.3.13 — Tabela de Identity Resolution (complementa o grafo) */}
+          <div className="mt-8 bg-graphite border border-line rounded-xl overflow-hidden">
+            <div className="p-4 border-b border-line flex items-baseline justify-between">
+              <div>
+                <h2 className="text-16 font-medium text-eggshell">Identity Resolution</h2>
+                <p className="text-12 text-stone mt-0.5">Uma linha por identidade: qual sinal amarrou qual pessoa a qual canal — clique em "Debug" para inspecionar a costura.</p>
+              </div>
+              <span className="font-mono text-11 text-stone">{persons.length} identidades</span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-12">
+                <thead>
+                  <tr className="border-b border-line">
+                    <th className="p-3 text-11 font-mono uppercase text-stone">Identidade</th>
+                    <th className="p-3 text-11 font-mono uppercase text-stone">Session</th>
+                    <th className="p-3 text-11 font-mono uppercase text-stone">User</th>
+                    <th className="p-3 text-11 font-mono uppercase text-stone">Telegram</th>
+                    <th className="p-3 text-11 font-mono uppercase text-stone">Canal</th>
+                    <th className="p-3 text-11 font-mono uppercase text-stone">Player</th>
+                    <th className="p-3 text-11 font-mono uppercase text-stone text-right">Eventos</th>
+                    <th className="p-3 text-11 font-mono uppercase text-stone text-right">Debug</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {persons.slice(0, 24).map((p) => {
+                    const sessionId = `sess_${p.id.slice(-6)}`;
+                    const userId    = p.customer_id ? p.customer_id : '—';
+                    const tg        = p.telegram_id ? `@${p.name.split(' ')[0].toLowerCase()}` : '—';
+                    const canal     = p.telegram_id ? 'grupo_vip_bra' : p.source === 'tiktok' ? 'tt_bio' : p.source === 'organic' ? 'ig_bio' : 'presell_v2';
+                    const player    = p.customer_id ?? '—';
+                    const evCount   = db.events.filter((e) => e.person_id === p.id).length;
+                    return (
+                      <tr key={p.id} className="border-b border-line last:border-0 hover:bg-zinc/40">
+                        <td className="p-3 font-mono text-11 text-proof-blue tabular-nums">{p.id}</td>
+                        <td className="p-3 font-mono text-11 text-stone tabular-nums">{sessionId}</td>
+                        <td className="p-3 font-mono text-11 text-stone tabular-nums">{userId}</td>
+                        <td className="p-3 font-mono text-11 text-stone">{tg}</td>
+                        <td className="p-3 font-mono text-11 text-stone">{canal}</td>
+                        <td className="p-3 font-mono text-11 text-stone tabular-nums">{player}</td>
+                        <td className="p-3 font-mono text-12 text-eggshell text-right tabular-nums">{evCount}</td>
+                        <td className="p-3 text-right">
+                          <button
+                            onClick={() => openEvidence(buildEvidence({
+                              label: `Debug identity · ${p.name}`,
+                              value: `${evCount} evento(s)`,
+                              formula: 'trace(events) group by identity_id → session → user → telegram → channel → player',
+                              source: `Identity resolver · método ${p.identity_method ?? 'manual'} · confiança ${p.identity_confidence}%`,
+                              state: p.identity_confidence > 75 ? 'Reconciliado' : 'Provisório',
+                            }))}
+                            className="text-11 font-mono uppercase text-stone hover:text-proof-blue"
+                          >
+                            debug
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </ScenarioStateGate>
       </div>
     </AppShell>
   );
 }
+
 
 function KpiTile({ label, value, tone = 'default', onClick }: {
   label: string; value: string; tone?: 'default' | 'verified' | 'warning' | 'critical'; onClick?: () => void;
