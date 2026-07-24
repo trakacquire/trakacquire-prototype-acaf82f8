@@ -12,6 +12,7 @@ import { buildEvidence } from '@/lib/evidence';
 import { db, SignalEvent } from '@/lib/fake/db';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { IntegrationState } from '@/lib/types';
+import { TeachingError } from '@/components/data/TeachingError';
 import { Copy, Check } from 'lucide-react';
 
 type Tab = 'visao' | 'setup' | 'eventos' | 'saude' | 'logs' | 'historico';
