@@ -41,64 +41,64 @@ export default function PlatformInvoicesPage() {
   return (
     <PlatformShell breadcrumb={[{ label: 'Faturas' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
-        <h1 className="text-24 font-bold text-[var(--eggshell)]">Faturas</h1>
+        <h1 className="text-24 font-bold text-eggshell">Faturas</h1>
 
         {/* Stat card */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-5">
-            <div className="text-11 font-mono text-[var(--stone)] uppercase mb-1">MRR Total</div>
-            <div className="text-22 font-mono text-[var(--eggshell)]">{fmtMoney(totalMrr)}</div>
+          <div className="bg-graphite border border-line rounded-xl p-5">
+            <div className="text-11 font-mono text-stone uppercase mb-1">MRR Total</div>
+            <div className="text-22 font-mono text-eggshell">{fmtMoney(totalMrr)}</div>
           </div>
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-5">
-            <div className="text-11 font-mono text-[var(--stone)] uppercase mb-1">Faturas Emitidas</div>
-            <div className="text-22 font-mono text-[var(--eggshell)]">{invoices.length}</div>
+          <div className="bg-graphite border border-line rounded-xl p-5">
+            <div className="text-11 font-mono text-stone uppercase mb-1">Faturas Emitidas</div>
+            <div className="text-22 font-mono text-eggshell">{invoices.length}</div>
           </div>
-          <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl p-5">
-            <div className="text-11 font-mono text-[var(--stone)] uppercase mb-1">Pendentes</div>
-            <div className="text-22 font-mono text-[var(--warning)]">
+          <div className="bg-graphite border border-line rounded-xl p-5">
+            <div className="text-11 font-mono text-stone uppercase mb-1">Pendentes</div>
+            <div className="text-22 font-mono text-warning">
               {invoices.filter(inv => inv.status === 'Pendente').length}
             </div>
           </div>
         </div>
 
         {/* Table */}
-        <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl overflow-hidden">
+        <div className="bg-graphite border border-line rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-13">
               <thead>
-                <tr className="border-b border-[var(--line)]">
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">ID</th>
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Cliente</th>
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Plano</th>
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Período</th>
-                  <th className="text-right text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Valor</th>
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Status</th>
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Vencimento</th>
+                <tr className="border-b border-line">
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">ID</th>
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Cliente</th>
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Plano</th>
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Período</th>
+                  <th className="text-right text-11 text-stone font-medium px-4 py-3 uppercase">Valor</th>
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Status</th>
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Vencimento</th>
                 </tr>
               </thead>
               <tbody>
                 {invoices.map(inv => (
-                  <tr key={inv.id} className="border-b border-[var(--line)]/50 last:border-0 hover:bg-[var(--iron)] transition-colors">
+                  <tr key={inv.id} className="border-b border-line/50 last:border-0 hover:bg-iron transition-colors">
                     <td className="px-4 py-3">
-                      <span className="font-mono text-12 text-[var(--stone)]">{inv.id}</span>
+                      <span className="font-mono text-12 text-stone">{inv.id}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-13 font-medium text-[var(--eggshell)]">{inv.tenant}</span>
+                      <span className="text-13 font-medium text-eggshell">{inv.tenant}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="px-2 py-0.5 rounded border border-[var(--line)] bg-[var(--zinc)] text-11 uppercase font-bold text-[var(--stone)]">
+                      <span className="px-2 py-0.5 rounded border border-line bg-zinc text-11 uppercase font-bold text-stone">
                         {inv.plan}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-[var(--stone)]">{inv.period}</td>
+                    <td className="px-4 py-3 text-stone">{inv.period}</td>
                     <td className="px-4 py-3 text-right">
-                      <span className="font-mono text-13 text-[var(--eggshell)]">{fmtMoney(inv.amount)}</span>
+                      <span className="font-mono text-13 text-eggshell">{fmtMoney(inv.amount)}</span>
                     </td>
                     <td className="px-4 py-3">
                       <StatusChip status={(inv.status === 'Pago' ? 'Reconciled' : 'Divergent') as EventStatus} />
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-12 font-mono text-[var(--stone)]">{fmtDate(inv.due)}</span>
+                      <span className="text-12 font-mono text-stone">{fmtDate(inv.due)}</span>
                     </td>
                   </tr>
                 ))}

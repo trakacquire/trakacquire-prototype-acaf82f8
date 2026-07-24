@@ -42,42 +42,42 @@ export default function PlatformAIRoutingPage() {
     <PlatformShell breadcrumb={[{ label: 'Roteamento de IA' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-24 font-bold text-[var(--eggshell)]">Roteamento de Modelos de IA</h1>
+          <h1 className="text-24 font-bold text-eggshell">Roteamento de Modelos de IA</h1>
           <button
             onClick={handleSaveAll}
-            className="px-4 py-2 rounded-md text-14 font-medium bg-[var(--eggshell)] text-[var(--ink)] hover:bg-white transition-colors"
+            className="px-4 py-2 rounded-md text-14 font-medium bg-eggshell text-ink hover:bg-white transition-colors"
           >
             Salvar configuração
           </button>
         </div>
 
-        <div className="bg-[var(--graphite)] border border-[var(--line)] rounded-xl overflow-hidden">
+        <div className="bg-graphite border border-line rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-13">
               <thead>
-                <tr className="border-b border-[var(--line)]">
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Funcionalidade</th>
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Principal</th>
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Reserva</th>
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Tempo limite</th>
-                  <th className="text-left text-11 text-[var(--stone)] font-medium px-4 py-3 uppercase">Ações</th>
+                <tr className="border-b border-line">
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Funcionalidade</th>
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Principal</th>
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Reserva</th>
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Tempo limite</th>
+                  <th className="text-left text-11 text-stone font-medium px-4 py-3 uppercase">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {routing.map(row => (
-                  <tr key={row.id} className="border-b border-[var(--line)]/50 last:border-0 hover:bg-[var(--iron)] transition-colors">
+                  <tr key={row.id} className="border-b border-line/50 last:border-0 hover:bg-iron transition-colors">
                     <td className="px-4 py-3">
-                      <span className="font-medium text-13 text-[var(--eggshell)]">{row.feature}</span>
+                      <span className="font-medium text-13 text-eggshell">{row.feature}</span>
                     </td>
                     <td className="px-4 py-3">
                       {editingId === row.id ? (
                         <input
                           value={editBuf.primary ?? ''}
                           onChange={e => setEditBuf(b => ({ ...b, primary: e.target.value }))}
-                          className="bg-[var(--zinc)] border border-[var(--line)] rounded px-2 py-1 text-12 font-mono text-[var(--eggshell)] w-40 focus:outline-none focus:border-[var(--proof-blue)]"
+                          className="bg-zinc border border-line rounded px-2 py-1 text-12 font-mono text-eggshell w-40 focus:outline-none focus:border-proof-blue"
                         />
                       ) : (
-                        <span className="font-mono text-12 text-[var(--proof-blue)] bg-[var(--proof-blue)]/10 px-2 py-1 rounded">
+                        <span className="font-mono text-12 text-proof-blue bg-proof-blue/10 px-2 py-1 rounded">
                           {row.primary}
                         </span>
                       )}
@@ -87,10 +87,10 @@ export default function PlatformAIRoutingPage() {
                         <input
                           value={editBuf.fallback ?? ''}
                           onChange={e => setEditBuf(b => ({ ...b, fallback: e.target.value }))}
-                          className="bg-[var(--zinc)] border border-[var(--line)] rounded px-2 py-1 text-12 font-mono text-[var(--eggshell)] w-40 focus:outline-none focus:border-[var(--proof-blue)]"
+                          className="bg-zinc border border-line rounded px-2 py-1 text-12 font-mono text-eggshell w-40 focus:outline-none focus:border-proof-blue"
                         />
                       ) : (
-                        <span className="font-mono text-12 text-[var(--stone)]">{row.fallback}</span>
+                        <span className="font-mono text-12 text-stone">{row.fallback}</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
@@ -98,24 +98,24 @@ export default function PlatformAIRoutingPage() {
                         <input
                           value={editBuf.timeout ?? ''}
                           onChange={e => setEditBuf(b => ({ ...b, timeout: e.target.value }))}
-                          className="bg-[var(--zinc)] border border-[var(--line)] rounded px-2 py-1 text-12 font-mono text-[var(--eggshell)] w-20 focus:outline-none focus:border-[var(--proof-blue)]"
+                          className="bg-zinc border border-line rounded px-2 py-1 text-12 font-mono text-eggshell w-20 focus:outline-none focus:border-proof-blue"
                         />
                       ) : (
-                        <span className="font-mono text-12 text-[var(--eggshell)]">{row.timeout}</span>
+                        <span className="font-mono text-12 text-eggshell">{row.timeout}</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       {editingId === row.id ? (
                         <button
                           onClick={() => saveEdit(row.id)}
-                          className="text-12 text-[var(--verified)] hover:underline"
+                          className="text-12 text-verified hover:underline"
                         >
                           Salvar
                         </button>
                       ) : (
                         <button
                           onClick={() => startEdit(row)}
-                          className="text-12 text-[var(--proof-blue)] hover:underline"
+                          className="text-12 text-proof-blue hover:underline"
                         >
                           Editar
                         </button>
