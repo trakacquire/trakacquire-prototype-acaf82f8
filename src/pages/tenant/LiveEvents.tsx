@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { db } from '@/lib/fake/db';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppShell } from '@/components/layout/AppShell';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { StatusChip } from '@/components/domain/StatusChip';
 import { Link } from 'wouter';
 import type { SignalEvent, EventStatus } from '@/lib/fake/db';
@@ -115,6 +116,7 @@ export default function LiveEvents() {
             <p className="text-stone text-14 mt-3 max-w-xl">
               Cada linha é um sinal — capturado, confirmado e correlacionado a uma pessoa e uma campanha.
             </p>
+            <div className="mt-3"><PreviewBadge /></div>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
