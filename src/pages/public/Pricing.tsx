@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'wouter';
 import { Check } from 'lucide-react';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
 
 export default function PricingPage() {
   return (
@@ -11,9 +12,12 @@ export default function PricingPage() {
             <span className="w-6 h-6 rounded bg-proof-blue shrink-0"></span>
             TrakAcquire
           </Link>
+          <div className="text-11 font-serif italic text-stone mb-3">Investimento · Densidade da operação</div>
           <h1 className="text-32 md:text-4xl font-bold mb-4">Planos que escalam com sua prova.</h1>
           <p className="text-16 text-stone max-w-2xl mx-auto">Sem taxas escondidas. Pague pela densidade da sua operação.</p>
+          <div className="mt-4 flex justify-center"><PreviewBadge /></div>
         </div>
+
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20 max-w-5xl mx-auto">
           {/* Starter */}
