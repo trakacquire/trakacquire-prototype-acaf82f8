@@ -105,17 +105,20 @@
 
   --background: var(--ink);
   --foreground: var(--eggshell);
-  --border: var(--line);
-  --input: var(--line);
+  /* border/input consumidos por hsl(var(--border)) nos componentes shadcn.
+     Apontar direto para o hairline (eggshell 6% alpha) unifica toda borda. */
+  --border: var(--eggshell) / 0.06;
+  --input: var(--eggshell) / 0.06;
   --ring: var(--proof-blue);
 
   --card: var(--graphite);
   --card-foreground: var(--eggshell);
-  --card-border: var(--line);
+  --card-border: var(--eggshell) / 0.06;
 
   --popover: var(--graphite);
   --popover-foreground: var(--eggshell);
-  --popover-border: var(--line);
+  --popover-border: var(--eggshell) / 0.06;
+
 
   --primary: var(--eggshell);
   --primary-foreground: var(--ink);
