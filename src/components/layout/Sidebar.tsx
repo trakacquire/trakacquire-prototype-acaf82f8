@@ -30,10 +30,8 @@ function SidebarItem({ href, icon, label, badge }: SidebarItemProps) {
     <Link
       href={href}
       className={cn(
-        'relative flex items-center gap-3 pl-3 pr-2 py-1.5 rounded-md text-13 font-medium transition-colors group',
-        active
-          ? 'bg-zinc/60 text-eggshell'
-          : 'text-stone hover:bg-zinc/40 hover:text-eggshell',
+        'relative flex items-center gap-2.5 pl-3 pr-2 py-1.5 rounded-md text-13 font-medium transition-colors group',
+        active ? 'text-eggshell' : 'text-stone hover:text-eggshell',
       )}
     >
       {active && (
@@ -41,17 +39,20 @@ function SidebarItem({ href, icon, label, badge }: SidebarItemProps) {
       )}
       <span
         className={cn(
-          'transition-colors',
-          active ? 'text-proof-blue' : 'text-stone group-hover:text-eggshell',
+          'icon-tile',
+          active && 'icon-tile-active',
+          !active && 'group-hover:text-eggshell',
         )}
+        aria-hidden
       >
-        {icon}
+        <span className="inline-flex items-center justify-center w-3.5 h-3.5">{icon}</span>
       </span>
       <span className="truncate">{label}</span>
       {badge && <span className="ml-auto shrink-0">{badge}</span>}
     </Link>
   );
 }
+
 
 function SidebarGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
