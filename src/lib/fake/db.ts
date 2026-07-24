@@ -991,7 +991,10 @@ export function dailySeries(days: number, metric: 'clicks' | 'registrations' | '
     const dayStr = daysAgo(i).toISOString().slice(0, 10);
     let value = 0;
     if (metric === 'clicks') {
-      value = PERSONS.filter(p => p.clicked_at?.startsWith(dayStr)).length;
+      // Cliques capturados/dia = identidades resolvidas × fator de inflação (âncora 5.000 em 30d)
+      const raw = PERSONS.filter(p => p.clicked_at?.startsWith(dayStr)).length;
+      value = Math.round(raw * (CANONICAL_CLICKS_30D / Math.max(1, PERSONS.filter(p => p.clicked_at && isInLastDays(p.clicked_at, 30)).length)));
+
     } else if (metric === 'registrations') {
       value = PERSONS.filter(p => p.registered_at?.startsWith(dayStr)).length;
     } else if (metric === 'ftds') {
