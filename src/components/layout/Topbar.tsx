@@ -3,7 +3,8 @@ import { usePeriod } from '@/lib/context/PeriodContext';
 import { CommandBar } from '@/components/domain/CommandBar';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { db } from '@/lib/fake/db';
-import { Bell, Sparkles, Sun, Send } from 'lucide-react';
+import { Bell, Sparkles, Sun, Send, Plus, ChevronDown } from 'lucide-react';
+import { Link, useLocation } from 'wouter';
 
 interface TopbarProps {
   breadcrumb: React.ReactNode;
