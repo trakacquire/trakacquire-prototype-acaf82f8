@@ -18,8 +18,6 @@ export default function PlatformCompliancePage() {
 
   return (
     <PlatformShell breadcrumb={[{ label: 'Compli<PlatformPageHeader kicker="Platform · Compliance" title="Compliance" />y-6">
-        <h1 className="text-24 font-bold text-eggshell">Compliance</h1>
-        
         <div>
           <h2 className="text-18 font-medium text-stone mb-4">Solicitações de Titular (DSR)</h2>
           <DataTable data={dsr} columns={columns} />

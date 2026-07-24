@@ -5,8 +5,7 @@ import { Check } from 'lucide-react';
 
 export default function PlatformPlansPage() {
   return (
-    <PlatformShell breadcrumb={[{ label: 'Plans' }]}><PlatformPageHeader kicker="Platform · Billing" title="Plans & Pricing" />    <h1 className="text-24 font-bold text-eggshell mb-2">Plans & Pricing</h1>
-          <p className="text-14 text-stone">Configuração dos pacotes oferecidos aos tenants.</p>
+    <PlatformShell breadcrumb={[{ label: 'Plans' }]}><PlatformPageHeader kicker="Platform · Billing" title="Plans & Pricing" />    <p className="text-14 text-stone">Configuração dos pacotes oferecidos aos tenants.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

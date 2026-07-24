@@ -5,9 +5,7 @@ import { Settings, Database, Shield, Bell } from 'lucide-react';
 
 export default function PlatformSettingsPage() {
   return (
-    <PlatformShell breadcrumb={[{ label: 'Platfor<PlatformPageHeader kicker="Platform · Settings" title="Platform Settings" />       <h1 className="text-24 font-bold text-eggshell">Platform Settings</h1>
-
-        <div className="bg-graphite border border-line rounded-xl p-6 space-y-6">
+    <PlatformShell breadcrumb={[{ label: 'Platfor<PlatformPageHeader kicker="Platform · Settings" title="Platform Settings" />       <div className="bg-graphite border border-line rounded-xl p-6 space-y-6">
           <div className="flex items-center gap-3">
             <Settings className="w-5 h-5 text-proof-blue" />
             <h2 className="text-16 font-medium text-eggshell">Configurações Gerais</h2>

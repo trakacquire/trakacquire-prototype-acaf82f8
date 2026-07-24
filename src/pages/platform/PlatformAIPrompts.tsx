@@ -12,9 +12,7 @@ const prompts = [
 
 export default function PlatformAIPromptsPage() {
   return (
-    <PlatformShell breadcrumb={[{ label: 'Registro <PlatformPageHeader kicker="Platform · AI Prompts" title="Registro de Prompts" />     <h1 className="text-24 font-bold text-eggshell">Registro de Prompts</h1>
-
-        <div className="bg-graphite border border-line rounded-xl overflow-hidden">
+    <PlatformShell breadcrumb={[{ label: 'Registro <PlatformPageHeader kicker="Platform · AI Prompts" title="Registro de Prompts" />     <div className="bg-graphite border border-line rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-13">
               <thead>

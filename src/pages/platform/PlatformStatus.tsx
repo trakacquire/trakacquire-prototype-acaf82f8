@@ -4,9 +4,7 @@ import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 
 export default function PlatformStatusPage() {
   return (
-    <PlatformShell breadcrumb={[{ label: 'Status Pa<PlatformPageHeader kicker="Platform · Status" title="Status Page Control" /><h1 className="text-24 font-bold text-eggshell mb-6">Status Page Control</h1>
-        
-        <div className="bg-graphite border border-line rounded-xl p-6">
+    <PlatformShell breadcrumb={[{ label: 'Status Pa<PlatformPageHeader kicker="Platform · Status" title="Status Page Control" /><div className="bg-graphite border border-line rounded-xl p-6">
           <h2 className="text-18 font-medium text-eggshell mb-4">Publicar Atualização Pública</h2>
           <form className="space-y-4">
             <div>

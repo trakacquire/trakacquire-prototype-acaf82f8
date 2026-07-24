@@ -7,7 +7,6 @@ export default function PlatformIncidentsPage() {
   return (
     <PlatformShell breadcrumb={[{ label: 'Incidents' }]}>
       <div className="max-w-7xl mx-auto sp<PlatformPageHeader kicker="Platform · Reliability" title="Incidentes" />d">
-          <h1 className="text-24 font-bold text-eggshell">Incidentes</h1>
           <button className="bg-critical text-ink px-4 py-2 rounded-md font-medium text-14 hover:bg-critical/80 transition-colors">
             Declarar Incidente
           </button>

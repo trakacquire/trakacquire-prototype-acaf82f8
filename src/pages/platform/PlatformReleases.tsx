@@ -18,7 +18,6 @@ export default function PlatformReleasesPage() {
 
   return (
     <PlatformShell breadcrumb={[{ label: 'Release<PlatformPageHeader kicker="Platform · Releases" title="Releases" />e-y-6">
-        <h1 className="text-24 font-bold text-eggshell">Releases</h1>
         <DataTable data={releases} columns={columns} />
       </div>
     </PlatformShell>

@@ -4,9 +4,7 @@ import { PlatformPageHeader } from '@/components/layout/PlatformPageHeader';
 
 export default function PlatformAICostPage() {
   return (
-    <PlatformShell breadcrumb={[{ label<PlatformPageHeader kicker="Platform · AI Cost" title="AI Cost Monitoring" />      <h1 className="text-24 font-bold text-eggshell">AI Cost Monitoring</h1>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <PlatformShell breadcrumb={[{ label<PlatformPageHeader kicker="Platform · AI Cost" title="AI Cost Monitoring" />      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-graphite border border-line rounded-xl p-6">
             <h2 className="text-14 font-medium text-stone mb-2">Custo Atual (Mês)</h2>
             <div className="text-32 font-bold font-mono text-eggshell mb-4">R$ 124,50</div>

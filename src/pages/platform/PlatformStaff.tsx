@@ -18,8 +18,7 @@ export default function PlatformStaffPage() {
   ];
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Plat<PlatformPageHeader kicker="Platform · IAM" title="Equipe Plataforma" />       <h1 className="text-24 font-bold text-eggshell">Equipe Plataforma</h1>
-        <DataTable data={staff} columns={columns} />
+    <PlatformShell breadcrumb={[{ label: 'Plat<PlatformPageHeader kicker="Platform · IAM" title="Equipe Plataforma" />       <DataTable data={staff} columns={columns} />
       </div>
     </PlatformShell>
   );

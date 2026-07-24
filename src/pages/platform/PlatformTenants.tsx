@@ -31,8 +31,7 @@ export default function PlatformTenantsPage() {
   return (
     <PlatformShell breadcrumb={[{ label: 'Tenants' }]}>
       <div className="max-w-7xl mx-auto space-y-6">
-        <PlatformPageHeader kicker="Platform · Tenants" title="Tenants" />            <h1 className="text-24 font-bold text-eggshell mb-2">Tenants</h1>
-            <p className="text-14 text-stone">Gerencie os clientes da plataforma SaaS.</p>
+        <PlatformPageHeader kicker="Platform · Tenants" title="Tenants" />            <p className="text-14 text-stone">Gerencie os clientes da plataforma SaaS.</p>
           </div>
           <button onClick={() => setLocation('/platform/tenants/new')} className="bg-eggshell text-ink px-4 py-2 rounded-md font-medium text-14 hover:bg-white transition-colors">
             Provisionar Tenant

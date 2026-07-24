@@ -18,8 +18,7 @@ export default function PlatformReliabilityPage() {
   ];
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'R<PlatformPageHeader kicker="Platform · SLOs" title="Confiabilidade & SLOs" />   <h1 className="text-24 font-bold text-eggshell">Confiabilidade & SLOs</h1>
-        <DataTable data={slos} columns={columns} />
+    <PlatformShell breadcrumb={[{ label: 'R<PlatformPageHeader kicker="Platform · SLOs" title="Confiabilidade & SLOs" />   <DataTable data={slos} columns={columns} />
       </div>
     </PlatformShell>
   );

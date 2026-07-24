@@ -65,9 +65,7 @@ export default function PlatformSupportPage() {
   ];
 
   return (
-    <PlatformShell breadcrumb={[{ label<PlatformPageHeader kicker="Platform · Support" title="Support & Changelog" />     <h1 className="text-24 font-bold text-eggshell">Support & Changelog</h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <PlatformShell breadcrumb={[{ label<PlatformPageHeader kicker="Platform · Support" title="Support & Changelog" />     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-graphite border border-line rounded-xl p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center">

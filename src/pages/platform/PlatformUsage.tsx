@@ -72,8 +72,6 @@ export default function PlatformUsagePage() {
 
   return (
     <PlatformShell breadcrumb={[{ label: 'Usag<PlatformPageHeader kicker="Platform · Usage" title="Usage & Quotas" />>
-        <h1 className="text-24 font-bold text-eggshell">Usage & Quotas</h1>
-
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-graphite border border-line rounded-xl p-4">
             <div className="flex items-center gap-3">

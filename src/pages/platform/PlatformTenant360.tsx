@@ -177,8 +177,7 @@ export default function PlatformTenant360Page({ params }: { params: { id: string
     <PlatformShell breadcrumb={[{ label: 'Tenants', href: '/platform/tenants' }, { label: tenant.name }]}>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="bg-graphite border border-line rounded-xl p-6 flex flex-col md:flex-row jus<PlatformPageHeader kicker="Platform · Tenant 360" title="{tenant.name}" />           <h1 className="text-24 font-bold text-eggshell">{tenant.name}</h1>
-            <div className="flex items-center gap-3 mt-2 flex-wrap">
+        <div className="bg-graphite border border-line rounded-xl p-6 flex flex-col md:flex-row jus<PlatformPageHeader kicker="Platform · Tenant 360" title="{tenant.name}" />           <div className="flex items-center gap-3 mt-2 flex-wrap">
               <span className="inline-flex items-center px-2 py-0.5 rounded border border-line bg-zinc text-11 uppercase font-bold text-stone">
                 {plan}
               </span>

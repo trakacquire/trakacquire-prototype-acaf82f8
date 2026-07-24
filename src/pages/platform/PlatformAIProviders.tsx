@@ -20,9 +20,7 @@ export default function PlatformAIProvidersPage() {
   }
 
   return (
-    <PlatformShell breadcrumb={[{ label: 'Proved<PlatformPageHeader kicker="Platform · AI Providers" title="Provedores de IA" />        <h1 className="text-24 font-bold text-eggshell">Provedores de IA</h1>
-
-        {/* Stat cards */}
+    <PlatformShell breadcrumb={[{ label: 'Proved<PlatformPageHeader kicker="Platform · AI Providers" title="Provedores de IA" />        {/* Stat cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-graphite border border-line rounded-xl p-5">
             <div className="text-11 font-mono text-stone uppercase mb-1">Chamadas este mês</div>
