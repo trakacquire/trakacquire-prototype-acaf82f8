@@ -12,6 +12,17 @@
  *   Persons total ............ 240 (240 personas geradas, seed fixa)
  *   Sources .................. 144 Meta · 48 TikTok · 36 Orgânico · 12 Órfãos
  *   FTDs canônicos ........... 89 no total (47 nos 30d · 26 nos 31–60d · 16 nos 61–90d)
+ *
+ * ── DUAS VISTAS DA MESMA VERDADE ──────────────────────────────────────────
+ *   Journey proof (CADEIA DE PROVA da atribuição):
+ *     Captured → Linked → Registered → Confirmed → Reconciled
+ *   Funil de aquisição (comportamento operacional — funnelSteps.ts):
+ *     Clique → StartBot → Entrada Canal → Cadastro → FTD
+ *   Ambas as vistas partilham as MESMAS âncoras: começam em `clicks` (78)
+ *   e terminam em `ftds` (36). Etapas intermediárias podem diferir porque
+ *   respondem a jobs diferentes (provar × operar), mas âncoras jamais
+ *   divergem. O Evidence Drawer marca cada número com o campo `view`.
+ *
  *   Journey (90d) monotônico:  Captured ≥ Linked ≥ Registered ≥ Confirmed ≥ Reconciled
  *   Investimento ............. spendForPeriod(days) — Meta cresce R$180→R$300, TikTok R$120/d
  *   Custo/FTD ................ metricsForPeriod(days).cpftd = round(meta_spend / ftds)
