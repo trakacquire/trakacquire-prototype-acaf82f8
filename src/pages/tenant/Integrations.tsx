@@ -8,6 +8,7 @@ import { buildEvidence } from '@/lib/evidence';
 import { db } from '@/lib/fake/db';
 import { StatusPill, CardFooter, MicroStatRow, type IntegrationPillState } from '@/components/ui/proofline';
 import { Search } from 'lucide-react';
+import { AppIcon, kindFromIntegrationId } from '@/components/brand/AppIcon';
 import type { IntegrationState } from '@/lib/types';
 
 /**
