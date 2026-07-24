@@ -293,27 +293,39 @@
 }
 
 /* ==== Fase D · Superfícies recalibradas — degrau curto, borda sugerida ==== */
+/* ==== Fase F · Superfícies com peso físico (gradient + inset) ==== */
 @utility surface-flat {
-  background: hsl(var(--surface));
+  background: var(--gradient-card);
   border: 1px solid hsl(var(--eggshell) / 0.06);
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.025);
 }
 @utility surface-raised {
-  background: hsl(var(--surface-raised));
+  background: var(--gradient-card);
   border: 1px solid hsl(var(--eggshell) / 0.06);
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.025);
 }
 @utility surface-inset {
   background: hsl(var(--surface-inset));
   border: 1px solid hsl(var(--eggshell) / 0.06);
 }
 @utility surface-floating {
-  background: hsl(var(--surface-raised));
+  background: var(--gradient-card);
   border: 1px solid hsl(var(--eggshell) / 0.10);
-  box-shadow: var(--shadow-floating);
+  box-shadow: var(--shadow-node);
 }
 @utility surface-glass {
   background: hsl(var(--iron) / 0.55);
   backdrop-filter: blur(18px) saturate(140%);
   border: 1px solid hsl(var(--eggshell) / 0.06);
+}
+@utility surface-topbar {
+  background: hsl(10 8% 4% / 0.86); /* rgba(10,10,11,.86) */
+  backdrop-filter: blur(22px) saturate(150%);
+  border-bottom: 1px solid hsl(var(--eggshell) / 0.065);
+}
+@utility surface-sidebar {
+  background: var(--gradient-sidebar);
+  border-right: 1px solid hsl(var(--eggshell) / 0.095);
 }
 @utility surface-proof {
   background: hsl(var(--surface));
@@ -335,13 +347,40 @@
 @utility hairline-top { position: relative; }
 @utility shadow-elevated { box-shadow: var(--shadow-elevated); }
 @utility shadow-floating { box-shadow: var(--shadow-floating); }
+@utility shadow-node { box-shadow: var(--shadow-node); }
 @utility shadow-proof-glow { box-shadow: var(--shadow-proof-glow); }
 
-/* Icon tile — glifo monocromático em quadrado 28px, hairline, raio 8 */
+/* ==== Fase F · Botões físicos ==== */
+@utility btn-eggshell {
+  background: var(--gradient-eggshell-btn);
+  color: hsl(var(--ink));
+  border: 1px solid hsl(45 20% 82%);
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.055), 0 1px 2px 0 hsl(0 0% 0% / 0.35);
+  border-radius: 9px;
+  font-weight: 600;
+  transition: filter 140ms ease-out, transform 120ms ease-out;
+}
+@utility btn-eggshell-hover {
+  &:hover { filter: brightness(1.04); }
+  &:active { transform: translateY(0.5px); }
+}
+@utility btn-proof {
+  background: var(--gradient-proof-btn);
+  color: hsl(var(--ink));
+  border: 1px solid hsl(230 60% 60%);
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.11), 0 1px 2px 0 hsl(0 0% 0% / 0.35);
+  border-radius: 9px;
+  font-weight: 600;
+  transition: filter 140ms ease-out, transform 120ms ease-out;
+  &:hover { filter: brightness(1.05); }
+  &:active { transform: translateY(0.5px); }
+}
+
+/* Icon tile — 20px (Fase F). Área de toque preservada pelo padding do link pai. */
 @utility icon-tile {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
   border: 1px solid hsl(var(--eggshell) / 0.06);
   background: hsl(var(--surface-raised));
   color: hsl(var(--stone));
@@ -349,10 +388,27 @@
   place-items: center;
   transition: color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
 }
+@utility icon-tile > svg { width: 12px; height: 12px; }
 @utility icon-tile-active {
   border-color: hsl(var(--proof-blue) / 0.35);
-  background: hsl(var(--surface-inset));
+  background: linear-gradient(180deg, hsl(230 30% 18%), hsl(240 8% 10%));
   color: hsl(var(--proof-blue));
+  box-shadow: inset 0 0 0 1px hsl(var(--proof-blue) / 0.18);
+}
+
+/* Glow para dots de status (Fase F.3) */
+@utility dot-glow-verified { box-shadow: 0 0 12px hsl(var(--verified) / 0.3); }
+@utility dot-glow-warning  { box-shadow: 0 0 12px hsl(var(--warning) / 0.3); }
+@utility dot-glow-critical { box-shadow: 0 0 12px hsl(var(--critical) / 0.3); }
+@utility dot-glow-proof    { box-shadow: 0 0 12px hsl(var(--proof-blue) / 0.35); }
+
+/* Confidence bar inline — Ledger (Fase F.5) */
+@utility confidence-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: hsl(var(--surface-inset));
+  overflow: hidden;
+  position: relative;
 }
 
 
