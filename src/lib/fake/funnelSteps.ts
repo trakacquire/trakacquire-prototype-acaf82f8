@@ -4,16 +4,17 @@
  * RELAÇÃO COM O JOURNEY PROOF:
  *   Journey proof (Captured → Linked → Registered → Confirmed → Reconciled)
  *   é a CADEIA DE PROVA da atribuição. Este arquivo expõe o FUNIL DE AQUISIÇÃO —
- *   duas vistas da mesma verdade: ambas começam em `clicks` (78 · Capturados)
- *   e terminam em `ftds` (36 · Reconciliados) para o período canônico.
+ *   duas vistas da mesma verdade: ambas começam em `clicks` (5.000 · Capturados)
+ *   e terminam em `ftds` (36 · Reconciliados) para o período canônico 30d.
  *
- * REGRA (Fase R · correção crítica):
+ * REGRA (Fase R · dupla ancoragem):
  *   ÂNCORAS NUNCA SÃO CLAMPADOS — só as etapas intermediárias são derivadas.
- *     - Clique   = m.clicks          (âncora imutável — Captured)
- *     - Cadastro = m.registrations   (âncora imutável — Registered)
- *     - FTD      = m.ftds            (âncora imutável — Reconciled/FTD)
+ *     - Clique   = m.clicks          (âncora imutável — Captured, 5.000)
+ *     - Cadastro = m.registrations   (âncora imutável — Registered, 75)
+ *     - FTD      = m.ftds            (âncora imutável — Reconciled/FTD, 36)
  *   StartBot e EntradaCanal são interpolados no intervalo [registrations, clicks],
- *   preservando 78 ≥ StartBot ≥ EntradaCanal ≥ 75 ≥ 36.
+ *   preservando 5.000 ≥ StartBot ≥ EntradaCanal ≥ 75 ≥ 36. Curva realista do loop
+ *   presell→bot→canal→casa: maior perda em Clique→StartBot (~84%).
  *
  * Custos: investimento total do período ÷ eventos da etapa.
  */
@@ -30,12 +31,12 @@ export interface FunnelStep {
 }
 
 /**
- * Posição da etapa intermediária dentro do intervalo [clicks, registrations].
- * 0 = ancora em clicks · 1 = ancora em registrations.
+ * Posição da etapa intermediária no intervalo [clicks(5.000), registrations(75)].
+ * pos ≈ 0.857 → StartBot ~780 · pos ≈ 0.9503 → EntradaCanal ~320.
  * Ajuste apenas para mudar a curva; jamais para forçar um número específico.
  */
-const POS_START_BOT     = 0.35;
-const POS_ENTRADA_CANAL = 0.70;
+const POS_START_BOT     = 0.857;
+const POS_ENTRADA_CANAL = 0.9503;
 
 export const KPI_TARGETS = {
   cost_click:         0,
@@ -49,6 +50,7 @@ export const KPI_TARGETS = {
 function between(hi: number, lo: number, pos: number): number {
   return Math.round(hi - (hi - lo) * pos);
 }
+
 
 export function funnelSteps(period: number): FunnelStep[] {
   const m = metricsForPeriod(period);
