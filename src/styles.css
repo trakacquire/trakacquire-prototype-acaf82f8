@@ -48,10 +48,10 @@
   --color-surface-raised: hsl(var(--surface-raised));
   --color-surface-inset: hsl(var(--surface-inset));
   --color-zinc: hsl(var(--zinc));
-  /* Hairline — Fase D · maior alavancagem visual. Substitui a antiga
-     borda alta (#38383D) por uma linha em eggshell 6% alpha. */
-  --color-line: hsl(var(--eggshell) / 0.06);
-  --color-line-strong: hsl(var(--eggshell) / 0.10);
+  /* Hairline — Onda H1 · borda default sobe para .09 (default) e .12 (strong)
+     para dar corpo aos cards sem cair no cinza cru da referência. */
+  --color-line: hsl(var(--eggshell) / 0.09);
+  --color-line-strong: hsl(var(--eggshell) / 0.12);
   --color-line-solid: hsl(var(--line));
   --color-eggshell: hsl(var(--eggshell));
   --color-stone: hsl(var(--stone));
