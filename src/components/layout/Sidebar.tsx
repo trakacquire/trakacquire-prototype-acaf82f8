@@ -10,6 +10,7 @@ import {
   Settings, UserCircle2, Construction,
 } from 'lucide-react';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
+import { Brand } from '@/components/brand/Brand';
 
 interface SidebarItemProps {
   href: string;
