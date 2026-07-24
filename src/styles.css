@@ -216,44 +216,104 @@
 @utility text-32 { font-size: 32px; line-height: 40px; font-weight: 600; }
 @utility tabular-nums-x { font-variant-numeric: tabular-nums; }
 
-/* ==== Proofline surfaces — physical confidence ==== */
+/* ==== Fase D · Tríade tipográfica de header ==== */
+@utility kicker {
+  font-size: 10px;
+  line-height: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: hsl(var(--stone));
+  font-family: var(--font-serif-family);
+  font-style: italic;
+  font-weight: 400;
+}
+@utility page-title {
+  font-size: 34px;
+  line-height: 40px;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: hsl(var(--eggshell));
+}
+@utility page-subtitle {
+  font-size: 15px;
+  line-height: 1.5;
+  color: hsl(var(--stone));
+}
+@utility card-title  { font-size: 15px; line-height: 22px; font-weight: 600; color: hsl(var(--eggshell)); }
+@utility card-body   { font-size: 13px; line-height: 20px; color: hsl(var(--stone)); }
+@utility micro-label {
+  font-size: 10px;
+  line-height: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: hsl(var(--stone) / 0.7);
+  font-family: var(--font-mono-family);
+}
+@utility mono-value  { font-size: 13px; line-height: 20px; font-family: var(--font-mono-family); font-variant-numeric: tabular-nums; color: hsl(var(--eggshell)); }
+
+/* ==== Fase D · Superfícies recalibradas — degrau curto, borda sugerida ==== */
 @utility surface-flat {
-  background: hsl(var(--graphite));
-  border: 1px solid hsl(var(--line) / 0.6);
-  box-shadow: var(--shadow-flat);
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--eggshell) / 0.06);
 }
 @utility surface-raised {
-  background-image: var(--gradient-surface);
-  border: 1px solid hsl(var(--line) / 0.7);
-  box-shadow: var(--shadow-elevated);
+  background: hsl(var(--surface-raised));
+  border: 1px solid hsl(var(--eggshell) / 0.06);
+}
+@utility surface-inset {
+  background: hsl(var(--surface-inset));
+  border: 1px solid hsl(var(--eggshell) / 0.06);
 }
 @utility surface-floating {
-  background-image: var(--gradient-surface-raised);
-  border: 1px solid hsl(var(--line) / 0.8);
+  background: hsl(var(--surface-raised));
+  border: 1px solid hsl(var(--eggshell) / 0.10);
   box-shadow: var(--shadow-floating);
 }
 @utility surface-glass {
   background: hsl(var(--iron) / 0.55);
   backdrop-filter: blur(18px) saturate(140%);
   border: 1px solid hsl(var(--eggshell) / 0.06);
-  box-shadow: var(--shadow-elevated);
 }
 @utility surface-proof {
-  background-image: var(--gradient-proof), var(--gradient-surface);
+  background: hsl(var(--surface));
   border: 1px solid hsl(var(--proof-blue) / 0.25);
-  box-shadow: var(--shadow-proof-glow);
-}
-@utility hairline-top {
-  position: relative;
+  box-shadow: inset 0 0 0 1px hsl(var(--proof-blue) / 0.12);
 }
 @utility ring-hairline {
-  box-shadow:
-    inset 0 1px 0 0 hsl(var(--eggshell) / 0.05),
-    inset 0 0 0 1px hsl(var(--line) / 0.6);
+  box-shadow: inset 0 0 0 1px hsl(var(--eggshell) / 0.06);
 }
+@utility ring-hairline-strong {
+  box-shadow: inset 0 0 0 1px hsl(var(--eggshell) / 0.10);
+}
+@utility ring-proof {
+  box-shadow: inset 0 0 0 1px hsl(var(--proof-blue) / 0.35), 0 0 0 1px hsl(var(--proof-blue) / 0.12);
+}
+@utility hairline-divider {
+  border-top: 1px solid hsl(var(--eggshell) / 0.06);
+}
+@utility hairline-top { position: relative; }
 @utility shadow-elevated { box-shadow: var(--shadow-elevated); }
 @utility shadow-floating { box-shadow: var(--shadow-floating); }
 @utility shadow-proof-glow { box-shadow: var(--shadow-proof-glow); }
+
+/* Icon tile — glifo monocromático em quadrado 28px, hairline, raio 8 */
+@utility icon-tile {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid hsl(var(--eggshell) / 0.06);
+  background: hsl(var(--surface-raised));
+  color: hsl(var(--stone));
+  display: inline-grid;
+  place-items: center;
+  transition: color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
+}
+@utility icon-tile-active {
+  border-color: hsl(var(--proof-blue) / 0.35);
+  background: hsl(var(--surface-inset));
+  color: hsl(var(--proof-blue));
+}
+
 
 
 /* ==== Proofline motion & interaction ==== */
