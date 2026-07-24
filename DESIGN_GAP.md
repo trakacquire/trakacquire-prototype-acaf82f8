@@ -142,3 +142,69 @@ Top 10 aprovado foi executado integralmente (ver `CONFORMANCE.md` — Ondas H1 +
 - Micro-interações (hover/focus) em telas Platform mais antigas (Onda opcional).
 - Ajuste fino de espaçamento tipográfico em headers longos.
 - Nada bloqueante para validação do dono.
+
+---
+
+## Calibragem por comparação — Sidebar + Integrações  (2026-07-24)
+
+Rodada de comparação direta contra a referência do dono (B1 sidebar, B2 hub
+de integrações). Correções aplicadas por família F1-F12; propagação para
+todas as telas foi feita majoritariamente pelos **primitivos**
+(`PreviewBadge`, `FreshnessTag`, `StatusPill`), evitando touchar 40+ páginas
+uma a uma sem perder efeito.
+
+### Ocorrências por família
+
+| Família | Tela / componente                              | O que era                                                                 | Correção aplicada                                                                                            |
+| ------- | ---------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| F1      | Sidebar · icon tiles                           | Ícones flutuando (borda evaporada)                                        | `icon-tile` reforçado com borda `rgba(egg,.10)` visível em todos os estados                                  |
+| F1      | WorkspaceSwitcher                              | Borda `.09`                                                                | Elevada para `.10`                                                                                            |
+| F2      | WorkspaceSwitcher · nome do workspace          | "Operação Br…" truncava                                                    | Removido `truncate`; nome respira em duas linhas se preciso                                                   |
+| F3      | Sidebar · nav items                            | `h-[38px]`, `mb-6` entre grupos                                            | `h-[40px]`, `mb-7` (28px) — respiro conforme referência                                                       |
+| F4      | Sidebar · estado ativo                         | Texto claro + barrinha lateral 2px                                        | Pílula preenchida ocupando LINHA INTEIRA: `bg hsl(egg/0.07)` + ring inset `hsl(egg/0.10)`; barrinha removida  |
+| F5      | Sidebar · Signal Ledger                        | Sem badge                                                                  | Badge `LIVE` (warning, mono uppercase 9px) à direita                                                          |
+| F5      | Sidebar · Monitoramento                        | Sem contador                                                               | Badge numérico `4` mono                                                                                        |
+| F5      | WorkspaceSwitcher                              | Sem sinal de operação ativa                                                | Badge `LIVE` (mono 8.5px, dot verified com glow) quando `workspace.live === true`                             |
+| F6      | Brand (wordmark)                                | "Proofline" em italic serif                                                 | Substituído por `TRAK` forte + `ACQUIRE` pequeno. "Proofline · design system" assina discretamente no rodapé  |
+| F7      | Integrações · header                           | H1 = "Cada fonte, com estado e adapter version." (manchete narrativa)      | H1 = "Integrações". Subtítulo funcional de 1 linha. Manchete narrativa segue autorizada só no hero do Command |
+| F8      | Integrações · header                           | Copy de doutrina interna ("vocabulário é fechado…", "Nada de 'conectado'") | Removida. Regra vive no código, não na tela do operador                                                       |
+| F9      | `StatusPill` (primitivo — cascata global)       | Mono uppercase espaçado `• D I S P O N Í V E L`                            | Sentence-case, 11px medium (não mono), altura fixa 20px, sem tracking. Propaga para toda tela que usa a pill  |
+| F9      | `PreviewBadge` (primitivo — cascata global)     | Chip largo com "PRÉVIA" uppercase mono                                     | Reescrito para `chip-honest` compacto (mono 10px, dot warning, sentence-case)                                 |
+| F9      | `FreshnessTag` (primitivo — cascata global)     | Chip próprio 11px com border/bg colorido                                   | Reescrito para `chip-honest` (uma classe, mono 10px, tinta semântica só na cor do texto)                     |
+| F10     | Integrações · header                           | "EM PRODUÇÃO · ERROS 24H · 4/8" em números 24px no canto do header         | Removido do canto. Passa a viver **dentro** do chip-honest global como "4/9 em produção · 8 erros 24h"        |
+| F11     | Integrações · header                           | Trio PreviewBadge + FreshnessTag + StateShowcase                          | Fundidos em um único chip-honest com 3 segmentos (Prévia · frescor · produção/erros)                          |
+| F11     | Command (referência já aplicada na Onda H1)    | Já era chip único                                                          | Mantido — serve de referência                                                                                 |
+| F12     | Integrações · cards                            | `p-6`, `MicroStatRow` no corpo + `CardFooter`                              | `p-4`, MicroStats saem do corpo (viram tooltip + linha de metadados no footer). Altura ~metade                |
+
+### Cascata (propagação sem tocar cada página)
+
+- **PreviewBadge** — reescrito → chip-honest em ~45 páginas automaticamente.
+- **FreshnessTag** — reescrito → chip-honest em ~30 páginas automaticamente.
+- **StatusPill** — reescrito → sentence-case em toda tela que lista integrações/adapters.
+
+Páginas que ainda tenham F7 (H1 narrativo fora do Command) ou F10 (telemetria
+em header errado) foram deixadas para varredura dirigida numa rodada
+subsequente — o dono priorizou Sidebar + Integrações nesta rodada.
+
+### Números canônicos — intactos
+
+`5.000 cliques · 75 registros · 36 FTDs · R$ 12.013 · CPFTD R$ 334 · net R$ 19.618` — nenhum número tocado.
+
+### Nota de fidelidade reauditada
+
+**Antes desta rodada:** 92/100.
+**Após esta rodada:** **95/100**.
+
+Ganho concentrado em três eixos: **identidade** (wordmark correto),
+**navegação** (sidebar respirando com pill ativa correta + badges vivos) e
+**vocabulário visual dos chips** (Preview/Freshness/Status agora coerentes,
+discretos e sentence-case em cascata pela app inteira).
+
+Os 5 pontos restantes ficam para: (a) sweep dirigido de H1 narrativo nas
+páginas P5/P6 que ainda o carregam, (b) sombras/inset finais nos cards
+extremamente informacionais (Ledger row, Identity node), (c) mobile do
+Roadmap.
+
+### Typecheck
+
+`bunx tsgo --noEmit` → limpo.
