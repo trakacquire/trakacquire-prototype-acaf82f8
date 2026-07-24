@@ -45,8 +45,8 @@ function SidebarItem({ href, icon, label, badge }: SidebarItemProps) {
         )}
         aria-hidden
       >
-        <span className="inline-flex items-center justify-center w-3.5 h-3.5">{icon}</span>
-      </span>
+        {icon}
+
       <span className="truncate">{label}</span>
       {badge && <span className="ml-auto shrink-0">{badge}</span>}
     </Link>
