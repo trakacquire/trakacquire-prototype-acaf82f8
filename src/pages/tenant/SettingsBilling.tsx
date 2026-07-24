@@ -38,7 +38,7 @@ export default function SettingsBillingPage() {
           <div className="flex items-start justify-between">
             <div>
               <div className="text-11 uppercase tracking-wider text-stone">Plano atual</div>
-              <div className="text-18 font-medium text-eggshell mt-1">Growth · <MetricValue value={797} format="currency" className="text-18" />/mês</div>
+              <div className="text-18 font-medium text-eggshell mt-1">Growth · <MetricValue value={`R$ ${(797).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} size="sm" />/mês</div>
             </div>
             <FreshnessTag ageSeconds={60 * 30} />
           </div>
