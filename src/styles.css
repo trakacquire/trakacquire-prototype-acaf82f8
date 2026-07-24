@@ -153,7 +153,7 @@
 
   --radius: 8px;
 
-  /* Proofline depth system — physical confidence */
+  /* Proofline depth system — physical confidence (Fase F) */
   --shadow-flat: 0 1px 0 0 hsl(0 0% 100% / 0.02) inset, 0 1px 2px 0 hsl(0 0% 0% / 0.4);
   --shadow-elevated:
     0 1px 0 0 hsl(0 0% 100% / 0.04) inset,
@@ -165,12 +165,18 @@
     0 0 0 1px hsl(var(--line) / 0.8),
     0 24px 48px -16px hsl(0 0% 0% / 0.7),
     0 8px 16px -6px hsl(0 0% 0% / 0.45);
+  --shadow-node: 0 24px 70px -12px hsl(0 0% 0% / 0.42), inset 0 1px 0 0 hsl(0 0% 100% / 0.025);
   --shadow-proof-glow: 0 0 0 1px hsl(var(--proof-blue) / 0.25), 0 8px 32px -8px hsl(var(--proof-blue) / 0.35);
 
+  /* Fase F · gradientes de superfície com "peso físico" */
+  --gradient-card: linear-gradient(180deg, #151517 0%, #111113 100%);
+  --gradient-sidebar: linear-gradient(180deg, #111113 0%, #0C0C0D 100%);
   --gradient-surface: linear-gradient(180deg, hsl(var(--graphite)) 0%, hsl(var(--iron)) 100%);
   --gradient-surface-raised: linear-gradient(180deg, hsl(240 5% 13%) 0%, hsl(var(--graphite)) 100%);
   --gradient-proof: linear-gradient(135deg, hsl(var(--proof-blue) / 0.14), hsl(var(--proof-blue) / 0));
   --gradient-hairline: linear-gradient(90deg, transparent, hsl(var(--eggshell) / 0.08), transparent);
+  --gradient-eggshell-btn: linear-gradient(180deg, #F9F6EF 0%, #DED7CB 100%);
+  --gradient-proof-btn: linear-gradient(180deg, #8CA0FF 0%, #6D82E9 100%);
 }
 
 
