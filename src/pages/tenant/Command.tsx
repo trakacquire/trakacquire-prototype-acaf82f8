@@ -6,6 +6,9 @@ import { PreviewBadge } from '@/components/data/PreviewBadge';
 import { FreshnessTag } from '@/components/data/FreshnessTag';
 import { MetricValue } from '@/components/data/MetricValue';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
+import { TargetKpi } from '@/components/data/TargetKpi';
+import { BottleneckPanel } from '@/components/data/BottleneckPanel';
+import { KPI_TARGETS } from '@/lib/fake/funnelSteps';
 import { buildEvidence } from '@/lib/evidence';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
@@ -226,19 +229,21 @@ export default function CommandPage() {
               attribution: 'Last Qualified Click · janela 30d · congelado no registro',
             }))}
           />
-          <KpiCard
+          <TargetKpi
             label="Custo / FTD"
-            value={brl(m.cpftd)}
-            delta="↓ 4,8%"
-            deltaTone="verified"
-            onClick={() => openEvidence(buildEvidence({
+            value={m.cpftd}
+            format={brl}
+            target={KPI_TARGETS.cost_ftd}
+            onOpenEvidence={() => openEvidence(buildEvidence({
               label: 'Custo / FTD',
-              value: brl(m.cpftd),
+              value: `${brl(m.cpftd)} (meta < ${brl(KPI_TARGETS.cost_ftd)})`,
               formula: 'sum(spend.total) / count(ftds)',
               source: 'Derivado — Investimento ÷ FTDs oficiais',
               state: 'Reconciliado',
+              attribution: 'Semáforo: <80% meta = verified · 80–100% = warning · acima = critical',
             }))}
           />
+
           <KpiCard
             label="Net deposit"
             value={brl(m.net_deposits)}
@@ -357,6 +362,20 @@ export default function CommandPage() {
             </ul>
           </div>
         </div>
+
+        {/* ── Gargalos por etapa (diagnóstico) ─────────────────────────── */}
+        <BottleneckPanel
+          period={period}
+          onOpenEvidence={(label, value, formula) =>
+            openEvidence(buildEvidence({
+              label,
+              value,
+              formula,
+              source: 'Journey proof (dataset canônico)',
+              state: 'Reconciliado',
+            }))
+          }
+        />
         </ScenarioStateGate>
 
       </div>
