@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { AppShell } from '@/components/layout/AppShell';
+import { AppShell, useEvidence } from '@/components/layout/AppShell';
 import { IdentityGraph } from '@/components/data/IdentityGraph';
 import { db, Person } from '@/lib/fake/db';
+import { StatusChip } from '@/components/domain/StatusChip';
+import { PreviewBadge } from '@/components/data/PreviewBadge';
+import { MetricValue } from '@/components/data/MetricValue';
+import { ScenarioStateGate } from '@/components/state/ScenarioStateGate';
+import { buildEvidence } from '@/lib/evidence';
 import {
   Dialog,
   DialogContent,
@@ -15,44 +20,23 @@ function fmtTs(isoStr: string) {
   return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  Captured: '#7C91FF',
-  Linked: '#7C91FF',
-  Confirmed: '#4CAF50',
-  Reconciled: '#4CAF50',
-  Divergent: '#F1C778',
-  Failed: '#EF7D8B',
-  'Policy blocked': '#EF7D8B',
-  Orphan: '#FF9800',
-  Synthetic: '#9C27B0',
-};
-
-function StatusChip({ status }: { status: string }) {
-  const color = STATUS_COLORS[status] ?? '#888';
-  return (
-    <span className="inline-flex items-center px-2 py-0.5 rounded text-11 font-medium border" style={{ color, borderColor: color + '44', background: color + '18' }}>
-      {status}
-    </span>
-  );
-}
-
-const EVENT_TYPE_COLOR: Record<string, string> = {
-  click: '#7C91FF',
-  register: '#4CAF50',
-  ftd: '#72E6A6',
-  deposit: '#72E6A6',
-  withdrawal: '#EF7D8B',
-  postback: '#FF9800',
-  capi: '#F1C778',
-  webhook: '#9C27B0',
-  bot_message: '#7C91FF',
-  conversation_start: '#E91E63',
+const TYPE_TONE: Record<string, string> = {
+  click: 'text-proof-blue border-proof-blue/40 bg-proof-blue/10',
+  register: 'text-verified border-verified/40 bg-verified/10',
+  ftd: 'text-verified border-verified/40 bg-verified/10',
+  deposit: 'text-verified border-verified/40 bg-verified/10',
+  withdrawal: 'text-critical border-critical/40 bg-critical/10',
+  postback: 'text-warning border-warning/40 bg-warning/10',
+  capi: 'text-warning border-warning/40 bg-warning/10',
+  webhook: 'text-stone border-line bg-zinc',
+  bot_message: 'text-proof-blue border-proof-blue/40 bg-proof-blue/10',
+  conversation_start: 'text-stone border-line bg-zinc',
 };
 
 function TypeChip({ type }: { type: string }) {
-  const color = EVENT_TYPE_COLOR[type] ?? '#888';
+  const cls = TYPE_TONE[type] ?? 'text-stone border-line bg-zinc';
   return (
-    <span className="inline-flex items-center px-2 py-0.5 rounded text-11 font-mono border" style={{ color, borderColor: color + '44', background: color + '18' }}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-11 font-mono border ${cls}`}>
       {type}
     </span>
   );
@@ -106,6 +90,7 @@ export default function IdentityDetailPage({ params }: { params: { personId: str
   return (
     <AppShell breadcrumb={[{ label: 'Identity Graph', href: '/identity' }, { label: params.personId }]}>
       <div className="max-w-5xl mx-auto space-y-6">
+        <div className="flex items-center gap-2"><PreviewBadge /></div>
         {/* Header */}
         <div className="bg-graphite border border-line rounded-xl p-5 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
           <div>
@@ -179,25 +164,22 @@ export default function IdentityDetailPage({ params }: { params: { personId: str
               <p className="text-stone text-14">Nenhum evento encontrado.</p>
             ) : (
               <div className="space-y-3">
-                {personEvents.map(evt => {
-                  const dotColor = STATUS_COLORS[evt.status] ?? '#888';
-                  return (
-                    <div key={evt.id} className="flex items-start gap-3">
-                      <div className="mt-1 w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                      <div className="flex flex-wrap items-center gap-2 min-w-0">
-                        <TypeChip type={evt.type} />
-                        <StatusChip status={evt.status} />
-                        <span className="font-mono text-11 text-stone whitespace-nowrap">{fmtTs(evt.timestamp)}</span>
-                        {evt.value !== undefined && (
-                          <span className="font-mono text-12 text-eggshell">
-                            {evt.type === 'withdrawal' ? '-' : ''}R$ {evt.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                          </span>
-                        )}
-                        <span className="text-11 font-mono text-stone">{evt.latency_ms}ms</span>
-                      </div>
+                {personEvents.map(evt => (
+                  <div key={evt.id} className="flex items-start gap-3">
+                    <div className="mt-1 w-2 h-2 rounded-full flex-shrink-0 bg-proof-blue" />
+                    <div className="flex flex-wrap items-center gap-2 min-w-0">
+                      <TypeChip type={evt.type} />
+                      <StatusChip status={evt.status} />
+                      <span className="font-mono text-11 text-stone whitespace-nowrap tabular-nums">{fmtTs(evt.timestamp)}</span>
+                      {evt.value !== undefined && (
+                        <span className="font-mono text-12 text-eggshell tabular-nums">
+                          {evt.type === 'withdrawal' ? '-' : ''}R$ {evt.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </span>
+                      )}
+                      <span className="text-11 font-mono text-stone tabular-nums">{evt.latency_ms}ms</span>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             )}
           </div>

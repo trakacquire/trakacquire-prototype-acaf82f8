@@ -6,8 +6,9 @@ Matriz página × requisito. Atualizada a cada fase (P2 → P8). Célula = ✅ c
 
 ## Changelog
 
-- **2026-07-24 · Fase P2 concluída (LiveEvents, Ledger, Monitoring)** — as três páginas ganharam os 8 estados de UX via `ScenarioStateGate` (encaixa no ScenarioSelector já existente), Evidence Drawer em todo número (via `MetricValue` + payload `buildEvidence`), breadcrumb "Observe / …", tokens D1 sanitizados, mono tabular em ID/valor/timestamp/latência e (Ledger) mobile reordenado por prioridade — filtros antes da tabela, colunas secundárias colapsadas em subtexto da primária. Monitoring foi promovida à sidebar em OBSERVE (Command · Analytics · Integrações · Tracking · Domínios · **Live · Ledger · Monitoring · Players** · Automações · Mídia · Receita · Governança + rodapé). `Signals`, `EventDetail` e `Reconciliation` permanecem em `/roadmap` até fecharem suas linhas.
-- **2026-07-24 · P2 em pausa entre iterações** — próximas rodadas retomam por **P3 (Identity Graph + Players + Player360 + IdentityDetail)** e seguem P4→P8. Guilhotina de 150%: qualquer estouro corta escopo da fase e segue.
+- **2026-07-24 · Dívida da Command quitada + Backlog P2 (Signals/EventDetail/Reconciliation) + Fase P3 (Identity/IdentityDetail/Players/Player360)** — Command Dashboard ganhou `ScenarioStateGate` e Evidence Drawer em TODOS os KPIs e etapas do Journey (fórmula, fonte, frescor, estado). Signals refeita com `DataTable`, gate, `MetricValue` e evidência; EventDetail contextual do Ledger com gate + PreviewBadge + FreshnessTag; Reconciliation com gate, PreviewBadge e KPIs clicáveis que abrem evidência. P3: Identity reescrita (KPIs + DataTable com métodos e confiança + evidência), IdentityDetail usando `StatusChip` de domínio + tokens D1 (fim dos hex literais locais), Players com header serif/kicker + gate + StateShowcase, Player360 com PreviewBadge/StateShowcase/gate e `StatusChip` de domínio. Sidebar promovida: **Signals** e **Identity Graph** entram em OBSERVE.
+- **2026-07-24 · P2 concluída (LiveEvents, Ledger, Monitoring)** — 8 estados via `ScenarioStateGate`, Evidence Drawer em todo número, breadcrumb "Observe / …", tokens D1, mono tabular. Monitoring promovida à sidebar em OBSERVE.
+- Próximo: **P4 (Analytics + Revenue + Cohorts + Reports + Governance)**.
 
 
 ## Legenda das colunas
@@ -53,7 +54,7 @@ Fase esperada de detalhamento entre parênteses.
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Command | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | ⏳ | ✅ | **P1 ✔** (banner de estados na P3) |
+| Command | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ✅ | **P1/P3 ✔** |
 | Analytics | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ❌ | ❌ | ✅ | P4 |
 | Revenue | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ❌ | ❌ | ✅ | P4 |
 
@@ -76,16 +77,16 @@ Fase esperada de detalhamento entre parênteses.
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Signals | ❌ | ❌ | ✅ | ✅ | ⏳ | ✅ | ✅ | ✅ | ❌ | ❌ | P2 |
+| Signals | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P2 ✔** |
 | LiveEvents | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P2 ✔** |
-| EventDetail | ❌ | ❌ | ✅ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P2 (backlog) |
+| EventDetail | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ➖ | **P2 ✔** (contextual do Ledger) |
 | Ledger | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P2 ✔** |
 | Monitoring | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P2 ✔** |
-| Reconciliation | ❌ | ❌ | ✅ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P2 |
-| Identity | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P3 |
-| IdentityDetail | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P3 |
-| Players | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ✅ | P3 |
-| Player360 | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P3 |
+| Reconciliation | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | **P2 ✔** (contextual de Receita) |
+| Identity | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P3 ✔** |
+| IdentityDetail | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ➖ | **P3 ✔** (contextual do Identity) |
+| Players | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P3 ✔** |
+| Player360 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | ✅ | ➖ | **P3 ✔** (contextual de Players) |
 
 ### Operate
 
@@ -163,8 +164,8 @@ Fase esperada de detalhamento entre parênteses.
 |---|---|---|
 | P0 · Foundations | Tokens D1, primitivos (FreshnessTag, IntegrationStateBadge, AuditRef, MetricValue, PreviewBadge), 8 estados como componentes | ✔ concluída (tokens revertidos nesta rodada) |
 | P1 · Command | Command definitivo, funil monotônico, live feed cronológico, MetricValue, PreviewBadge, dataset canônico | ✔ concluída |
-| P2 · Signal Ledger + Observe | LiveEvents · Ledger · Monitoring com 8 estados + Evidence Drawer + DataTable + mobile reordenado. Signals/EventDetail/Reconciliation seguem em `/roadmap` até fecharem a matriz (backlog P2). | ✔ concluída em 2026-07-24 — Monitoring entrou na sidebar em Observe |
-| P3 · Identity + Players | Identity Graph, IdentityDetail, Players, Player360 | ⏸ |
+| P2 · Signal Ledger + Observe | LiveEvents · Ledger · Monitoring · Signals · EventDetail · Reconciliation | ✔ concluída em 2026-07-24 — Signals promovida à sidebar em Observe |
+| P3 · Identity + Players | Identity Graph, IdentityDetail, Players, Player360 | ✔ concluída em 2026-07-24 — Identity Graph promovida à sidebar em Observe |
 | P4 · Analytics + Revenue + Reports | Analytics, Revenue, Cohorts, Reports, ReportDetail, Governance | ⏸ |
 | P5 · Connect | Tracking, Domains, Integrations, Campaign360, Media | ⏸ |
 | P6 · Operate | Automations, FlowBuilder, Broadcasts, Segments, Inbox, Approvals | ⏸ |
