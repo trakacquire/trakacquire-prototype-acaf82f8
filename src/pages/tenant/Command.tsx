@@ -162,10 +162,10 @@ export default function CommandPage() {
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <button className="h-9 px-4 rounded-lg border border-line bg-graphite hover:bg-zinc text-13 text-eggshell transition-colors press">
+            <button className="h-9 px-4 rounded-[9px] border border-line bg-graphite hover:bg-zinc text-13 text-eggshell transition-colors press">
               Briefing diário
             </button>
-            <button className="h-9 px-4 rounded-lg bg-eggshell text-ink text-13 font-medium hover:bg-eggshell/90 transition-colors press">
+            <button className="btn-eggshell h-9 px-4 text-13">
               Abrir copiloto
             </button>
           </div>
@@ -197,14 +197,18 @@ export default function CommandPage() {
               state: pendingReconcile === 0 ? 'Reconciliado' : 'Provisório',
               freshness: lastEventAgo !== null ? `último evento há ${lastEventAgo}s` : 'sem eventos',
             }))}
-            className="text-left md:col-span-1 relative overflow-hidden rounded-xl border border-line bg-gradient-to-br from-graphite via-graphite to-iron p-4 hover:border-stone transition-colors"
+            className="text-left md:col-span-1 relative overflow-hidden rounded-xl border border-line surface-raised p-4 hover:border-stone transition-colors group"
           >
-            <div className="flex items-center gap-2 mb-3">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-verified opacity-60 animate-ping" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-verified" />
-              </span>
-              <span className="text-11 font-mono uppercase tracking-wider text-stone">Proof integrity</span>
+            <div className="flex items-center gap-3 mb-3">
+              {/* Health Orb — Fase F.3 */}
+              <span className="health-orb" aria-hidden />
+              <div className="min-w-0">
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-stone mb-0.5">Proof integrity</div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-verified dot-glow-verified" />
+                  <span className="text-11 font-mono text-verified">operacional</span>
+                </div>
+              </div>
             </div>
             <MetricValue value={proofIntegrity.toFixed(1)} unit="%" size="xl" tone="default" />
             <div className="text-11 text-stone mt-2 leading-relaxed font-mono tabular-nums">
