@@ -1085,7 +1085,9 @@ export const db = {
   revenueBySource,
   cohortData,
   funnelData,
+  journeyLinked,
   spendForPeriod,
+
 
   // Helpers
   getPerson: (id: string) => PERSONS.find(p => p.id === id),
