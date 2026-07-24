@@ -5,7 +5,8 @@ import { usePeriod } from '@/lib/context/PeriodContext';
 // PreviewBadge + FreshnessTag consolidados no chip-honest do header (Onda H1).
 
 import { MetricValue } from '@/components/data/MetricValue';
-import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
+import { ScenarioStateGate } from '@/components/state/ScenarioStateGate';
+import { useDemoScenario } from '@/lib/context/ScenarioContext';
 import { TargetKpi } from '@/components/data/TargetKpi';
 import { BottleneckPanel } from '@/components/data/BottleneckPanel';
 import { RadarPanel } from '@/components/data/RadarPanel';
