@@ -12,6 +12,7 @@ import { buildEvidence } from '@/lib/evidence';
 import { db, SignalEvent } from '@/lib/fake/db';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { IntegrationState } from '@/lib/types';
+import { TeachingError } from '@/components/data/TeachingError';
 import { Copy, Check } from 'lucide-react';
 
 type Tab = 'visao' | 'setup' | 'eventos' | 'saude' | 'logs' | 'historico';
@@ -341,43 +342,339 @@ function KPI({ label, value, tone = 'default', onOpenEvidence }: { label: string
 
 /* ── Special panels ─────────────────────────────────────────────────────── */
 
+/* ── TAP · Setup guiado (Fase R · Bloco 2) ─────────────────────────────── */
+
+const TAP_MACROS: Array<{ macro: string; maps: string; desc: string }> = [
+  { macro: '{{afp}}',                  maps: 'external_id',       desc: 'Identificador opaco do clique (AFP)' },
+  { macro: '{{customer_id}}',          maps: 'player_id',         desc: 'ID do jogador na casa' },
+  { macro: '{{registration_id}}',      maps: 'registration_id',   desc: 'ID do cadastro (idempotência)' },
+  { macro: '{{first_deposit_amount}}', maps: 'ftd_amount',        desc: 'Valor do primeiro depósito (BRL)' },
+  { macro: '{{deposit}}',              maps: 'deposit_amount',    desc: 'Valor de depósito subsequente' },
+  { macro: '{{payout_currency}}',      maps: 'currency',          desc: 'ISO 4217 (BRL, USD, EUR)' },
+  { macro: '{{campaign_id}}',          maps: 'campaign_id',       desc: 'ID da campanha atribuída' },
+  { macro: '{{brand_id}}',             maps: 'brand_id',          desc: 'ID da marca no tenant' },
+];
+
+const TAP_EVENT_MAP: Array<{ external: string; internal: string; sample: string }> = [
+  { external: 'tag: "lead"',           internal: 'lead_created',   sample: 'lead · tag=lead' },
+  { external: 'bot start',             internal: 'bot_started',    sample: 'bot_start · session_id=…' },
+  { external: 'depósito da casa',      internal: 'deposit_made',   sample: 'deposit · amount=250' },
+  { external: 'first_deposit_confirmed', internal: 'ftd_confirmed', sample: 'ftd · amount=100' },
+];
+
+const META_CAPI_MAP: Array<{ from: string; to: string; hint: string }> = [
+  { from: 'FTD',     to: 'Purchase',  hint: 'value = first_deposit_amount · currency = BRL' },
+  { from: 'Lead',    to: 'Lead',      hint: 'em, ph SHA-256 quando disponíveis' },
+  { from: 'Deposit', to: 'Subscribe', hint: 'value = deposit · currency = BRL' },
+];
+
+const TAP_SYNC_HISTORY: Array<{ at: string; platform: string; imported: number; errors: number; status: 'Sucesso' | 'Parcial' | 'Erro' }> = [
+  { at: '2026-07-23 11:52', platform: 'TAP Reporting API', imported: 96, errors: 0, status: 'Sucesso' },
+  { at: '2026-07-23 11:37', platform: 'TAP Reporting API', imported: 91, errors: 0, status: 'Sucesso' },
+  { at: '2026-07-23 11:22', platform: 'TAP Postback',      imported: 84, errors: 2, status: 'Parcial' },
+  { at: '2026-07-23 11:07', platform: 'TAP Reporting API', imported: 88, errors: 0, status: 'Sucesso' },
+  { at: '2026-07-23 10:52', platform: 'TAP Reporting API', imported: 0,  errors: 3, status: 'Erro' },
+];
+
+interface TapTestEntry {
+  at: string;
+  event: string;
+  received: number;
+  code?: string;
+}
+
 function SpecialTAP({ openEvidence, postbackUrl, copied, copy }: { openEvidence: (d: any) => void; postbackUrl: string; copied: string | null; copy: (v: string, k: string) => void; }) {
   const [semaforo, setSemaforo] = useState<'idle' | 'testing' | 'ok'>('idle');
-  const runTest = () => { setSemaforo('testing'); setTimeout(() => setSemaforo('ok'), 900); };
+  const [capiOn, setCapiOn] = useState(true);
+  const [testEvent, setTestEvent] = useState<'lead' | 'ftd' | 'deposit'>('ftd');
+  const [testCode, setTestCode] = useState('');
+  const [testLog, setTestLog] = useState<TapTestEntry[]>([
+    { at: 'há 4min',  event: 'ftd',     received: 1, code: 'TEST12345' },
+    { at: 'há 21min', event: 'deposit', received: 3 },
+    { at: 'há 1h',    event: 'lead',    received: 1 },
+  ]);
+  const [mapping, setMapping] = useState(TAP_EVENT_MAP);
+
+  const baseUrl = 'https://ingest.trakacquire.com/webhook/tap/{{brand_id}}';
+  const templateAll = `${baseUrl}?event={{event}}&afp={{afp}}&customer_id={{customer_id}}&registration_id={{registration_id}}&amount={{first_deposit_amount}}&currency={{payout_currency}}&campaign_id={{campaign_id}}`;
+  const templateLead    = `${baseUrl}?event=lead&afp={{afp}}&registration_id={{registration_id}}&campaign_id={{campaign_id}}`;
+  const templateFtd     = `${baseUrl}?event=ftd&afp={{afp}}&customer_id={{customer_id}}&amount={{first_deposit_amount}}&currency={{payout_currency}}`;
+  const templateDeposit = `${baseUrl}?event=deposit&afp={{afp}}&customer_id={{customer_id}}&amount={{deposit}}&currency={{payout_currency}}`;
+
+  const runTest = () => {
+    setSemaforo('testing');
+    setTimeout(() => {
+      setSemaforo('ok');
+      setTestLog((prev) => [{ at: 'agora', event: testEvent, received: 1, code: testCode || undefined }, ...prev].slice(0, 8));
+    }, 900);
+  };
+
   return (
-    <div className="bg-graphite border border-line rounded-xl p-5 space-y-4">
-      <div className="flex items-center gap-3">
-        <h3 className="text-14 font-semibold text-eggshell">Setup TAP · postback + reconciliação</h3>
-        <StatusChip status="Reconciled" />
-      </div>
-      <div>
-        <div className="text-11 font-mono uppercase tracking-wider text-stone mb-1">URL de postback (única)</div>
-        <div className="flex items-center gap-2">
-          <code className="flex-1 bg-zinc border border-line rounded-md px-3 py-2 font-mono text-12 text-eggshell truncate">{postbackUrl}</code>
-          <button onClick={() => copy(postbackUrl, 'pb')} className="border border-line rounded-md px-3 py-2 text-stone hover:text-eggshell hover:border-stone">
-            {copied === 'pb' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-          </button>
+    <div className="space-y-4">
+      {/* URL base + templates por evento */}
+      <div className="bg-graphite border border-line rounded-xl p-5 space-y-4">
+        <div className="flex items-center gap-3">
+          <h3 className="text-14 font-semibold text-eggshell">Setup guiado TAP · postback + reconciliação</h3>
+          <StatusChip status="Reconciled" />
+        </div>
+
+        <div>
+          <div className="text-11 font-mono uppercase tracking-wider text-stone mb-1">URL base de postback</div>
+          <div className="flex items-center gap-2">
+            <code className="flex-1 bg-zinc border border-line rounded-md px-3 py-2 font-mono text-12 text-eggshell truncate">{postbackUrl}</code>
+            <button onClick={() => copy(postbackUrl, 'pb')} className="border border-line rounded-md px-3 py-2 text-stone hover:text-eggshell hover:border-stone">
+              {copied === 'pb' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div className="text-11 font-mono uppercase tracking-wider text-stone mb-1">Template completo (todas as macros)</div>
+          <div className="flex items-center gap-2">
+            <code className="flex-1 bg-zinc border border-line rounded-md px-3 py-2 font-mono text-11 text-eggshell truncate">{templateAll}</code>
+            <button onClick={() => copy(templateAll, 'tpl_all')} className="border border-line rounded-md px-3 py-2 text-stone hover:text-eggshell hover:border-stone">
+              {copied === 'tpl_all' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {[
+            { label: 'Template · lead',    tpl: templateLead,    key: 'tpl_lead' },
+            { label: 'Template · ftd',     tpl: templateFtd,     key: 'tpl_ftd' },
+            { label: 'Template · deposit', tpl: templateDeposit, key: 'tpl_deposit' },
+          ].map((t) => (
+            <div key={t.key} className="border border-line rounded-md p-3 bg-zinc/40">
+              <div className="text-11 font-mono uppercase text-stone mb-1">{t.label}</div>
+              <code className="block font-mono text-11 text-eggshell break-all mb-2">{t.tpl}</code>
+              <button onClick={() => copy(t.tpl, t.key)} className="text-11 border border-line rounded-md px-2 py-1 text-stone hover:text-eggshell hover:border-stone inline-flex items-center gap-1">
+                {copied === t.key ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar</>}
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Passo a passo numerado */}
+        <div className="border-t border-line pt-4">
+          <div className="text-11 font-mono uppercase tracking-wider text-stone mb-3">Passo a passo · painel TAP</div>
+          <ol className="space-y-2 text-13 text-stone">
+            {[
+              'Abra o painel TAP → Webhooks → Novo webhook.',
+              'Cole a URL base acima no campo "Endpoint URL".',
+              'Selecione os eventos: FTD, Deposit, Lead.',
+              'Cole os templates de macros nos campos "Payload" de cada evento.',
+              'Salve e clique em "Enviar postback de teste" abaixo para validar assinatura.',
+            ].map((step, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-zinc border border-line font-mono text-11 text-eggshell flex items-center justify-center tabular-nums">{i + 1}</span>
+                <span className="pt-0.5">{step}</span>
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
-      <div className="flex items-center gap-4 flex-wrap">
-        <button onClick={runTest} className="text-13 border border-line rounded-md px-4 py-2 bg-zinc text-eggshell hover:border-stone">Enviar postback de teste</button>
-        <span className={`inline-flex items-center gap-2 text-12 font-mono ${semaforo === 'ok' ? 'text-verified' : semaforo === 'testing' ? 'text-warning' : 'text-stone'}`}>
-          <span className={`w-2 h-2 rounded-full ${semaforo === 'ok' ? 'bg-verified' : semaforo === 'testing' ? 'bg-warning animate-pulse' : 'bg-stone'}`} />
-          {semaforo === 'ok' ? 'Postback recebido · assinatura OK · 87ms' : semaforo === 'testing' ? 'Enviando…' : 'Aguardando teste'}
-        </span>
+
+      {/* Tabela de macros */}
+      <div className="bg-graphite border border-line rounded-xl overflow-hidden">
+        <div className="px-5 py-3 border-b border-line flex items-center justify-between">
+          <h3 className="text-14 font-semibold text-eggshell">Macros disponíveis</h3>
+          <span className="text-11 font-mono text-stone">{TAP_MACROS.length} macros</span>
+        </div>
+        <table className="w-full text-13">
+          <thead>
+            <tr className="border-b border-line bg-iron/50">
+              {['Macro TAP', 'Campo interno', 'Descrição'].map((h) => (
+                <th key={h} className="text-left text-11 font-mono uppercase text-stone px-5 py-2">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {TAP_MACROS.map((m) => (
+              <tr key={m.macro} className="border-b border-line last:border-0">
+                <td className="px-5 py-2 font-mono text-12 text-eggshell">{m.macro}</td>
+                <td className="px-5 py-2 font-mono text-12 text-proof-blue">{m.maps}</td>
+                <td className="px-5 py-2 text-stone">{m.desc}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <div className="pt-3 border-t border-line grid grid-cols-3 gap-4">
+
+      {/* Meta CAPI auto-fire toggle */}
+      <div className="bg-graphite border border-line rounded-xl p-5 space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-14 font-semibold text-eggshell">Disparar Meta CAPI automaticamente</h3>
+            <p className="text-12 text-stone mt-1">Cada postback TAP dispara o evento Meta correspondente com dedup por <span className="font-mono text-eggshell">event_id</span>.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setCapiOn((v) => !v)} className={`px-3 py-1.5 rounded-md border text-12 font-mono ${capiOn ? 'bg-verified/10 text-verified border-verified/30' : 'bg-zinc text-stone border-line'}`}>
+              {capiOn ? 'ON' : 'OFF'}
+            </button>
+            <button className="text-12 font-mono border border-line rounded-md px-3 py-1.5 text-stone hover:text-eggshell hover:border-stone">Rotacionar token</button>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 border-t border-line pt-3">
+          {META_CAPI_MAP.map((m) => (
+            <div key={m.from} className="border border-line rounded-md p-3 bg-zinc/40">
+              <div className="font-mono text-12 text-eggshell">{m.from} <span className="text-stone">→</span> <span className="text-proof-blue">{m.to}</span></div>
+              <div className="text-11 text-stone mt-1">{m.hint}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Teste ao vivo */}
+      <div className="bg-graphite border border-line rounded-xl p-5 space-y-4">
+        <div className="flex items-center gap-3">
+          <h3 className="text-14 font-semibold text-eggshell">Teste ao vivo</h3>
+          <StatusChip status={semaforo === 'ok' ? 'Confirmed' : semaforo === 'testing' ? 'Captured' : 'Captured'} />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <label className="flex flex-col gap-1 md:col-span-1">
+            <span className="text-11 font-mono uppercase text-stone">Evento</span>
+            <select value={testEvent} onChange={(e) => setTestEvent(e.target.value as any)} className="bg-zinc border border-line rounded-md px-3 py-2 text-13 text-eggshell">
+              <option value="lead">lead</option>
+              <option value="ftd">ftd</option>
+              <option value="deposit">deposit</option>
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 md:col-span-2">
+            <span className="text-11 font-mono uppercase text-stone">test_event_code (opcional)</span>
+            <input value={testCode} onChange={(e) => setTestCode(e.target.value)} placeholder="TEST12345" className="bg-zinc border border-line rounded-md px-3 py-2 font-mono text-12 text-eggshell placeholder:text-stone/60" />
+          </label>
+          <button onClick={runTest} className="self-end text-13 border border-line rounded-md px-4 py-2 bg-zinc text-eggshell hover:border-stone">Enviar teste</button>
+        </div>
+        <div className="flex items-center gap-2 text-12 font-mono">
+          <span className={`w-2 h-2 rounded-full ${semaforo === 'ok' ? 'bg-verified' : semaforo === 'testing' ? 'bg-warning animate-pulse' : 'bg-stone'}`} />
+          <span className={semaforo === 'ok' ? 'text-verified' : semaforo === 'testing' ? 'text-warning' : 'text-stone'}>
+            {semaforo === 'ok' ? 'Postback recebido · assinatura OK · 87ms' : semaforo === 'testing' ? 'Enviando…' : 'Aguardando teste'}
+          </span>
+        </div>
+
+        <div className="border-t border-line pt-3">
+          <div className="text-11 font-mono uppercase tracking-wider text-stone mb-2">Histórico de testes</div>
+          <div className="divide-y divide-line border border-line rounded-md overflow-hidden">
+            {testLog.map((t, i) => (
+              <button
+                key={i}
+                onClick={() => openEvidence(buildEvidence({
+                  label: `Teste TAP · ${t.event}`,
+                  value: `${t.received} evento(s)`,
+                  formula: 'count(webhook.received) where signature = valid',
+                  source: 'TAP webhook (test)',
+                  freshness: t.at,
+                  state: 'Reconciliado',
+                  view: 'operational',
+                }))}
+                className="w-full text-left px-3 py-2 flex items-center gap-3 hover:bg-iron"
+              >
+                <StatusChip status="Confirmed" />
+                <span className="font-mono text-12 text-eggshell">{t.event}</span>
+                {t.code && <span className="font-mono text-11 text-stone">code={t.code}</span>}
+                <span className="text-12 text-stone flex-1">Enviado · {t.received} evento(s) recebido(s)</span>
+                <span className="font-mono text-11 text-stone tabular-nums">{t.at}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Mapeamento evento externo → interno */}
+      <div className="bg-graphite border border-line rounded-xl overflow-hidden">
+        <div className="px-5 py-3 border-b border-line flex items-center justify-between">
+          <h3 className="text-14 font-semibold text-eggshell">Mapeamento de eventos externos → internos</h3>
+          <span className="text-11 font-mono text-stone">{mapping.length} regras</span>
+        </div>
+        <table className="w-full text-13">
+          <thead>
+            <tr className="border-b border-line bg-iron/50">
+              {['Externo (TAP)', '→', 'Interno (Proofline)', 'Exemplo', 'Ação'].map((h) => (
+                <th key={h} className="text-left text-11 font-mono uppercase text-stone px-4 py-2">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {mapping.map((m, i) => (
+              <tr key={m.internal} className="border-b border-line last:border-0">
+                <td className="px-4 py-2 font-mono text-12 text-eggshell">{m.external}</td>
+                <td className="px-4 py-2 text-stone">→</td>
+                <td className="px-4 py-2">
+                  <input
+                    value={m.internal}
+                    onChange={(e) => setMapping((prev) => prev.map((x, j) => j === i ? { ...x, internal: e.target.value } : x))}
+                    className="bg-zinc border border-line rounded-md px-2 py-1 font-mono text-12 text-proof-blue w-56"
+                  />
+                </td>
+                <td className="px-4 py-2 font-mono text-11 text-stone">{m.sample}</td>
+                <td className="px-4 py-2">
+                  <button onClick={() => setMapping((prev) => prev.filter((_, j) => j !== i))} className="text-11 font-mono text-stone hover:text-critical">Remover</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Histórico de sincronização */}
+      <div className="bg-graphite border border-line rounded-xl overflow-hidden">
+        <div className="px-5 py-3 border-b border-line flex items-center justify-between">
+          <h3 className="text-14 font-semibold text-eggshell">Histórico de sincronização</h3>
+          <span className="text-11 font-mono text-stone">últimos {TAP_SYNC_HISTORY.length} batches</span>
+        </div>
+        <table className="w-full text-13">
+          <thead>
+            <tr className="border-b border-line bg-iron/50">
+              {['Data', 'Plataforma', 'Importados', 'Erros', 'Status'].map((h) => (
+                <th key={h} className="text-left text-11 font-mono uppercase text-stone px-4 py-2">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {TAP_SYNC_HISTORY.map((r, i) => (
+              <tr key={i} className="border-b border-line last:border-0 hover:bg-iron cursor-pointer" onClick={() => openEvidence(buildEvidence({
+                label: `Sync ${r.platform}`,
+                value: `${r.imported} importados · ${r.errors} erros`,
+                formula: 'sum(batch.rows_imported) · sum(batch.rows_error)',
+                source: r.platform,
+                freshness: r.at,
+                state: r.status === 'Sucesso' ? 'Reconciliado' : r.status === 'Parcial' ? 'Provisório' : 'Divergente',
+                view: 'operational',
+              }))}>
+                <td className="px-4 py-2 font-mono text-11 text-stone tabular-nums">{r.at}</td>
+                <td className="px-4 py-2 text-eggshell">{r.platform}</td>
+                <td className="px-4 py-2 font-mono text-12 text-eggshell tabular-nums text-right">{r.imported}</td>
+                <td className="px-4 py-2 font-mono text-12 tabular-nums text-right"><span className={r.errors > 0 ? 'text-warning' : 'text-verified'}>{r.errors}</span></td>
+                <td className="px-4 py-2">
+                  <StatusChip status={r.status === 'Sucesso' ? 'Confirmed' : r.status === 'Parcial' ? 'Divergent' : 'Failed'} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Erros que ensinam */}
+      <TeachingError
+        code="#200"
+        cause="Missing Permissions"
+        action="Gere um token com a permissão ads_read e atualize o Access Token na integração Meta."
+        where="Business Manager → Usuários do sistema → Gerar token · escopo ads_read"
+        hint="Tokens CAPI-only (como o atual) só servem para enviar eventos, não para puxar dados de campanha."
+      />
+
+      <div className="pt-2 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <div className="text-11 font-mono uppercase text-stone mb-1">Postbacks (30d)</div>
-          <MetricValue value="2.148" size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Postbacks TAP 30d', value: '2.148', formula: 'count(events where type in [ftd, deposit])', source: 'TAP webhook' }))} />
+          <MetricValue value="2.148" size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Postbacks TAP 30d', value: '2.148', formula: 'count(events where type in [ftd, deposit])', source: 'TAP webhook', view: 'operational' }))} />
         </div>
         <div>
           <div className="text-11 font-mono uppercase text-stone mb-1">Reporting API (30d)</div>
-          <MetricValue value="2.148" size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Reporting API 30d', value: '2.148', formula: 'sum(reporting_api.deposits_count)', source: 'TAP Reporting API' }))} />
+          <MetricValue value="2.148" size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Reporting API 30d', value: '2.148', formula: 'sum(reporting_api.deposits_count)', source: 'TAP Reporting API', view: 'operational' }))} />
         </div>
         <div>
           <div className="text-11 font-mono uppercase text-stone mb-1">Divergência</div>
-          <MetricValue value="0" size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Divergência postback × Reporting', value: '0', formula: 'abs(postbacks - reporting)', source: 'Reconciliation engine', state: 'Reconciliado' }))} />
+          <MetricValue value="0" size="sm" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Divergência postback × Reporting', value: '0', formula: 'abs(postbacks - reporting)', source: 'Reconciliation engine', state: 'Reconciliado', view: 'operational' }))} />
         </div>
       </div>
     </div>

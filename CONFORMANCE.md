@@ -188,3 +188,34 @@ Fase esperada de detalhamento entre parênteses.
 
 
 **Regra de prévia rasa (Product-Map §0):** cada página fora da fase corrente exibe explicitamente o banner "Esta tela será detalhada na fase PN". Nenhuma tela finge estar pronta.
+
+## Changelog · Fase R · Turno 2 (2026-07-24)
+
+**Correção crítica no funil de aquisição (`src/lib/fake/funnelSteps.ts`)**
+- Reescrito com **ancoragem de ponta a ponta**: Clique = `clicks` (78) · Cadastro = `registrations` (75) · FTD = `ftds` (36) — âncoras JAMAIS clampados.
+- StartBot e Entrada Canal agora são **interpolados** no intervalo [registrations, clicks] via `between(hi, lo, pos)` (POS 0.35 / 0.70), gerando 78 ≥ 77 ≥ 76 ≥ 75 ≥ 36 (monotonia preservada sem rebaixar âncoras).
+- Adicionado **assert de coerência** que lança se qualquer âncora divergir de `metricsForPeriod` ou se a monotonia quebrar.
+- Cabeçalho documenta: "âncoras nunca são clampados; só as etapas intermediárias são derivadas".
+
+**Duas vistas da mesma verdade declaradas (`src/lib/fake/db.ts`)**
+- Cabeçalho do dataset canônico agora explicita as duas vistas:
+  - Journey proof (Captured → Linked → Registered → Confirmed → Reconciled) = **cadeia de prova**
+  - Funil de aquisição (Clique → StartBot → EntradaCanal → Cadastro → FTD) = **comportamento operacional**
+- Ambas partilham as mesmas âncoras (78 · 36).
+
+**EvidencePayload ganhou `view` (`src/lib/evidence.ts`)**
+- Campo `view: 'journey_proof' | 'acquisition_funnel' | 'operational'`.
+- `EvidenceDrawer` exibe chip "Vista: …" ao lado de estado + frescor.
+
+**Experts renomeados (`src/lib/fake/experts.ts`)**
+- Operação Tainá (cliente-zero contratual, DECISIONS.md Parte III): **Tainá Souza · Renata Alves · Jeferson Lima · Marcos Vinícius · Larissa Prado · Gabriel Menezes**.
+
+**Bloco 2 · Integration360 / TAP setup guiado (`src/pages/tenant/Integration360.tsx`)**
+- URL base copiável + **template completo** com macros + **3 templates por evento** (lead · ftd · deposit) com botão Copiar dedicado.
+- **Tabela de 8 macros** ({{afp}}, {{customer_id}}, {{registration_id}}, {{first_deposit_amount}}, {{deposit}}, {{payout_currency}}, {{campaign_id}}, {{brand_id}}) mapeando para o campo interno.
+- Passo a passo numerado para o painel TAP.
+- Toggle **"Disparar Meta CAPI automaticamente"** com mapeamento visível (FTD→Purchase · Lead→Lead · Deposit→Subscribe) e ação **"Rotacionar token"**.
+- **Teste ao vivo**: seletor de evento + campo `test_event_code` + botão "Enviar teste" com histórico ("Enviado · evento · N evento(s) recebido(s) · há X"), StatusChip fechado e Evidence por linha (`view: 'operational'`).
+- **Mapeamento externo → interno** editável em DataTable (tag "lead" → lead_created; bot start → bot_started; depósito da casa → deposit_made; first_deposit_confirmed → ftd_confirmed).
+- **Histórico de sincronização** em DataTable (data · plataforma · importados · erros · Status Sucesso/Parcial/Erro) com Evidence por linha.
+- Novo componente `src/components/data/TeachingError.tsx` (código + causa + ação + onde + hint) instanciado com o exemplo canônico "(#200) Missing Permissions".

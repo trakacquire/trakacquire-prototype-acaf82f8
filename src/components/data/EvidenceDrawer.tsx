@@ -28,12 +28,17 @@ export function EvidenceDrawer({ isOpen, onClose, data }: EvidenceDrawerProps) {
               <h3 className="text-24 font-mono font-bold mb-1">{data.label || 'Metric'}</h3>
               <div className="text-32 font-mono text-eggshell mb-4">{data.value}</div>
               
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <StatusChip status={data.state === 'Provisório' ? 'Divergent' : 'Reconciled'} />
                 <span className="inline-flex items-center px-2 py-0.5 rounded-[6px] border border-line bg-zinc text-11 font-medium text-stone">
                   <Clock className="w-3 h-3 mr-1" />
                   {data.freshness || 'atualizado há 5m'}
                 </span>
+                {data.view && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-[6px] border border-line bg-zinc text-11 font-mono text-stone">
+                    Vista: {data.view === 'journey_proof' ? 'Cadeia de prova' : data.view === 'acquisition_funnel' ? 'Funil de aquisição' : 'Operacional'}
+                  </span>
+                )}
               </div>
             </div>
 
