@@ -97,29 +97,42 @@ export default function IntegrationsPage() {
   return (
     <AppShell breadcrumb={[{ label: 'Connect', href: '/integrations' }, { label: 'Integrações' }]}>
       <div className="max-w-7xl mx-auto space-y-10 py-10 px-10">
-        {/* Header: kicker / título / subtítulo */}
+        {/* Header (H1 = nome da página · chip único de meta-estado global) */}
         <header className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-6">
           <div className="min-w-0">
-            <div className="kicker mb-3">Connect · Integration hub</div>
-            <h1 className="page-title">Cada fonte, com estado e adapter version.</h1>
-            <p className="page-subtitle mt-2 max-w-2xl">
-              O vocabulário é fechado — Ativa · Disponível · Restrita · Erro. Cada card carrega a versão do adapter, o número de contas ligadas e um botão único de ação. Nada de "conectado".
+            <div className="eyebrow mb-2">Connect</div>
+            <h1 className="page-title">Integrações</h1>
+            <p className="page-subtitle mt-1.5 max-w-2xl">
+              Conecte mídia, mensageria, revenue providers e infraestrutura por contratos versionados e observáveis.
             </p>
-            <div className="flex items-center gap-3 mt-4 flex-wrap">
-              <PreviewBadge />
-              <FreshnessTag ageSeconds={ageAgo(lastEventFor('ftd'))} source="TAP · Meta · Telegram" />
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span className="chip-honest">
+                <span className="w-1 h-1 rounded-full bg-warning" />
+                Prévia
+                <span className="chip-honest-sep" />
+                <FreshnessTagInline seconds={ageAgo(lastEventFor('ftd'))} />
+                <span className="chip-honest-sep" />
+                <span className={totalErrors > 0 ? 'text-warning' : 'text-verified'}>
+                  {totalProd}/{integrations.length} em produção · {totalErrors} erros 24h
+                </span>
+              </span>
               <StateShowcase />
             </div>
           </div>
-          <div className="hidden md:flex flex-col items-end gap-2 shrink-0">
-            <span className="micro-label">Em produção · Erros 24h</span>
-            <div className="flex items-baseline gap-3">
-              <span className="mono-value text-24 text-eggshell tabular-nums leading-none">{totalProd}</span>
-              <span className="text-stone">/</span>
-              <span className={`mono-value text-24 tabular-nums leading-none ${totalErrors > 0 ? 'text-warning' : 'text-verified'}`}>{totalErrors}</span>
-            </div>
+          <div className="hidden md:flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => navigate('/roadmap')}
+              className="h-9 px-3 rounded-[9px] border border-line bg-graphite hover:bg-zinc text-13 text-eggshell transition-colors press"
+            >
+              Ver documentação
+            </button>
+            <button type="button" className="btn-eggshell h-9 px-4 text-13">
+              + Nova integração
+            </button>
           </div>
         </header>
+
 
         <ScenarioStateGate emptyTitle="Nenhuma integração configurada" emptyDescription="Comece pela provedora de receita." emptyPrerequisite="Um adapter em Production é pré-requisito para o Signal Ledger.">
           {/* Filtros */}
