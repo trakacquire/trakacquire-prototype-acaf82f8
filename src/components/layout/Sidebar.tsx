@@ -114,6 +114,9 @@ export function Sidebar() {
 
         <SidebarGroup title="Operate">
           <SidebarItem href="/automations" icon={<Zap className="w-4 h-4" />} label="Automações" />
+          <SidebarItem href="/broadcasts" icon={<Send className="w-4 h-4" />} label="Broadcasts" />
+          <SidebarItem href="/inbox" icon={<InboxIcon className="w-4 h-4" />} label="Caixa de Entrada" />
+          <SidebarItem href="/approvals" icon={<GitPullRequestArrow className="w-4 h-4" />} label="Aprovações" />
           <SidebarItem href="/media" icon={<Megaphone className="w-4 h-4" />} label="Mídia" />
         </SidebarGroup>
 
