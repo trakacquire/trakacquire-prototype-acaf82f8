@@ -9,6 +9,7 @@ import { DataTable, ColumnDef } from '@/components/data/DataTable';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
 import { buildEvidence } from '@/lib/evidence';
 import { LINKS, TrackingLink, metricsForPeriod, spendForPeriod } from '@/lib/fake/db';
+import { DiagnosticPanel, DiagnosticItem } from '@/components/data/DiagnosticPanel';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const LOOP_LABEL: Record<string, string> = {
@@ -25,6 +26,7 @@ export default function TrackingPage() {
   const { openEvidence } = useEvidence();
   const isMobile = useIsMobile();
   const [loop, setLoop] = useState<'all' | 'presell → bot' | 'bot → canal'>('all');
+  const [diagnostic, setDiagnostic] = useState<string | null>(null);
 
   const totalSpend = spendForPeriod(30).total;
   const totalClicks = LINKS.reduce((s, l) => s + l.unique_clicks, 0) || 1;
@@ -35,7 +37,32 @@ export default function TrackingPage() {
     return { ...l, loop: LOOP_LABEL[l.campaign_id ?? 'undefined'] ?? 'bot → canal', cpftd, conv };
   }), [totalClicks, totalSpend]);
 
-  const filtered = loop === 'all' ? rows : rows.filter((r) => r.loop === loop);
+  // Diagnósticos — cor semântica (verified/warning/critical)
+  const isSemEvento = (r: Row) => r.clicks === 0;
+  const isQueda     = (r: Row) => r.clicks >= 50 && r.conv < 3;
+  const isErro      = (r: Row) => r.status === 'archived';
+  const isUtmIncompleta = (r: Row) => !r.campaign_id;
+
+  const diagnostics: DiagnosticItem[] = [
+    { key: 'sem_evento',  label: 'Sem evento',           description: 'Links criados sem cliques registrados.', count: rows.filter(isSemEvento).length, tone: rows.filter(isSemEvento).length ? 'warning' : 'verified' },
+    { key: 'queda_conv',  label: 'Queda de conversão',   description: 'Conv. < 3% com volume mínimo.',          count: rows.filter(isQueda).length,     tone: rows.filter(isQueda).length ? 'warning' : 'verified' },
+    { key: 'erro',        label: 'Com erro',             description: 'Links arquivados ou em falha.',           count: rows.filter(isErro).length,      tone: rows.filter(isErro).length ? 'critical' : 'verified' },
+    { key: 'utm_incompl', label: 'UTMs incompletas',     description: 'Sem campanha vinculada.',                 count: rows.filter(isUtmIncompleta).length, tone: rows.filter(isUtmIncompleta).length ? 'warning' : 'verified' },
+  ];
+
+  const byDiagnostic = (r: Row): boolean => {
+    switch (diagnostic) {
+      case 'sem_evento':  return isSemEvento(r);
+      case 'queda_conv':  return isQueda(r);
+      case 'erro':        return isErro(r);
+      case 'utm_incompl': return isUtmIncompleta(r);
+      default:            return true;
+    }
+  };
+
+  const filtered = rows
+    .filter((r) => loop === 'all' ? true : r.loop === loop)
+    .filter(byDiagnostic);
   const m30 = metricsForPeriod(30);
 
   const columns: ColumnDef<Row>[] = [
@@ -88,6 +115,17 @@ export default function TrackingPage() {
             <KPI label="Investimento" value={`R$ ${m30.total_spend.toLocaleString('pt-BR')}`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Investimento 30d', value: `R$ ${m30.total_spend.toLocaleString('pt-BR')}`, formula: 'meta_spend + tiktok_spend', source: 'Meta + TikTok spend' }))} />
             <KPI label="CPFTD" value={`R$ ${m30.cpftd.toLocaleString('pt-BR')}`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Custo por FTD', value: `R$ ${m30.cpftd.toLocaleString('pt-BR')}`, formula: 'total_spend / ftds', source: 'Command dataset canônico' }))} />
           </div>
+
+          {/* Diagnóstico dos links — clique filtra a tabela */}
+          <section className="space-y-2">
+            <div className="flex items-baseline justify-between">
+              <h3 className="text-14 font-semibold text-eggshell">Diagnóstico</h3>
+              <span className="text-11 font-mono text-stone tabular-nums">
+                {diagnostic ? 'filtro ativo · clique novamente para limpar' : `${rows.length} links inspecionados`}
+              </span>
+            </div>
+            <DiagnosticPanel items={diagnostics} active={diagnostic} onSelect={setDiagnostic} />
+          </section>
 
           <div className="flex flex-wrap items-center gap-2 bg-graphite border border-line rounded-xl p-3">
             {(['all', 'presell → bot', 'bot → canal'] as const).map((o) => (

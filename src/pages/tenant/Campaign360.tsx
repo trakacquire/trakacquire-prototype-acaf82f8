@@ -8,6 +8,9 @@ import { StatusChip } from '@/components/domain/StatusChip';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
 import { buildEvidence } from '@/lib/evidence';
 import { CAMPAIGNS, PERSONS, spendForPeriod } from '@/lib/fake/db';
+import { funnelSteps } from '@/lib/fake/funnelSteps';
+import { TargetKpi } from '@/components/data/TargetKpi';
+import { expertForPerson } from '@/lib/fake/experts';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 
 interface ActionPlan {
@@ -42,6 +45,31 @@ export default function Campaign360Page() {
   const cpm = campaign.source === 'meta' ? 12.4 : 8.7;
   const ctr = campaign.source === 'meta' ? 1.8 : 2.4;
 
+  // Custos por etapa (proporcional ao share da campanha no funil canônico)
+  const globalSteps = funnelSteps(30);
+  const clicksAll = globalSteps.find((s) => s.key === 'click')?.count ?? 1;
+  const allPersons = PERSONS.filter((p) => p.campaign_id === campaign.id);
+  const clicksThis = Math.max(allPersons.length, ftds);
+  const shareClicks = clicksAll > 0 ? clicksThis / clicksAll : 0;
+  const stageCosts = globalSteps
+    .filter((s) => s.key !== 'click')
+    .map((s) => {
+      const events = Math.max(1, Math.round(s.count * shareClicks));
+      return { ...s, count: events, cost: Math.round(spend30 / events) };
+    });
+
+  // Expert dominante desta campanha
+  const expertCounts = new Map<string, { name: string; count: number }>();
+  allPersons.forEach((p) => {
+    const e = expertForPerson(p.id);
+    if (!e) return;
+    const cur = expertCounts.get(e.id) ?? { name: e.name, count: 0 };
+    cur.count++;
+    expertCounts.set(e.id, cur);
+  });
+  const topExpert = [...expertCounts.entries()].sort((a, b) => b[1].count - a[1].count)[0];
+  const brl = (n: number) => 'R$ ' + Math.round(n).toLocaleString('pt-BR');
+
   const toggle = (id: string) => {
     setExpanded((prev) => {
       const n = new Set(prev);
@@ -64,6 +92,7 @@ export default function Campaign360Page() {
               <PreviewBadge />
               <StatusChip status={campaign.status === 'active' ? 'Confirmed' : 'Captured'} />
               <FreshnessTag ageSeconds={60 * 45} source={`${campaign.source === 'meta' ? 'Meta' : 'TikTok'} Ads · snapshot 45min`} />
+              {topExpert ? <span className="text-11 font-mono text-eggshell px-2 py-0.5 rounded border border-line bg-zinc/60">Expert · {topExpert[1].name}</span> : null}
               <StateShowcase />
             </div>
             <h1 className="text-eggshell font-sans font-semibold tracking-tight text-24">{campaign.name}</h1>
@@ -92,6 +121,36 @@ export default function Campaign360Page() {
               </div>
             </div>
           </div>
+
+          {/* Custo por etapa (StartBot · Canal · Cadastro · FTD) */}
+          <section className="space-y-3">
+            <div className="flex items-baseline justify-between">
+              <h3 className="text-14 font-semibold text-eggshell">Custo por etapa do funil</h3>
+              <span className="text-11 font-mono text-stone tabular-nums">
+                clique share · {(shareClicks * 100).toFixed(1)}% do funil
+              </span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {stageCosts.map((s) => (
+                <TargetKpi
+                  key={s.key}
+                  label={s.costLabel}
+                  value={s.cost}
+                  format={brl}
+                  target={s.target}
+                  onOpenEvidence={() => openEvidence(buildEvidence({
+                    label: `${s.costLabel} · ${campaign.name}`,
+                    value: `${brl(s.cost)} · meta < ${brl(s.target)}`,
+                    formula: `spend_campaign / count(events.${s.key} × share)`,
+                    source: `${campaign.source} spend × funil canônico`,
+                    state: 'Reconciliado',
+                    attribution: `Etapa: ${s.count.toLocaleString('pt-BR')} eventos atribuídos`,
+                  }))}
+                />
+              ))}
+            </div>
+          </section>
+
 
           {/* Árvore campanha → adset → ad */}
           <div className="bg-graphite border border-line rounded-xl overflow-hidden">

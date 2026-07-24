@@ -7,8 +7,11 @@ import { MetricValue } from '@/components/data/MetricValue';
 import { StatusChip } from '@/components/domain/StatusChip';
 import { DataTable, ColumnDef } from '@/components/data/DataTable';
 import { ScenarioStateGate, StateShowcase } from '@/components/state/ScenarioStateGate';
+import { TargetKpi } from '@/components/data/TargetKpi';
 import { buildEvidence } from '@/lib/evidence';
 import { CAMPAIGNS, PERSONS, metricsForPeriod, spendForPeriod } from '@/lib/fake/db';
+import { funnelSteps } from '@/lib/fake/funnelSteps';
+import { EXPERTS, expertForPerson } from '@/lib/fake/experts';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CampRow {
@@ -23,33 +26,56 @@ interface CampRow {
   net30: number;
   roi_pct: number;
   roas: number;
+  expert: string;      // expert dominante
+  expertId: string;
 }
+
+const brl = (n: number) => 'R$ ' + Math.round(n).toLocaleString('pt-BR');
 
 export default function MediaPage() {
   const [, navigate] = useLocation();
   const { openEvidence } = useEvidence();
   const isMobile = useIsMobile();
   const [source, setSource] = useState<'all' | 'meta' | 'tiktok'>('all');
+  const [expertFilter, setExpertFilter] = useState<'all' | string>('all');
 
   const totalSpend = spendForPeriod(30);
+  const steps = funnelSteps(30);
+
   const rows: CampRow[] = useMemo(() => {
-    // FTDs per campaign from PERSONS
     return CAMPAIGNS.map((c) => {
       const ps = PERSONS.filter((p) => p.campaign_id === c.id && p.ftd_at);
       const ftds = ps.length;
       const net = ps.reduce((s, p) => s + p.net_deposit, 0);
-      // Spend share proportional to daily budget within source pool
       const sameSourceSum = CAMPAIGNS.filter((x) => x.source === c.source).reduce((s, x) => s + x.budget_daily, 0) || 1;
       const share = c.budget_daily / sameSourceSum;
       const spend = Math.round((c.source === 'meta' ? totalSpend.meta : totalSpend.tiktok) * share);
       const cpftd = ftds > 0 ? Math.round(spend / ftds) : 0;
       const roi = spend > 0 ? Math.round(((net - spend) / spend) * 100) : 0;
       const roas = spend > 0 ? +(net / spend).toFixed(2) : 0;
-      return { id: c.id, name: c.name, source: c.source, status: c.status, budget_daily: c.budget_daily, spend30: spend, ftds30: ftds, cpftd, net30: Math.round(net), roi_pct: roi, roas };
+      // Expert dominante: primeiro expert de todas as pessoas dessa campanha
+      const allPersons = PERSONS.filter((p) => p.campaign_id === c.id);
+      const expertCounts = new Map<string, { name: string; count: number }>();
+      allPersons.forEach((p) => {
+        const e = expertForPerson(p.id);
+        if (!e) return;
+        const cur = expertCounts.get(e.id) ?? { name: e.name, count: 0 };
+        cur.count++;
+        expertCounts.set(e.id, cur);
+      });
+      const top = [...expertCounts.entries()].sort((a, b) => b[1].count - a[1].count)[0];
+      return {
+        id: c.id, name: c.name, source: c.source, status: c.status, budget_daily: c.budget_daily,
+        spend30: spend, ftds30: ftds, cpftd, net30: Math.round(net), roi_pct: roi, roas,
+        expert: top ? top[1].name : '—', expertId: top ? top[0] : '',
+      };
     });
   }, [totalSpend]);
 
-  const filtered = source === 'all' ? rows : rows.filter((r) => r.source === source);
+  const filtered = rows
+    .filter((r) => source === 'all' || r.source === source)
+    .filter((r) => expertFilter === 'all' || r.expertId === expertFilter);
+
   const m = metricsForPeriod(30);
 
   const columns: ColumnDef<CampRow>[] = [
@@ -59,6 +85,9 @@ export default function MediaPage() {
         <span className="text-11 font-mono text-stone">{r.source.toUpperCase()}</span>
       </div>
     ) },
+    { header: 'Expert', accessorKey: 'expert', cell: (r) => (
+      <span className="text-12 text-eggshell truncate">{r.expert}</span>
+    ), className: isMobile ? 'hidden' : '' },
     { header: 'Status', accessorKey: 'status', cell: (r) => <StatusChip status={r.status === 'active' ? 'Confirmed' : 'Captured'} /> },
     { header: 'Diário', accessorKey: 'budget_daily', cell: (r) => (
       <span className="font-mono text-12 tabular-nums text-stone">R$ {r.budget_daily.toLocaleString('pt-BR')}</span>
@@ -92,23 +121,64 @@ export default function MediaPage() {
               <StateShowcase />
             </div>
             <h1 className="text-eggshell font-sans font-semibold tracking-tight text-24">Meta × TrakAcquire, lado a lado.</h1>
-            <p className="text-stone text-13 mt-2 max-w-xl">Spend/CPM/CTR vindo da plataforma; FTD/CPFTD/net/ROI vindo do dataset canônico. Números batem com Command e Receita.</p>
+            <p className="text-stone text-13 mt-2 max-w-xl">Custo por etapa do funil (StartBot · Canal · Cadastro · FTD) com meta e semáforo semântico. Números batem com Command e Receita.</p>
           </div>
           <Link href="/media/creatives" className="text-13 border border-line rounded-md px-4 py-2 text-stone hover:text-eggshell hover:border-stone">Ranking de criativos →</Link>
         </header>
 
         <ScenarioStateGate emptyTitle="Sem campanhas ativas">
+          {/* KPIs agregados */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <KPI label="Spend total" value={`R$ ${m.total_spend.toLocaleString('pt-BR')}`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Investimento 30d', value: `R$ ${m.total_spend.toLocaleString('pt-BR')}`, formula: 'meta + tiktok', source: 'Cross plataformas' }))} />
             <KPI label="FTDs" value={m.ftds.toLocaleString('pt-BR')} tone="verified" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'FTDs 30d', value: m.ftds.toLocaleString('pt-BR'), formula: 'metricsForPeriod(30).ftds', source: 'TAP', state: 'Reconciliado' }))} />
-            <KPI label="CPFTD" value={`R$ ${m.cpftd.toLocaleString('pt-BR')}`} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'CPFTD', value: `R$ ${m.cpftd.toLocaleString('pt-BR')}`, formula: 'total_spend / ftds', source: 'Command' }))} />
+            <KPI label="Net (30d)" value={`R$ ${m.net_deposits.toLocaleString('pt-BR')}`} tone="verified" onOpenEvidence={() => openEvidence(buildEvidence({ label: 'Net 30d', value: `R$ ${m.net_deposits.toLocaleString('pt-BR')}`, formula: 'gross − withdrawals', source: 'TAP + saques' }))} />
             <KPI label="ROI" value={`${m.roi_pct}%`} tone={m.roi_pct >= 0 ? 'verified' : 'critical'} onOpenEvidence={() => openEvidence(buildEvidence({ label: 'ROI', value: `${m.roi_pct}%`, formula: '(gross_margin - spend) / spend', source: 'P&L operacional' }))} />
           </div>
 
+          {/* Custo por etapa do funil — semáforo semântico contra meta */}
+          <section className="space-y-3">
+            <div className="flex items-baseline justify-between">
+              <div>
+                <h2 className="text-14 font-semibold text-eggshell">Custo por etapa do funil</h2>
+                <p className="text-12 text-stone mt-0.5">Investimento ÷ eventos da etapa. Semáforo compara contra meta declarada.</p>
+              </div>
+              <span className="text-11 font-mono text-stone tabular-nums">período: 30d</span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {steps.filter((s) => s.key !== 'click').map((s) => (
+                <TargetKpi
+                  key={s.key}
+                  label={s.costLabel}
+                  value={s.cost}
+                  format={brl}
+                  target={s.target}
+                  onOpenEvidence={() => openEvidence(buildEvidence({
+                    label: `${s.costLabel} (30d)`,
+                    value: `${brl(s.cost)} · meta < ${brl(s.target)}`,
+                    formula: `sum(spend.total) / count(events.${s.key})`,
+                    source: 'Meta+TikTok spend ÷ funil canônico',
+                    state: 'Reconciliado',
+                    attribution: `Etapa: ${s.count.toLocaleString('pt-BR')} eventos · Semáforo: <80% meta=verified · 80–100%=warning · acima=critical`,
+                  }))}
+                />
+              ))}
+            </div>
+          </section>
+
+          {/* Filtros: fonte + expert */}
           <div className="flex flex-wrap items-center gap-2 bg-graphite border border-line rounded-xl p-3">
             {(['all', 'meta', 'tiktok'] as const).map((s) => (
               <button key={s} onClick={() => setSource(s)} className={`text-12 px-3 py-1 rounded-md border ${source === s ? 'bg-zinc text-eggshell border-line' : 'text-stone border-transparent hover:text-eggshell'}`}>{s === 'all' ? 'Todas as fontes' : s.toUpperCase()}</button>
             ))}
+            <span className="w-px h-5 bg-line mx-1" />
+            <select
+              value={expertFilter}
+              onChange={(e) => setExpertFilter(e.target.value)}
+              className="bg-zinc border border-line text-eggshell rounded-md px-2 py-1 text-12 outline-none focus:border-proof-blue"
+            >
+              <option value="all">Todos os Experts</option>
+              {EXPERTS.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
+            </select>
             <span className="ml-auto text-11 font-mono text-stone tabular-nums">{filtered.length} campanhas</span>
           </div>
 
