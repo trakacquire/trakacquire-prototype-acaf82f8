@@ -109,9 +109,9 @@ Fase esperada de detalhamento entre parênteses.
 
 | Página | 8-ST | EVD | CHIP | TOK | MON | PRV | BRC | TBL | MOB | NAV | Fase |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Reports | ❌ | ➖ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ❌ | P4 |
-| ReportDetail | ❌ | ❌ | ❌ | ✅ | ⏳ | ❌ | ✅ | ➖ | ❌ | ❌ | P4 |
-| Governance | ❌ | ➖ | ❌ | ✅ | ⏳ | ❌ | ✅ | ✅ | ❌ | ✅ | P4 |
+| Reports | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P4 ✔** |
+| ReportDetail | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖ | **P4 ✔** (contextual de Reports) |
+| Governance | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **P4 ✔** |
 
 ### Settings/Perfil
 
