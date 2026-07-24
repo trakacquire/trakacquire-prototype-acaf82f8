@@ -40,11 +40,19 @@
   --color-sidebar-border: hsl(var(--sidebar-border));
 
   --color-ink: hsl(var(--ink));
+  --color-canvas: hsl(var(--canvas));
   --color-iron: hsl(var(--iron));
   --color-graphite: hsl(var(--graphite));
   --color-panel: hsl(var(--panel));
+  --color-surface: hsl(var(--surface));
+  --color-surface-raised: hsl(var(--surface-raised));
+  --color-surface-inset: hsl(var(--surface-inset));
   --color-zinc: hsl(var(--zinc));
-  --color-line: hsl(var(--line));
+  /* Hairline — Fase D · maior alavancagem visual. Substitui a antiga
+     borda alta (#38383D) por uma linha em eggshell 6% alpha. */
+  --color-line: hsl(var(--eggshell) / 0.06);
+  --color-line-strong: hsl(var(--eggshell) / 0.10);
+  --color-line-solid: hsl(var(--line));
   --color-eggshell: hsl(var(--eggshell));
   --color-stone: hsl(var(--stone));
 
@@ -67,8 +75,9 @@
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 4px);
-  --radius-xl: calc(var(--radius) + 8px);
+  --radius-xl: calc(var(--radius) + 4px);
 }
+
 
 :root {
   /* TrakAcquire Proofline Design System — CANONICAL D1 TOKENS.
