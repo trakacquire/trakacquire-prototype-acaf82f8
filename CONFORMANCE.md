@@ -164,8 +164,8 @@ Fase esperada de detalhamento entre parênteses.
 |---|---|---|
 | P0 · Foundations | Tokens D1, primitivos (FreshnessTag, IntegrationStateBadge, AuditRef, MetricValue, PreviewBadge), 8 estados como componentes | ✔ concluída (tokens revertidos nesta rodada) |
 | P1 · Command | Command definitivo, funil monotônico, live feed cronológico, MetricValue, PreviewBadge, dataset canônico | ✔ concluída |
-| P2 · Signal Ledger + Observe | LiveEvents · Ledger · Monitoring com 8 estados + Evidence Drawer + DataTable + mobile reordenado. Signals/EventDetail/Reconciliation seguem em `/roadmap` até fecharem a matriz (backlog P2). | ✔ concluída em 2026-07-24 — Monitoring entrou na sidebar em Observe |
-| P3 · Identity + Players | Identity Graph, IdentityDetail, Players, Player360 | ⏸ |
+| P2 · Signal Ledger + Observe | LiveEvents · Ledger · Monitoring · Signals · EventDetail · Reconciliation | ✔ concluída em 2026-07-24 — Signals promovida à sidebar em Observe |
+| P3 · Identity + Players | Identity Graph, IdentityDetail, Players, Player360 | ✔ concluída em 2026-07-24 — Identity Graph promovida à sidebar em Observe |
 | P4 · Analytics + Revenue + Reports | Analytics, Revenue, Cohorts, Reports, ReportDetail, Governance | ⏸ |
 | P5 · Connect | Tracking, Domains, Integrations, Campaign360, Media | ⏸ |
 | P6 · Operate | Automations, FlowBuilder, Broadcasts, Segments, Inbox, Approvals | ⏸ |
