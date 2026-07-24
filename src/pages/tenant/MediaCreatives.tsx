@@ -49,8 +49,9 @@ export default function MediaCreativesPage() {
     return out.sort((a, b) => b.ftds - a.ftds);
   }, []);
 
+  const rankIndex = new Map(rows.map((r, i) => [r.id, i + 1]));
   const columns: ColumnDef<CrRow>[] = [
-    { header: '#', accessorKey: 'id', cell: (_r, i?: number) => <span className="font-mono text-11 text-stone tabular-nums">#{(i ?? 0) + 1}</span> },
+    { header: '#', accessorKey: 'id', cell: (r) => <span className="font-mono text-11 text-stone tabular-nums">#{rankIndex.get(r.id)}</span> },
     { header: 'Criativo', accessorKey: 'name', cell: (r) => (
       <div className="flex items-center gap-3">
         <div className={`w-8 h-8 rounded flex items-center justify-center text-11 font-mono uppercase ${r.type === 'video' ? 'bg-proof-blue/10 text-proof-blue' : r.type === 'image' ? 'bg-warning/10 text-warning' : 'bg-verified/10 text-verified'}`}>{r.type[0]}</div>
