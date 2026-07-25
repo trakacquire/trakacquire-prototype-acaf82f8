@@ -83,6 +83,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Infraestrutura de atribuição de receita." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "TrakAcquire" },
+      { name: "twitter:description", content: "Infraestrutura de atribuição de receita." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e222ab33-bbb7-414b-8d29-e23bb4cd997a/id-preview-4083db00--0496a670-6b99-4fef-bf4b-e79c5f535b01.lovable.app-1784935305866.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e222ab33-bbb7-414b-8d29-e23bb4cd997a/id-preview-4083db00--0496a670-6b99-4fef-bf4b-e79c5f535b01.lovable.app-1784935305866.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
